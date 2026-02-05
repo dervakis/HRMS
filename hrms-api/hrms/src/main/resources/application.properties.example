@@ -1,0 +1,9 @@
+spring.application.name=HRMS API
+
+#database related configuration
+spring.datasource.url=jdbc:sqlserver://;serverName=localhost;databaseName=hrms_db;encrypt=false;trustServerCertificate=false;
+spring.datasource.username=USERNAME
+spring.datasource.password=DBPASSWORD
+spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=create
