@@ -12,11 +12,12 @@ import java.time.LocalTime;
 public class GameSlot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int GameSlotId;
-    private LocalTime SlotTime;
-    private boolean IsActive;
+    @Column(name = "pk_game_slot_it")
+    private int gameSlotId;
+    private LocalTime slotTime;
+    private boolean isActive;
 
     @ManyToOne
-    @JoinColumn(name = "GameId")
-    private Game Game;
+    @JoinColumn(name = "fk_game_id")
+    private Game game;
 }

@@ -1,9 +1,6 @@
 package com.intern.hrms.entity.travel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +10,8 @@ import lombok.Setter;
 public class DocumentType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int DocumentTypeId;
-    private String DocumentTypeName;
+        @Column(name = "pk_document_type_id")
+    private int documentTypeId;
+    @Column(nullable = false, unique = true)
+    private String documentTypeName;
 }

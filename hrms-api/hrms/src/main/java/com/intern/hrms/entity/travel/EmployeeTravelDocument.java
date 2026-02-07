@@ -14,23 +14,20 @@ import java.time.LocalDate;
 public class EmployeeTravelDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int EmployeeTravelDocumentId;
-    private LocalDate ActionDate;
-    private DocumentStatusEnum DocumentStatus;
+    @Column(name = "pk_employee_travel_document_id")
+    private int employeeTravelDocumentId;
+    private LocalDate actionDate;
+    private DocumentStatusEnum documentStatus;
 
     @ManyToOne
-    @JoinColumn(name = "TravelPlanId")
-    private TravelPlan TravelPlan;
+    @JoinColumn(name = "fk_travel_employee_id", nullable = false)
+    private TravelEmployee travelEmployee;
 
     @ManyToOne
-    @JoinColumn(name = "EmployeeId")
-    private Employee Employee;
+    @JoinColumn(name = "fk_employee_document_id", nullable = false)
+    private EmployeeDocument employeeDocument;
 
     @ManyToOne
-    @JoinColumn(name = "EmployeeDocumentId")
-    private EmployeeDocument EmployeeDocument;
-
-    @ManyToOne
-    @JoinColumn(name = "ApproverId")
-    private Employee Approver; // hr is responsible for approver
+    @JoinColumn(name = "fk_approver_employee_id")
+    private Employee approver; // hr is responsible for approver
 }

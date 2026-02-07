@@ -15,23 +15,24 @@ import java.util.List;
 public class GameSlotBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int GameSlotBookingId;
-    private LocalDate BookingDate;
-    private SlotBookingStatusEnum BookingStatus;
+    @Column(name = "pk_game_slot_booking_id")
+    private int gameSlotBookingId;
+    private LocalDate bookingDate;
+    private SlotBookingStatusEnum bookingStatus;
 
     @ManyToOne
-    @JoinColumn(name = "GameSlotId")
-    private GameSlot GameSlot;
+    @JoinColumn(name = "fk_game_slot_id")
+    private GameSlot gameSlot;
 
     @ManyToOne
-    @JoinColumn(name = "BookedBy")
-    private Employee BookedBy;
+    @JoinColumn(name = "fk_booked_by_employee_id")
+    private Employee bookedBy;
 
     @ManyToMany
     @JoinTable(
-            name = "PlayerInSlot",
-            joinColumns = @JoinColumn(name = "GameSlotBookingId"),
-            inverseJoinColumns = @JoinColumn(name = "EmployeeId")
+            name = "playerInSlot",
+            joinColumns = @JoinColumn(name = "fk_game_slot_booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_employee_id")
     )
-    private List<Employee> Players;
+    private List<Employee> players;
 }

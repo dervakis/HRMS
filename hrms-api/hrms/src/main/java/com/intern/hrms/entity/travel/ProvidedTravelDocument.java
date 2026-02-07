@@ -13,15 +13,20 @@ import java.time.LocalDate;
 public class ProvidedTravelDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ProvidedTravelDocumentId;
-    private LocalDate Date;
-    private String DocumentUrl;
+    @Column(name = "pk_provided_travel_document_id")
+    private int providedTravelDocumentId;
+    private LocalDate date;
+    private String documentUrl;
 
     @ManyToOne
-    @JoinColumn(name = "DocumentTypeId")
-    private DocumentType DocumentType;
+    @JoinColumn(name = "fk_document_type_id")
+    private DocumentType documentType;
 
     @ManyToOne
-    @JoinColumn(name = "ProviderId") //hr provide this ticket and etc..
-    private Employee Provider;
+    @JoinColumn(name = "fk_provider_id") //hr provide this ticket and etc..
+    private Employee provider;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_travel_employee_id")
+    private TravelEmployee travelEmployee;
 }

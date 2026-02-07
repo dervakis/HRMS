@@ -13,16 +13,17 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int CommentId;
+    @Column(name = "pk_comment_id")
+    private int commentId;
     private String text;
-    private LocalDateTime CommentedAt;
+    private LocalDateTime commentedAt;
     private boolean isActive;
 
     @ManyToOne
-    @JoinColumn(name = "PostId")
-    private Post Post;
+    @JoinColumn(name = "fk_post_id")
+    private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "CommenterId")
-    private Employee CommentBy;
+    @JoinColumn(name = "fk_commenter_id")
+    private Employee commentBy;
 }

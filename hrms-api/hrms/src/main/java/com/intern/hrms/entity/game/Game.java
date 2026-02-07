@@ -12,11 +12,12 @@ import java.util.List;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int GameId;
-    private String GameName;
-    private int DurationInMinute;
-    private int MaxPlayer;
+    @Column(name = "pk_name_id")
+    private int gameId;
+    private String gameName;
+    private int durationInMinute;
+    private int maxPlayer;
 
-    @OneToMany(mappedBy = "Game")
-    private List<GameSlot> GameSlots;
+    @OneToMany(mappedBy = "game")
+    private List<GameSlot> gameSlots;
 }

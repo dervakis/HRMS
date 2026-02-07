@@ -12,9 +12,11 @@ import java.util.List;
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int DepartmentId;
-    private String DepartmentName;
+    @Column(name = "pk_department_id")
+    private int departmentId;
+    @Column(nullable = false, unique = true)
+    private String departmentName;
 
-    @OneToMany(mappedBy = "Department")
-    private List<Employee> Employees;
+    @OneToMany(mappedBy = "department")
+    private List<Employee> employees;
 }

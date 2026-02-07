@@ -13,17 +13,18 @@ import java.util.UUID;
 @Setter
 public class JobReferral {
     @Id
-    private UUID JobReferralId; //random uuid as referel code also primary key
-    private String Referee; // whom to going to give referral
-    private String RefereeEmail;
-    private String ResumeUrl;
-    private ReferralStatusEnum ReferralStatus; //
+    @Column(name = "pk_job_referral_id")
+    private UUID jobReferralId; //random uuid as referel code also primary key
+    private String referee; // whom to going to give referral
+    private String refereeEmail;
+    private String resumeUrl;
+    private ReferralStatusEnum referralStatus; //
 
     @ManyToOne
-    @JoinColumn(name = "JobId")
-    private Job Job;
+    @JoinColumn(name = "fk_job_id")
+    private Job job;
 
     @ManyToOne
-    @JoinColumn(name = "ReferrerId")
-    private Employee Referrer;
+    @JoinColumn(name = "fk_referrer_employee_id")
+    private Employee referrer;
 }

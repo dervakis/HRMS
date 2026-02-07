@@ -14,20 +14,21 @@ import java.util.List;
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int JobId;
-    private String Title;
-    private boolean IsOpen;
-    private LocalDate OpenedAt;
-    private int Salary;
-    private int Requirment;
-    private int Location; //remote  or office
-    private String JobDescriptionUrl;
+    @Column(name = "pk_job_id")
+    private int jobId;
+    private String title;
+    private boolean isOpen;
+    private LocalDate openedAt;
+    private int salary;
+    private int requirment;
+    private int location; //remote  or office
+    private String jobDescriptionUrl;
 
     @ManyToOne
-    @JoinColumn(name = "CreatorId")
-    private Employee CreatedBy; //recruiter open position for that
+    @JoinColumn(name = "fk_created_by_employee_id")
+    private Employee createdBy; //recruiter open position for that
 
 
-    @OneToMany(mappedBy = "Job")
-    private List<JobReferral> JobReferrals;
+    @OneToMany(mappedBy = "job")
+    private List<JobReferral> jobReferrals;
 }

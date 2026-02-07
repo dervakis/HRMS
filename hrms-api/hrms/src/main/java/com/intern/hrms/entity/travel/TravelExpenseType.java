@@ -1,9 +1,6 @@
 package com.intern.hrms.entity.travel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +10,11 @@ import lombok.Setter;
 public class TravelExpenseType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int TravelExpenseTypeId;
-    private String TravelExpenseTypeName;
-    private int MaxAmount;
+    @Column(name = "pk_travel_expense_type_id")
+    private int travelExpenseTypeId;
+    @Column(nullable = false, unique = true)
+    private String travelExpenseTypeName;
+    private int maxAmount;
 
     // max amount time
 }

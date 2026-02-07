@@ -13,15 +13,16 @@ import java.time.LocalDate;
 public class JobSharing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int JobSharingId;
-    private String Email;
-    private LocalDate Date;
+    @Column(name = "pk_job_sharing_id")
+    private int jobSharingId;
+    private String email;
+    private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "SharedJobId")
-    private Job SharedJob;
+    @JoinColumn(name = "fk_shared_job_id")
+    private Job sharedJob;
 
     @ManyToOne
-    @JoinColumn(name = "SharedBy")
-    private Employee SharedBy;
+    @JoinColumn(name = "fk_shared_by_employee_id")
+    private Employee sharedBy;
 }

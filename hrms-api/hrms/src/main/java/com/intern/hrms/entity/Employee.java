@@ -5,6 +5,7 @@ import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.GameSlotBooking;
 import com.intern.hrms.entity.job.JobReferral;
 import com.intern.hrms.entity.travel.EmployeeDocument;
+import com.intern.hrms.entity.travel.TravelEmployee;
 import com.intern.hrms.entity.travel.TravelPlan;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,45 +20,47 @@ import java.util.List;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int EmployeeID;
-    private String FirstName;
-    private String LastName;
-    private LocalDate DateOfBirth;
-    private LocalDate JoiningDate;
+    @Column(name = "pk_employee_id")
+    private int employeeId;
+    private String firstName;
+    private String lastName;
+    @Column(unique = true, nullable = false)
+    private String email;
+    @Column(nullable = false)
+    private String password;
+    private LocalDate dateOfBirth;
+    private LocalDate joiningDate;
 
     @ManyToOne
-    @JoinColumn(name = "ManagerId")
-    private Employee Manager;
+    @JoinColumn(name = "fk_manager_employee_id")
+    private Employee manager;
 
     @ManyToOne
-    @JoinColumn(name = "DepartmentId")
-    private Department Department;
+    @JoinColumn(name = "fk_department_id")
+    private Department department;
 
     @ManyToOne
-    @JoinColumn(name = "RoleId")
-    private Role Role;
+    @JoinColumn(name = "fk_role_id")
+    private Role role;
 
-    @OneToMany(mappedBy = "Manager")
-    private List<Employee> Employees;
+    @OneToMany(mappedBy = "manager")
+    private List<Employee> employees;
 
-    @ManyToMany(mappedBy = "Employees")
-    private List<TravelPlan> TravelPlans;
+    @OneToMany(mappedBy = "employee")
+    private List<TravelEmployee> travelEmployee;
 
-    @OneToMany(mappedBy = "Employee")
-    private List<EmployeeDocument> EmployeeDocuments;
+    @OneToMany(mappedBy = "employee")
+    private List<EmployeeDocument> employeeDocuments;
 
-    @OneToMany(mappedBy = "Author")
-    private List<Post> Posts;
+    @OneToMany(mappedBy = "author")
+    private List<Post> posts;
 
-//    @ManyToMany(mappedBy = "LikedBy")
-//    private List<Post> LikedPost;
+    @OneToMany(mappedBy = "referrer")
+    private List<JobReferral> jobReferrals;
 
-    @OneToMany(mappedBy = "Referrer")
-    private List<JobReferral> JobReferrals;
+    @OneToMany(mappedBy = "employee")
+    private List<EmployeeInterest> employeeInterests; // game in whihc emp intrested
 
-    @OneToMany(mappedBy = "Employee")
-    private List<EmployeeInterest> EmployeeInterests; // game in whihc emp intrested
-
-    @ManyToMany(mappedBy = "Players")
-    private List<GameSlotBooking> GameSlotBookings;
+    @ManyToMany(mappedBy = "players")
+    private List<GameSlotBooking> gameSlotBookings;
 }

@@ -12,9 +12,10 @@ import java.util.List;
 public class Tag{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int TagId;
-    private String TagName;
+    @Column(name = "pk_tag_id")
+    private int tagId;
+    private String tagName;
 
-    @ManyToMany(mappedBy = "PostTags")
-    private List<Post> Posts;
+    @ManyToMany(mappedBy = "postTags")
+    private List<Post> posts;
 }

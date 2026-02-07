@@ -18,50 +18,51 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int PostId;
-    private String Title;
-    private String Description;
-    private LocalDateTime CreatedAt;
-    private String ImageUrl;
-    private boolean IsPublic;
+    @Column(name = "pk_post_id")
+    private int postId;
+    private String title;
+    private String description;
+    private LocalDateTime createdAt;
+    private String imageUrl;
+    private boolean isPublic;
 
     @ManyToOne
-    @JoinColumn(name = "AuthorId")
-    private Employee Author;
+    @JoinColumn(name = "fk_author_employee_id")
+    private Employee author;
 
     @ManyToMany
     @JoinTable(
-            name = "RoleWiseVisibility",
-            joinColumns = @JoinColumn(name = "PostId"),
-            inverseJoinColumns = @JoinColumn(name = "RoleId")
+            name = "roleWiseVisibility",
+            joinColumns = @JoinColumn(name = "fk_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_role_id")
     )
-    private List<Role> Roles; //which role can view this post like only hr or s. dev (if ispublic false)
+    private List<Role> roles; //which role can view this post like only hr or s. dev (if ispublic false)
 
     @ManyToMany
     @JoinTable(
-            name = "DepartmentWiseVisibility",
-            joinColumns = @JoinColumn(name = "PostId"),
-            inverseJoinColumns = @JoinColumn(name = "DepartmentId")
+            name = "departmentWiseVisibility",
+            joinColumns = @JoinColumn(name = "fk_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_department_id")
     )
-    private List<Department> Departments; // which department are allow to watch post (if ispublic false)
+    private List<Department> departments; // which department are allow to watch post (if ispublic false)
 
     @ManyToMany
     @JoinTable(
-            name = "PostLikes",
-            joinColumns = @JoinColumn(name = "Postid"),
-            inverseJoinColumns = @JoinColumn(name = "EmployeeId")
+            name = "postLikes",
+            joinColumns = @JoinColumn(name = "fk_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_employee_id")
     )
-    private List<Employee> LikedBy;
+    private List<Employee> likedBy;
 
     @ManyToMany
     @JoinTable(
-            name = "PostTags",
-            joinColumns = @JoinColumn(name = "PostId"),
-            inverseJoinColumns = @JoinColumn(name = "TagId")
+            name = "postTags",
+            joinColumns = @JoinColumn(name = "fk_post_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_tag_id")
     )
-    private List<Tag> PostTags;
+    private List<Tag> postTags;
 
-    @OneToMany(mappedBy = "Post")
-    private List<Comment> Comments;
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
 
 }

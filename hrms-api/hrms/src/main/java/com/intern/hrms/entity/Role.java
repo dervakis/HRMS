@@ -12,12 +12,14 @@ import java.util.List;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int RoleId;
-    private String RoleName;
+    @Column(name = "pk_role_id")
+    private int roleId;
+    @Column(nullable = false, unique = true)
+    private String roleName;
     //person role
-    @OneToMany(mappedBy = "Role")
-    private List<HasPermission> HasPermissions;
+//    @OneToMany(mappedBy = "Role")
+//    private List<HasPermission> HasPermissions;
 
-    @OneToMany(mappedBy = "Role")
-    private  List<Employee> Employees;
+    @OneToMany(mappedBy = "role")
+    private  List<Employee> employees;
 }

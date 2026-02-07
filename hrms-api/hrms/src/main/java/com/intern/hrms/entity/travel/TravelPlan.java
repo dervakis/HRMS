@@ -17,21 +17,22 @@ import java.util.List;
 public class TravelPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int TravelPlanId;
-    private String Title;
-    private String Description;
-    private LocalDateTime StartTime;
-    private LocalDateTime EndTime;
+    @Column(name = "pk_travel_plan_id")
+    private int travelPlanId;
+    @Column(nullable = false)
+    private String title;
+    @Column(nullable = false)
+    private String description;
+    @Column(nullable = false)
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     @ManyToOne
-    @JoinColumn(name = "CreatedBy") // hr id who has created plan
-    private Employee CreatedBy;
+    @JoinColumn(name = "fk_created_by_employee_id", nullable = false) // hr id who has created plan
+    private Employee createdBy;
 
-    @ManyToMany //employee are going to travel
-    @JoinTable(name = "EmployeeTravel",
-    joinColumns = @JoinColumn(name = "TravelPlanId"),
-    inverseJoinColumns = @JoinColumn(name = "EmployeeId"))
-    private List<Employee> Employees;
+    @OneToMany(mappedBy = "travelPlan")
+    private List<TravelEmployee> travelEmployees;
 
 
 }
