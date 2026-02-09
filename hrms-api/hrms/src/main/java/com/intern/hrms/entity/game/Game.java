@@ -12,7 +12,7 @@ import java.util.List;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pk_name_id")
+    @Column(name = "pk_game_id")
     private int gameId;
     private String gameName;
     private int durationInMinute;

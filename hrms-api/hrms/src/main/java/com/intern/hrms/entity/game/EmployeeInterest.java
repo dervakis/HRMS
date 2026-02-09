@@ -16,7 +16,7 @@ public class EmployeeInterest {
     @Column(name = "pk_employee_interest_id")
     private int employeeInterestId;
     private int slotPlayed;
-    private LocalDateTime lastPlayed;
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "fk_game_id")

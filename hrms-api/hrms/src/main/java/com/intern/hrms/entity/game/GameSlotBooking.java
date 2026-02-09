@@ -35,4 +35,8 @@ public class GameSlotBooking {
             inverseJoinColumns = @JoinColumn(name = "fk_employee_id")
     )
     private List<Employee> players;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_game_cycle_id")
+    private GameCycle gameCycle;
 }

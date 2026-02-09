@@ -36,10 +36,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        logger.info("Authentication Filter : Request Arrived"+path);
+        logger.info("Authentication Filter : Request Arrived "+path);
 
         //remainging bypass logick here
-        if(path.startsWith("/employee/login")){
+        if(path.startsWith("/api/employee/login") || path.startsWith("/api/role" ) || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/api/employee/forget-password/")){
             logger.info("Authentication Filter : Bypassing Authentication for Path " + path);
             filterChain.doFilter(request, response);
             return;
