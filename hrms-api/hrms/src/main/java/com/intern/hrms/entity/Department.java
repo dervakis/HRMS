@@ -2,6 +2,7 @@ package com.intern.hrms.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +21,8 @@ public class Department {
 
     @OneToMany(mappedBy = "department")
     private List<Employee> employees;
+
+    public Department(String departmentName){
+        this.departmentName=departmentName;
+    }
 }

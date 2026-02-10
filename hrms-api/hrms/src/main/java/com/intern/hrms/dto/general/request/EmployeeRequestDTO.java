@@ -25,12 +25,10 @@ public class EmployeeRequestDTO {
     private LocalDate dateOfBirth;
     @NotNull(message = "specify joining date it's mandatory")
     private LocalDate joiningDate;
-    @Null
     @Min(value = 1, message = "manager Id should be > 0")
-    private int managerId;
+    private Integer managerId;
     @Min(value = 1, message = "role id Id should be > 0")
-    private int roleId;
-    @Null
+    private Integer roleId;
     @Min(value = 1, message = "department Id should be > 0")
-    private int departmentId;
+    private Integer departmentId;
 }

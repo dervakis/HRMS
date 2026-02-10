@@ -10,6 +10,7 @@ import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class EmployeeController {
 
     @PostMapping
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<Employee> addEmployee(@RequestBody EmployeeRequestDTO employeeRequestDTO){
+    public ResponseEntity<Employee> addEmployee(@Validated @RequestBody EmployeeRequestDTO employeeRequestDTO){
         Employee newEmployee = employeeService.addEmployee(employeeRequestDTO);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(newEmployee);
     }

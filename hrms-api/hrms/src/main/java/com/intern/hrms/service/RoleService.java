@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 @Service
-@Validated
 public class RoleService {
     private final RoleRepository roleRepository;
 
@@ -19,9 +18,7 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public Role createRole(@NotBlank(message = "role name can`t be blank")
-                           @NotNull(message = "role name can`t be null")
-                           @Size(max = 15, message = "role name must be < 15 char") String roleName){
+    public Role createRole(String roleName){
         roleRepository.getRolesByRoleName(roleName).ifPresent(
                 role -> {throw new RuntimeException("role already exist with name : "+role.getRoleName());}
         );
