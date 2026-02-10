@@ -1,5 +1,6 @@
 package com.intern.hrms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class Role {
 //    private List<HasPermission> HasPermissions;
 
     @OneToMany(mappedBy = "role")
+    @JsonIgnore
     private  List<Employee> employees;
 
     public Role(String roleName) {

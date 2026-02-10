@@ -34,5 +34,4 @@ public class TravelPlan {
     @OneToMany(mappedBy = "travelPlan")
     private List<TravelEmployee> travelEmployees;
 
-
 }

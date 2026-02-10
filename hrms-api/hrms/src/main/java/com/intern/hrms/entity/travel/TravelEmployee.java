@@ -3,11 +3,13 @@ package com.intern.hrms.entity.travel;
 import com.intern.hrms.entity.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(
         uniqueConstraints = @UniqueConstraint(columnNames = {"fk_travel_plan_id", "fk_employee_id"})
 )
@@ -23,5 +25,11 @@ public class TravelEmployee {
 
     @ManyToOne
     @JoinColumn(name = "fk_employee_id", nullable = false)
-    private Employee employee;
+        private Employee employee;
+
+
+    public TravelEmployee(TravelPlan travelPlan, Employee employee) {
+        this.travelPlan = travelPlan;
+        this.employee = employee;
+    }
 }
