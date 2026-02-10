@@ -10,6 +10,7 @@ import com.intern.hrms.repository.EmployeeRepository;
 import com.intern.hrms.utility.FileStorage;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -47,5 +48,12 @@ public class EmployeeDocumentService {
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
         );
         return fileStorage.getDocument(employeeDocument.getDocumentUrl());
+    }
+
+    public void updateEmployeeDocument(int employeeDocumentId, MultipartFile file) throws IOException{
+        EmployeeDocument employeeDocument= employeeDocumentRepository.findById(employeeDocumentId).orElseThrow(
+                ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
+        );
+        fileStorage.UpdateFile(employeeDocument.getDocumentUrl(), file);
     }
 }

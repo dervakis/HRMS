@@ -24,6 +24,7 @@ public class EmployeeDocument {
     private int employeeDocumentId;
     @Column(nullable = false)
     private String documentUrl;
+
     @Column(nullable = false)
     private LocalDate uploadedAt;
 

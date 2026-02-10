@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,13 +30,9 @@ import java.util.logging.Logger;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final Logger logger = Logger.getLogger(EmployeeController.class.getName());
-    private final GenericResponseService responseBuilder;
-    private final EmployeeDocumentService employeeDocumentService;
 
-    public EmployeeController(EmployeeService employeeService, GenericResponseService responseBuilder, EmployeeDocumentService employeeDocumentService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.responseBuilder = responseBuilder;
-        this.employeeDocumentService = employeeDocumentService;
     }
 
     @GetMapping("/login")
@@ -73,19 +70,5 @@ public class EmployeeController {
     public ResponseEntity<String> resetPassword(@PathVariable String email, @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO){
         employeeService.forgetPassword(email,resetPasswordRequestDTO);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password Changed Successfully");
-    }
-
-    @PostMapping("/document")
-    public ResponseEntity<SuccessResponse<EmployeeDocument>> addDocument(@Validated EmployeeDocumentRequestDTO employeeDocumentRequestDTO) throws IOException {
-        EmployeeDocument document = employeeDocumentService.addEmployeeDocument(employeeDocumentRequestDTO);
-        return ResponseEntity.ok(
-                new SuccessResponse<>("Document Uploaded Successfully", document)
-        );
-    }
-
-    @GetMapping("/document/{documentId}")
-    public ResponseEntity<Resource> getEmployeeDocument(@PathVariable int documentId){
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(employeeDocumentService.getEmployeeDocument(documentId));
-        //for pdf and ohter format handling require
     }
 }

@@ -30,6 +30,9 @@ public class FileStorage {
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
         return url;
     }
+    public void UpdateFile(String url, MultipartFile file)throws IOException{
+        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+    }
 
     public String getFileExtension(String name){
 
