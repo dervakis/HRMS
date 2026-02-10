@@ -82,6 +82,5 @@ public class TravelPlanService {
 
         addTravelEmployee(travelPlan, add.stream().toList());
         return travelPlan;
-
     }
 }

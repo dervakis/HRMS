@@ -4,6 +4,7 @@ import com.intern.hrms.entity.Employee;
 import com.intern.hrms.enums.DocumentStatusEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class EmployeeTravelDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +26,21 @@ public class EmployeeTravelDocument {
     private TravelEmployee travelEmployee;
 
     @ManyToOne
-    @JoinColumn(name = "fk_employee_document_id", nullable = false)
+    @JoinColumn(name = "fk_document_type_id", nullable = false)
+    private DocumentType documentType;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_employee_document_id")
     private EmployeeDocument employeeDocument;
 
     @ManyToOne
     @JoinColumn(name = "fk_approver_employee_id")
     private Employee approver; // hr is responsible for approver
+
+    public EmployeeTravelDocument(TravelEmployee travelEmployee, DocumentType documentType) {
+        this.actionDate = LocalDate.now();
+        this.documentStatus = DocumentStatusEnum.Pending;
+        this.travelEmployee = travelEmployee;
+        this.documentType = documentType;
+    }
 }

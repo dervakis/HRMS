@@ -3,6 +3,7 @@ package com.intern.hrms.entity.travel;
 import com.intern.hrms.entity.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @Table(
         uniqueConstraints = @UniqueConstraint(columnNames = {"fk_document_type_id","fk_employee_id"})
 )
+@NoArgsConstructor
 public class EmployeeDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +35,10 @@ public class EmployeeDocument {
     @JoinColumn(name = "fk_employee_id", nullable = false)
     private Employee employee;
 
+    public EmployeeDocument(String documentUrl, LocalDate uploadedAt, DocumentType documentType, Employee employee) {
+        this.documentUrl = documentUrl;
+        this.uploadedAt = uploadedAt;
+        this.documentType = documentType;
+        this.employee = employee;
+    }
 }
