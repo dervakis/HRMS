@@ -2,11 +2,13 @@ package com.intern.hrms.entity.travel;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class TravelExpenseType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +19,9 @@ public class TravelExpenseType {
     private int maxAmount;
 
     // max amount time
+
+    public TravelExpenseType(String travelExpenseTypeName, int maxAmount) {
+        this.travelExpenseTypeName = travelExpenseTypeName;
+        this.maxAmount = maxAmount;
+    }
 }

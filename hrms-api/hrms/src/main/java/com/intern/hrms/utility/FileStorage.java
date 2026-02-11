@@ -43,6 +43,17 @@ public class FileStorage {
         return url;
     }
 
+    public String uploadExpenseBill(String name,MultipartFile file) throws IOException{
+        File directory = new File(path+"expense-bills/");
+        if(!directory.exists()){
+            if(!directory.mkdirs()){
+                throw new RuntimeException("Issue in creating Directories in upload employee document.");
+            }
+        }
+        String url = path+"expense-bills/"+name+getFileExtension(file.getOriginalFilename());
+        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+        return url;
+    }
     public void UpdateFile(String url, MultipartFile file)throws IOException{
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
     }
