@@ -3,6 +3,7 @@ package com.intern.hrms.entity.travel;
 import com.intern.hrms.entity.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProvidedTravelDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,12 @@ public class ProvidedTravelDocument {
     @ManyToOne
     @JoinColumn(name = "fk_travel_employee_id")
     private TravelEmployee travelEmployee;
+
+    public ProvidedTravelDocument(String documentUrl, DocumentType documentType, Employee provider, TravelEmployee travelEmployee) {
+        this.documentUrl = documentUrl;
+        this.documentType = documentType;
+        this.provider = provider;
+        this.travelEmployee = travelEmployee;
+        this.date = LocalDate.now();
+    }
 }

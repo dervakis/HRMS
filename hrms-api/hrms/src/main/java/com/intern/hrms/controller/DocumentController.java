@@ -2,8 +2,10 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.travel.request.EmployeeDocumentRequestDTO;
+import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.entity.travel.EmployeeDocument;
 import com.intern.hrms.entity.travel.EmployeeTravelDocument;
+import com.intern.hrms.enums.DocumentStatusEnum;
 import com.intern.hrms.service.EmployeeDocumentService;
 import com.intern.hrms.service.TravelDocumentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -30,6 +33,14 @@ public class DocumentController {
         this.travelDocumentService = travelDocumentService;
     }
 
+    @PostMapping("/provided")
+    public ResponseEntity<SuccessResponse<Object>> addProvidedTravelDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, Principal principal) throws IOException{
+        travelDocumentService.submitProvidedDocument(providedTravelDocumentRequestDTO, principal.getName());
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Document Provided to Employee for Travel", null)
+        );
+    }
+
     @PostMapping()
     public ResponseEntity<SuccessResponse<EmployeeDocument>> addDocument(@Validated EmployeeDocumentRequestDTO employeeDocumentRequestDTO) throws IOException {
         EmployeeDocument document = employeeDocumentService.addEmployeeDocument(employeeDocumentRequestDTO);
@@ -42,6 +53,13 @@ public class DocumentController {
         travelDocumentService.submitDocumentRequest(employeeTravelDocumentId);
         return ResponseEntity.ok(
                 new SuccessResponse<>("Travel Document request Submitted Successfully", null)
+        );
+    }
+    @PatchMapping("verify/{employeeTravelDocumentId}/{status}")
+    public ResponseEntity<SuccessResponse<Object>> verifyDocumentRequest(@PathVariable int employeeTravelDocumentId, @PathVariable DocumentStatusEnum status, Principal principal){
+        travelDocumentService.verifyDocumentRequest(principal.getName(), employeeTravelDocumentId,status);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Travel Document verified Successfully by " + principal.getName(), null)
         );
     }
     @GetMapping("request/{employeeId}")

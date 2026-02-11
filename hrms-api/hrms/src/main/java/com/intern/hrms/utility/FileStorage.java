@@ -30,6 +30,19 @@ public class FileStorage {
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
         return url;
     }
+
+    public String uploadProvidedDocument(String documentType, int travelEmployeeId, MultipartFile file) throws IOException{
+        File directory = new File(path+"provided-documents/");
+        if(!directory.exists()){
+            if(!directory.mkdirs()){
+                throw new RuntimeException("Issue in creating Directories in upload employee document.");
+            }
+        }
+        String url = path+"provided-documents/"+travelEmployeeId+"_"+documentType+getFileExtension(file.getOriginalFilename());
+        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+        return url;
+    }
+
     public void UpdateFile(String url, MultipartFile file)throws IOException{
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
     }

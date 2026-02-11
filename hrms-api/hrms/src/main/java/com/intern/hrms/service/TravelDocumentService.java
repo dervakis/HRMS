@@ -1,12 +1,16 @@
 package com.intern.hrms.service;
 
+import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentRequestDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.*;
 import com.intern.hrms.enums.DocumentStatusEnum;
 import com.intern.hrms.repository.*;
+import com.intern.hrms.utility.FileStorage;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +26,21 @@ public class TravelDocumentService {
     private final DocumentTypeRepository documentTypeRepository;
     private final EmployeeRepository employeeRepository;
     private final EmployeeDocumentRepository employeeDocumentRepository;
+    private final FileStorage fileStorage;
+    private final TravelEmployeeRepository travelEmployeeRepository;
+    private final ProvidedTravelDocumentRepository providedTravelDocumentRepository;
 
-    public TravelDocumentService(TravelPlanRepository travelPlanRepository, EmployeeTravelDocumentRepository employeeTravelDocumentRepository, DocumentTypeRepository documentTypeRepository, EmployeeRepository employeeRepository, EmployeeDocumentRepository employeeDocumentRepository) {
+    public TravelDocumentService(TravelPlanRepository travelPlanRepository, EmployeeTravelDocumentRepository employeeTravelDocumentRepository, DocumentTypeRepository documentTypeRepository, EmployeeRepository employeeRepository, EmployeeDocumentRepository employeeDocumentRepository, FileStorage fileStorage, TravelEmployeeRepository travelEmployeeRepository, ProvidedTravelDocumentRepository providedTravelDocumentRepository) {
         this.travelPlanRepository = travelPlanRepository;
         this.employeeTravelDocumentRepository = employeeTravelDocumentRepository;
         this.documentTypeRepository = documentTypeRepository;
         this.employeeRepository = employeeRepository;
         this.employeeDocumentRepository = employeeDocumentRepository;
+        this.fileStorage = fileStorage;
+        this.travelEmployeeRepository = travelEmployeeRepository;
+        this.providedTravelDocumentRepository = providedTravelDocumentRepository;
     }
-
+    //below both are request for request creation for employee like this many document needs
     public void createSingleEmployeeTravelDocument(TravelEmployee travelEmployee, List<DocumentType> documentTypes){
         List<EmployeeTravelDocument> travelDocuments = new ArrayList<>();
         documentTypes.forEach(type ->{
@@ -70,5 +80,31 @@ public class TravelDocumentService {
         documentRequest.setDocumentStatus(DocumentStatusEnum.Uploaded);
         documentRequest.setEmployeeDocument(employeeDocument);
         employeeTravelDocumentRepository.save(documentRequest);
+    }
+
+    public void verifyDocumentRequest(String username, int employeeTravelDocumentId, DocumentStatusEnum status){
+        EmployeeTravelDocument employeeTravelDocument = employeeTravelDocumentRepository.findById(employeeTravelDocumentId).orElseThrow(
+                ()-> new RuntimeException("No such travel Document Entry found with Id :"+employeeTravelDocumentId)
+        );
+        if(employeeTravelDocument.getDocumentStatus() != DocumentStatusEnum.Uploaded){
+            throw new RuntimeException("No Verification Allowed Without Document Upload");
+        }
+        employeeTravelDocument.setApprover(employeeRepository.getReferenceByEmail(username));
+        employeeTravelDocument.setDocumentStatus(status);
+        employeeTravelDocumentRepository.save(employeeTravelDocument);
+    }
+
+    public void submitProvidedDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, String username) throws IOException {
+        DocumentType type = documentTypeRepository.getReferenceById(providedTravelDocumentRequestDTO.getDocumentTypeId());
+        TravelEmployee travelEmployee = travelEmployeeRepository.getReferenceById(providedTravelDocumentRequestDTO.getTravelEmployeeId());
+        Employee provider = employeeRepository.getReferenceByEmail(username);
+        String url = fileStorage.uploadProvidedDocument(type.getDocumentTypeName(),travelEmployee.getTravelEmployeeId(),providedTravelDocumentRequestDTO.getFile());
+        ProvidedTravelDocument providedTravelDocument = new ProvidedTravelDocument(
+                url,
+                type,
+                provider,
+                travelEmployee
+        );
+        providedTravelDocumentRepository.save(providedTravelDocument);
     }
 }
