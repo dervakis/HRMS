@@ -35,4 +35,12 @@ public class JobController {
                 new SuccessResponse<>("Job Updated Successfully", jobService.updateJob(dto))
         );
     }
+
+    @PatchMapping("/{jobId}/{isOpen}")
+    public ResponseEntity<SuccessResponse<Object>>manageJobStatus(@PathVariable int jobId,@PathVariable boolean isOpen){
+        jobService.jobStatus(isOpen, jobId);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Job Status Changed Successfully", null)
+        );
+    }
 }

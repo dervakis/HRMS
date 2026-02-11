@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @Service
 public class JobService {
@@ -62,5 +63,14 @@ public class JobService {
         }
         jobRepository.save(job);
         return job;
+    }
+
+    public void jobStatus(boolean isOpen, int jobId){
+        Job job = jobRepository.findById(jobId).orElseThrow(
+                ()->new RuntimeException("No such job found with id: "+jobId)
+        );
+        job.setOpen(isOpen);
+        job.setOpenedAt(LocalDate.now());
+        jobRepository.save(job);
     }
 }

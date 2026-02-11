@@ -55,17 +55,17 @@ public class FileStorage {
         return url;
     }
 
-    public String uploadJobDescription(String name, MultipartFile file) throws IOException{
-        File directory = new File(path+"job-description/");
-        if(!directory.exists()){
-            if(!directory.mkdirs()){
-                throw new RuntimeException("Issue in creating Directories in upload employee document.");
-            }
-        }
-        String url = path+"job-description/"+name+getFileExtension(file.getOriginalFilename());
-        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
-        return url;
-    }
+//    public String uploadJobDescription(String name, MultipartFile file) throws IOException{
+//        File directory = new File(path+"job-description/");
+//        if(!directory.exists()){
+//            if(!directory.mkdirs()){
+//                throw new RuntimeException("Issue in creating Directories in upload employee document.");
+//            }
+//        }
+//        String url = path+"job-description/"+name+getFileExtension(file.getOriginalFilename());
+//        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+//        return url;
+//    }
     public String uploadFile(String folderPath, String fileName, MultipartFile file) throws IOException{
         File directory = new File(path+folderPath);
         if(!directory.exists()){
