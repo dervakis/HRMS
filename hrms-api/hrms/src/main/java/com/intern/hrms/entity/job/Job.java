@@ -17,11 +17,11 @@ public class Job {
     @Column(name = "pk_job_id")
     private int jobId;
     private String title;
-    private boolean isOpen;
+    private boolean isOpen=false;
     private LocalDate openedAt;
     private int salary;
-    private int requirment;
-    private int location; //remote  or office
+    private int requirement;
+    private String location; //remote  or office
     private String jobDescriptionUrl;
 
     @ManyToOne

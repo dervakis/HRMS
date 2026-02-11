@@ -54,6 +54,36 @@ public class FileStorage {
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
         return url;
     }
+
+    public String uploadJobDescription(String name, MultipartFile file) throws IOException{
+        File directory = new File(path+"job-description/");
+        if(!directory.exists()){
+            if(!directory.mkdirs()){
+                throw new RuntimeException("Issue in creating Directories in upload employee document.");
+            }
+        }
+        String url = path+"job-description/"+name+getFileExtension(file.getOriginalFilename());
+        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+        return url;
+    }
+    public String uploadFile(String folderPath, String fileName, MultipartFile file) throws IOException{
+        File directory = new File(path+folderPath);
+        if(!directory.exists()){
+            if(!directory.mkdirs()){
+                throw new RuntimeException("Issue in creating Directories in upload employee document.");
+            }
+        }
+//        String url = directory.getPath();
+//        System.out.println(url);
+//        String url2 = directory.getAbsolutePath();
+//        System.out.println(url2);
+//        System.out.println(System.getProperty("user.dir"));
+        String url = directory.getPath()+"/"+fileName+getFileExtension(file.getOriginalFilename());
+        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+        return url;
+//        return "testing";
+    }
+
     public void UpdateFile(String url, MultipartFile file)throws IOException{
         file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
     }
