@@ -60,9 +60,11 @@ public class EmployeeController {
     }
 
     @GetMapping("/forget-password/{email}")
-    public ResponseEntity<String> requestForgetPassword(@PathVariable String email){
+    public ResponseEntity<SuccessResponse<Object>> requestForgetPassword(@PathVariable String email){
         String token = employeeService.requestForgetPassword(email);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new SuccessResponse<>("Token for reset Password forwarded to your mail.", null)
+        );
         //remaining mail sending,s0 only mail owner get this token
     }
 
