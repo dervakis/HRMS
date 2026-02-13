@@ -1,8 +1,10 @@
 package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
+import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.request.JobRequestDTO;
 import com.intern.hrms.entity.job.Job;
+import com.intern.hrms.entity.job.JobReferral;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.validation.Create;
 import com.intern.hrms.validation.Update;
@@ -42,5 +44,15 @@ public class JobController {
         return ResponseEntity.ok(
                 new SuccessResponse<>("Job Status Changed Successfully", null)
         );
+    }
+
+    @PostMapping("/referral")
+    public ResponseEntity<SuccessResponse<JobReferral>> sendJobReferral(JobReferralRequestDTO dto, Principal principal){
+        JobReferral referral = jobService.sendJobReferral(dto, principal.getName());
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Referral Sended Successfully", referral)
+        );
+
+        // mail sending to hr, referral, separatly
     }
 }

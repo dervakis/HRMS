@@ -1,9 +1,13 @@
 package com.intern.hrms.service.job;
 
+import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.request.JobRequestDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.job.Job;
+import com.intern.hrms.entity.job.JobReferral;
+import com.intern.hrms.enums.ReferralStatusEnum;
 import com.intern.hrms.repository.EmployeeRepository;
+import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
 import com.intern.hrms.utility.FileStorage;
 import org.modelmapper.ModelMapper;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -19,12 +24,14 @@ public class JobService {
     private final FileStorage fileStorage;
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
+    private final JobReferralRepository jobReferralRepository;
 
-    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository) {
+    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository, JobReferralRepository jobReferralRepository) {
         this.modelMapper = modelMapper;
         this.fileStorage = fileStorage;
         this.employeeRepository = employeeRepository;
         this.jobRepository = jobRepository;
+        this.jobReferralRepository = jobReferralRepository;
     }
 
     public Job createJob(JobRequestDTO dto, String username){
@@ -72,5 +79,26 @@ public class JobService {
         job.setOpen(isOpen);
         job.setOpenedAt(LocalDate.now());
         jobRepository.save(job);
+    }
+
+    public JobReferral sendJobReferral(JobReferralRequestDTO dto, String username){
+        Employee referrer = employeeRepository.getReferenceByEmail(username);
+        Job job = jobRepository.getReferenceById(dto.getJobId());
+        JobReferral jobReferral = new JobReferral();
+        modelMapper.map(dto, jobReferral);
+        jobReferral.setReferrer(referrer);
+        jobReferral.setJob(job);
+        jobReferral.setJobReferralId(UUID.randomUUID());
+        if(dto.getResumeFile().isEmpty())
+            throw new RuntimeException("Resume file not attached with referral");
+        try{
+            String url = fileStorage.uploadFile("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
+            jobReferral.setResumeUrl(url);
+        }catch (IOException e){
+            System.out.println("Issue in Uploading resume in file");
+        }
+        jobReferral.setReferralStatus(ReferralStatusEnum.New);
+        jobReferralRepository.save(jobReferral);
+        return jobReferral;
     }
 }
