@@ -1,6 +1,9 @@
+import { useDispatch } from "react-redux";
 import type { ApiResponseType } from "../types/ApiResponse";
 import type { LoginDetailType } from "../types/AuthType";
 import { employeeApi } from "./AxiosBase"
+import type { AppDispatchType } from "../redux-store/store";
+import { Authenticate } from "../redux-store/UserSlice";
 
 export const resetPasswordRequest = async (email:string):Promise<ApiResponseType<Object>> =>{
     const response = await employeeApi.get(`/forget-password/${email}`);
@@ -15,7 +18,6 @@ export const submitNewPassword = async ({email, token, newPassword}:{email:strin
 
 export const login = async (creadential:LoginDetailType) =>{
     const response = await employeeApi.get(`/login`, {params: {email: creadential.email, password:creadential.password}});
-    //set token from here direct not there
     return response.data;
 }
 

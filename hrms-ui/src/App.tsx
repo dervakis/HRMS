@@ -6,6 +6,7 @@ import Sidebar from './common/Sidebar'
 import MainLayout from './common/MainLayout'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
+import ProtectedRoute from './common/ProtectedRoute'
 
 function App() {
   const router = createBrowserRouter([
@@ -16,6 +17,10 @@ function App() {
     {
       path: '/reset-password',
       element: <ResetPassword/>
+    },
+    {
+      path:'/',
+      element: <ProtectedRoute><MainLayout/></ProtectedRoute>
     },
     {
       path: '*',

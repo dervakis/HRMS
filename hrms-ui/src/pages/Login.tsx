@@ -1,18 +1,24 @@
-import { CircleAlert,Lock, Mail,Send, UserIcon } from 'lucide-react'
+import { CircleAlert, Lock, Mail, Send, UserIcon } from 'lucide-react'
 import React, { useState, type ChangeEvent } from 'react'
 import { Alert, Button, Card, Label, Modal, ModalBody, ModalHeader, Spinner, TextInput, Toast, ToastToggle } from 'flowbite-react'
 import { useLogin, useResetPasswordRequest } from '../query/EmployeeQuery';
 import type { LoginDetailType } from '../types/AuthType';
 import { useForm, type SubmitErrorHandler, type SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import type { AppDispatchType } from '../redux-store/store';
+import { Authenticate } from '../redux-store/UserSlice';
 
 function Login() {
     const [openModel, setOpenModel] = useState<boolean>(false);
     const [email, setEmail] = useState<string>();
     const [emailError, setEmailError] = useState<string>();
     const { mutate, isPending, isError, error } = useResetPasswordRequest();
-    const {mutate:mutateLogin, isPending: isPendingLogin, isError:isErrorLogin, error:errorLogin} = useLogin();
-    const { register, handleSubmit } = useForm<LoginDetailType>()
+    const { mutate: mutateLogin, isPending: isPendingLogin, isError: isErrorLogin, error: errorLogin } = useLogin();
+    const { register, handleSubmit } = useForm<LoginDetailType>();
+    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatchType>();
     const onCloseModal = () => {
         setOpenModel(false);
         setEmailError(undefined);
@@ -27,7 +33,7 @@ function Login() {
         }
         mutate(email!,
             {
-                onSuccess : (data) =>{
+                onSuccess: (data) => {
                     toast.success(data.message);
                     onCloseModal();
                 }
@@ -36,9 +42,11 @@ function Login() {
     }
 
     const onSubmit: SubmitHandler<LoginDetailType> = (loginDetail) => {
-        mutateLogin(loginDetail,{
-            onSuccess : (data) => {
+        mutateLogin(loginDetail, {
+            onSuccess: (data) => {
                 console.log(data.data.token);
+                dispatch(Authenticate(data.data.token));
+                navigate('/');
             }
         })
     }
@@ -69,7 +77,7 @@ function Login() {
                     </div>
                     <Alert hidden={!isErrorLogin} color='failure'>{errorLogin?.message}</Alert>
                     <div className='flex justify-center'>
-                        <Button color='blue' type='submit' pill>{isPending ? <Spinner size='md' /> : <Send className='mx-4' />}</Button>
+                        <Button color='blue' type='submit' pill>{isPendingLogin ? <Spinner size='md' /> : <Send className='mx-4' />}</Button>
                     </div>
                 </form>
                 <div className='flex justify-center text-sm underline' onClick={() => setOpenModel(true)}>
