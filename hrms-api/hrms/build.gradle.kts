@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.modelmapper:modelmapper:3.2.4")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
 

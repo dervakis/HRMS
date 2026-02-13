@@ -14,7 +14,7 @@ function App() {
       element: <Login/>
     },
     {
-      path: '/reset-password/:token',
+      path: '/reset-password',
       element: <ResetPassword/>
     },
     {

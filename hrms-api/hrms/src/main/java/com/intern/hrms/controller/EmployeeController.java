@@ -3,23 +3,17 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
-import com.intern.hrms.dto.travel.request.EmployeeDocumentRequestDTO;
 import com.intern.hrms.entity.Employee;
-import com.intern.hrms.entity.travel.EmployeeDocument;
-import com.intern.hrms.service.EmployeeDocumentService;
 import com.intern.hrms.service.EmployeeService;
+import com.intern.hrms.utility.MailSend;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springdoc.core.service.GenericResponseService;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -30,9 +24,11 @@ import java.util.logging.Logger;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final Logger logger = Logger.getLogger(EmployeeController.class.getName());
+    private final MailSend mailSend;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, MailSend mailSend) {
         this.employeeService = employeeService;
+        this.mailSend = mailSend;
     }
 
     @GetMapping("/login")
@@ -62,6 +58,16 @@ public class EmployeeController {
     @GetMapping("/forget-password/{email}")
     public ResponseEntity<SuccessResponse<Object>> requestForgetPassword(@PathVariable String email){
         String token = employeeService.requestForgetPassword(email);
+
+        mailSend.sendText(email,
+                "Reset Password on HRMS Portal",
+                """
+                        Dear user,
+                        
+                        Your Reset Password Request is Arrived. Please click below link for set new password.
+                        
+                        Click: """+"http://localhost:5173/reset-password?token="+token
+        );
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new SuccessResponse<>("Token for reset Password forwarded to your mail.", null)
         );
@@ -69,8 +75,10 @@ public class EmployeeController {
     }
 
     @PostMapping("forget-password/{email}")
-    public ResponseEntity<String> resetPassword(@PathVariable String email, @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO){
+    public ResponseEntity<SuccessResponse<Object>> resetPassword(@PathVariable String email, @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO){
         employeeService.forgetPassword(email,resetPasswordRequestDTO);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password Changed Successfully");
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Password Changed Successfully", null)
+        );
     }
 }
