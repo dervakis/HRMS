@@ -20,7 +20,13 @@ function App() {
     },
     {
       path:'/',
-      element: <ProtectedRoute><MainLayout/></ProtectedRoute>
+      element: <MainLayout/>,
+      // element: <ProtectedRoute><MainLayout/></ProtectedRoute>
+      children: [
+        {path:'/',
+          element: <>Main Body</>
+        }
+      ]
     },
     {
       path: '*',

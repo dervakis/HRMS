@@ -1,12 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import { useNavigate } from "react-router-dom";
 
 const userSlice = createSlice({
     name: 'user',
     initialState: {
         authToken: '',
         isAuthenticated: false,
-        role: ''
+        role: '',
+        isCollapsed: false
     },
     reducers: {
         Authenticate : (state, action:PayloadAction<string>) => {
@@ -16,12 +16,14 @@ const userSlice = createSlice({
         Logout: (state) => {
             state.authToken = '';
             state.isAuthenticated = false;
-
+        },
+        toggleSidebar: (state) => {
+            state.isCollapsed = !state.isCollapsed;
         }
     }
 });
 
-export const {Authenticate, Logout} = userSlice.actions;
+export const {Authenticate, Logout, toggleSidebar} = userSlice.actions;
 export default userSlice.reducer;
 
 
