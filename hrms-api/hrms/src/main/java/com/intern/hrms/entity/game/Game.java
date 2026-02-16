@@ -2,6 +2,7 @@ package com.intern.hrms.entity.game;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +22,10 @@ public class Game {
 
     @OneToMany(mappedBy = "game")
     private List<GameSlot> gameSlots;
+
+    public Game(String gameName, int durationInMinute, int maxPlayer) {
+        this.gameName = gameName;
+        this.durationInMinute = durationInMinute;
+        this.maxPlayer = maxPlayer;
+    }
 }
