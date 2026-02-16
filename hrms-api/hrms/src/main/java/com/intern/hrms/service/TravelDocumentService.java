@@ -53,11 +53,13 @@ public class TravelDocumentService {
                 ()-> new RuntimeException("No such Travel Plan Exist for document Request Id: "+travelDocumentRequestDTO.getTravelPlanId())
         );
         List<DocumentType> documentTypes = documentTypeRepository.findAllById(travelDocumentRequestDTO.getDocumentTypeIds());
-        travelPlan.getTravelEmployees().forEach(
-                travelEmployee -> {
-                    createSingleEmployeeTravelDocument(travelEmployee, documentTypes);
-                }
-        );
+//        travelPlan.getTravelEmployees().forEach(
+//                travelEmployee -> {
+//                    createSingleEmployeeTravelDocument(travelEmployee, documentTypes);
+//                }
+//        );
+        travelPlan.setDocumentTypes(documentTypes);
+        travelPlanRepository.save(travelPlan);
     }
     public List<EmployeeTravelDocument> getAllDocumentRequest(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
+import { getEmployees, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
 import { type ApiErrorType, type ApiResponseType } from "../types/ApiResponse"
 import { type LoginDetailType, type ResetPasswordDetailType } from "../types/AuthType"
 
@@ -18,5 +18,13 @@ export const useSubmitNewPassword = () => {
 export const useLogin = () => {
     return useMutation<ApiResponseType<{token: string}>, ApiErrorType, LoginDetailType>({
         mutationFn: login
+    });
+}
+
+export const useGetEmployees = () => {
+    return useQuery({
+        queryKey: ['Employees'],
+        queryFn: getEmployees,
+        staleTime: Infinity
     });
 }

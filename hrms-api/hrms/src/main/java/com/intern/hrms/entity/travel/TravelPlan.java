@@ -34,4 +34,10 @@ public class TravelPlan {
     @OneToMany(mappedBy = "travelPlan")
     private List<TravelEmployee> travelEmployees;
 
+    @ManyToMany
+    @JoinTable(name = "TravelPlanDocument",
+            joinColumns = @JoinColumn(name = "fk_travel_plan_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_document_type_id")
+    )
+    private List<DocumentType> documentTypes;
 }

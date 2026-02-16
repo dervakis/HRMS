@@ -3,6 +3,7 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.service.EmployeeService;
 import com.intern.hrms.utility.MailSend;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -79,6 +81,13 @@ public class EmployeeController {
         employeeService.forgetPassword(email,resetPasswordRequestDTO);
         return ResponseEntity.ok(
                 new SuccessResponse<>("Password Changed Successfully", null)
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<SuccessResponse<List<EmployeeResponseDTO>>> getEmployees(){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, employeeService.getEmployees())
         );
     }
 }

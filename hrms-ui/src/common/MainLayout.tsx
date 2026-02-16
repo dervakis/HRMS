@@ -5,11 +5,11 @@ import { Outlet } from 'react-router-dom'
 
 function MainLayout() {
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
         <Navbar/>
-        <div className='flex flex-1'>
+        <div className='flex flex-1 overflow-hidden'>
             <Sidebar2/>
-            <main className='flex-1 p-8'>
+            <main className='flex-1 p-8 overflow-y-auto'>
                 <Outlet/>
             </main>
         </div>

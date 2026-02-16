@@ -7,6 +7,7 @@ import MainLayout from './common/MainLayout'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
 import ProtectedRoute from './common/ProtectedRoute'
+import ManageTravel from './pages/ManageTravel'
 
 function App() {
   const router = createBrowserRouter([
@@ -25,6 +26,10 @@ function App() {
       children: [
         {path:'/',
           element: <>Main Body</>
+        },
+        {
+          path: '/travel',
+          element: <ManageTravel/>
         }
       ]
     },

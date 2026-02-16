@@ -2,6 +2,7 @@ package com.intern.hrms.service;
 
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.repository.DepartmentRepository;
 import com.intern.hrms.repository.EmployeeRepository;
@@ -9,10 +10,13 @@ import com.intern.hrms.repository.RoleRepository;
 import com.intern.hrms.security.JwtService;
 import com.intern.hrms.utility.RandomStringGenerator;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Service
 @Validated
@@ -51,6 +55,10 @@ public class EmployeeService {
 //        if(employeeRequestDTO.getManagerId())
         return employeeRepository.save(newEmployee);
 //        return  newEmployee;
+    }
+    public List<EmployeeResponseDTO> getEmployees(){
+        List<Employee> employees =  employeeRepository.findAll();
+        return modelMapper.map(employees, new TypeToken<List<EmployeeResponseDTO>>(){}.getType());
     }
 
     public Employee getByEmail(String email){

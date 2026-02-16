@@ -2,6 +2,8 @@ package com.intern.hrms.service;
 
 import com.intern.hrms.dto.travel.request.TravelEmployeeRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelPlanRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
+import com.intern.hrms.dto.travel.response.TravelPlanResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.TravelEmployee;
 import com.intern.hrms.entity.travel.TravelPlan;
@@ -9,6 +11,7 @@ import com.intern.hrms.repository.EmployeeRepository;
 import com.intern.hrms.repository.TravelEmployeeRepository;
 import com.intern.hrms.repository.TravelPlanRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,16 +35,22 @@ public class TravelPlanService {
         this.travelEmployeeRepository = travelEmployeeRepository;
     }
 
-    public TravelPlan createTravelPlan(TravelPlanRequestDTO travelPlanRequestDTO){
-        Employee creator = employeeRepository.findById(travelPlanRequestDTO.getCreatorId()).orElseThrow(
-                ()-> new RuntimeException("Invalid Travel Creator Id : "+travelPlanRequestDTO.getCreatorId())
-        );
-
+    public TravelPlan createTravelPlan(TravelPlanRequestDTO travelPlanRequestDTO, String username){
+        Employee creator = employeeRepository.getReferenceByEmail(username);
         TravelPlan travelPlan = new TravelPlan();
         modelMapper.map(travelPlanRequestDTO, travelPlan);
         travelPlan.setCreatedBy(creator);
         return travelPlanRepository.save(travelPlan);
         //dto for response should
+    }
+
+    public TravelPlan updateTravelPlan(TravelPlanRequestDTO dto){
+        TravelPlan travelPlan = travelPlanRepository.findById(dto.getTravelPlanId()).orElseThrow(
+                () -> new RuntimeException("Invalid Travel Plan for update id :"+dto.getTravelPlanId())
+        );
+        modelMapper.map(dto, travelPlan);
+        travelPlanRepository.save(travelPlan);
+        return travelPlan;
     }
     public void addTravelEmployee(TravelPlan travelPlan, List<Integer> employeeIds){
         for(int i=0;i<employeeIds.size();i++){
@@ -82,5 +91,19 @@ public class TravelPlanService {
 
         addTravelEmployee(travelPlan, add.stream().toList());
         return travelPlan;
+    }
+    public List<TravelPlanResponseDTO> getTravelPlans(){
+        List<TravelPlan> travelPlans = travelPlanRepository.findAll();
+//        List<TravelPlanResponseDTO> result = modelMapper.map(travelPlans, new TypeToken<List<TravelPlanResponseDTO>>(){}.getType());
+//        result
+        List<TravelPlanResponseDTO> result = travelPlans.stream().map(
+                travelPlan -> {
+                    TravelPlanResponseDTO res = modelMapper.map(travelPlan, TravelPlanResponseDTO.class);
+                    List<EmployeeResponseDTO> emp =  modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType());
+                    res.setTravelEmployees(emp);
+//                    res.setEmployees(modelMapper.map(TravelPlan::getTravelEmployees,new TypeToken<List<EmployeeResponseDTO>>(){}.getType()));
+                    return  res;
+        }).toList();
+        return  result;
     }
 }
