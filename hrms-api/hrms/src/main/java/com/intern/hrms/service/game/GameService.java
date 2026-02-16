@@ -1,13 +1,18 @@
 package com.intern.hrms.service.game;
 
 import com.intern.hrms.dto.game.request.GameRequestDTO;
+import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.Game;
+import com.intern.hrms.entity.game.GameCycle;
 import com.intern.hrms.entity.game.GameSlot;
+import com.intern.hrms.repository.game.EmployeeInterestRepository;
+import com.intern.hrms.repository.game.GameCycleRepository;
 import com.intern.hrms.repository.game.GameRepository;
 import com.intern.hrms.repository.game.GameSlotRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +21,14 @@ import java.util.List;
 public class GameService {
     private final GameRepository gameRepository;
     private final GameSlotRepository gameSlotRepository;
+    private final GameCycleRepository gameCycleRepository;
+    private final EmployeeInterestRepository employeeInterestRepository;
 
-    public GameService(GameRepository gameRepository, GameSlotRepository gameSlotRepository) {
+    public GameService(GameRepository gameRepository, GameSlotRepository gameSlotRepository, GameCycleRepository gameCycleRepository, EmployeeInterestRepository employeeInterestRepository) {
         this.gameRepository = gameRepository;
         this.gameSlotRepository = gameSlotRepository;
+        this.gameCycleRepository = gameCycleRepository;
+        this.employeeInterestRepository = employeeInterestRepository;
     }
 
     public Game addGame(GameRequestDTO dto){
@@ -56,6 +65,14 @@ public class GameService {
         }));
         gameSlotRepository.save(new GameSlot(slotStart, game));
         return game;
+    }
+
+    public GameCycle createGameCycle(int gameId){
+        Game game = gameRepository.getReferenceById(gameId);
+        List<EmployeeInterest> employeeInterests = employeeInterestRepository.findAllByGame(game);
+        if(employeeInterests.size() <= 0)
+            throw new RuntimeException("Intrested People are 0 no need to create cycle");
+        return gameCycleRepository.save(new GameCycle(LocalDateTime.now(),(int) employeeInterests.size()/2, game));
     }
 
 }

@@ -4,6 +4,7 @@ import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.game.request.GameRequestDTO;
 import com.intern.hrms.dto.game.request.SlotRequestDTO;
 import com.intern.hrms.entity.game.Game;
+import com.intern.hrms.entity.game.GameCycle;
 import com.intern.hrms.service.game.GameService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.RequestEntity;
@@ -44,4 +45,12 @@ public class GameController {
                 new SuccessResponse<>(null, gameService.addSlot(dto.getGameId(), dto.getSlotStart()))
         );
     }
+
+    @PostMapping("/cycle/{gameId}")
+    public ResponseEntity<SuccessResponse<GameCycle>> addCycle(@PathVariable int gameId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, gameService.createGameCycle(gameId))
+        );
+    }
+
 }
