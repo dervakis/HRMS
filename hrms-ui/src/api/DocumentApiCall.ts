@@ -24,6 +24,7 @@ export const updateEmployeeDocument = async({documentId, form}:{documentId:numbe
 
 export const getTravelDocumentRequest = async(userId:number): Promise<EmployeeTravelDocumentType[]> =>{
     const response = await Api.get(`/document/request/${userId}`);
+    console.log(response.data.data);
     return response.data.data;
 }
 

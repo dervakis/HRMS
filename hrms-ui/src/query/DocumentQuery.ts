@@ -26,7 +26,8 @@ export const useGetEmployeeDocument = (documentId:number) => {
 export const useGetTravelDocumentRequest = (userId:number) => {
     return useQuery({
         queryKey: ['travelDocument'],
-        queryFn: () => getTravelDocumentRequest(userId)
+        queryFn: () => getTravelDocumentRequest(userId),
+        enabled: !!userId
     });
 }
 export const useSubmitTravelDocument = () => {

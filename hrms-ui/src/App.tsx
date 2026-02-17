@@ -12,6 +12,7 @@ import ManageExpense from './pages/ManageExpense'
 import EmployeeDocument from './pages/EmployeeDocument'
 import TravelDocument from './pages/TravelDocument'
 import EmployeeTravelExpense from './pages/EmployeeTravelExpense'
+import DocumentVarification from './pages/DocumentVarification'
 
 function App() {
   const router = createBrowserRouter([
@@ -48,7 +49,11 @@ function App() {
         },
         {path: 'travel-expense',
           element: <EmployeeTravelExpense/>
+        },
+        {path: '/document-verify',
+          element: <DocumentVarification/>
         }
+
       ]
     },
     {
