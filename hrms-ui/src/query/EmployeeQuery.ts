@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getEmployees, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
+import { getEmployeeDocuments, getEmployees, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
 import { type ApiErrorType, type ApiResponseType } from "../types/ApiResponse"
 import { type LoginDetailType, type ResetPasswordDetailType } from "../types/AuthType"
+import { updateEmployeeDocument } from "../api/DocumentApiCall"
 
 export const useResetPasswordRequest = ()=>{
     return useMutation<ApiResponseType<Object>, ApiErrorType, (string)>({
@@ -26,5 +27,18 @@ export const useGetEmployees = () => {
         queryKey: ['Employees'],
         queryFn: getEmployees,
         staleTime: Infinity
+    });
+}
+
+export const useGetEmployeeDocuments = (userId:number) => {
+    return useQuery({
+        queryKey: ['EmployeeDocument'],
+        queryFn: () => getEmployeeDocuments(userId)
+    })
+}
+
+export const useUpdateEmployeeDocument = () => {
+    return useMutation({
+        mutationFn: updateEmployeeDocument
     });
 }

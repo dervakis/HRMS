@@ -6,7 +6,10 @@ const userSlice = createSlice({
         authToken: '',
         isAuthenticated: false,
         role: '',
-        isCollapsed: false
+        isCollapsed: false, 
+        fullName: 'Kishan Dervaliya',
+        email: 'kishan.dervaliya2828@gmail.com',
+        userId: 1
     },
     reducers: {
         Authenticate : (state, action:PayloadAction<string>) => {

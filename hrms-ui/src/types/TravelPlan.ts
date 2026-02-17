@@ -25,3 +25,17 @@ export interface DocumentType{
     documentTypeId : number
     documentTypeName: string
 }
+
+export interface DocumentSubmitType{
+    employeeDocumentId? : number
+    documentTypeId: number
+    fileList:FileList
+}
+
+export interface EmployeeDocumentType{
+    employeeDocumentId : number
+    documentUrl : string
+    uploadedAt : Date
+    documentTypeId : number
+    documentTypeName : string
+}

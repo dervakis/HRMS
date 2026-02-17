@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Principal;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class DocumentController {
     public ResponseEntity<SuccessResponse<EmployeeDocument>> addDocument(@Validated EmployeeDocumentRequestDTO employeeDocumentRequestDTO) throws IOException {
         EmployeeDocument document = employeeDocumentService.addEmployeeDocument(employeeDocumentRequestDTO);
         return ResponseEntity.ok(
-                new SuccessResponse<>("Document Uploaded Successfully", document)
+                new SuccessResponse<>("Document Uploaded Successfully", null)
         );
     }
     @PutMapping("request/{employeeTravelDocumentId}")
@@ -70,8 +71,10 @@ public class DocumentController {
     }
 
     @GetMapping("/{documentId}")
-    public ResponseEntity<Resource> getEmployeeDocument(@PathVariable int documentId){
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(employeeDocumentService.getEmployeeDocument(documentId));
+    public ResponseEntity<Resource> getEmployeeDocument(@PathVariable int documentId) throws IOException{
+        Resource response = employeeDocumentService.getEmployeeDocument(documentId);
+        String type = Files.probeContentType(response.getFile().toPath());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(type)).body(response);
         //for pdf and ohter format handling require
     }
 

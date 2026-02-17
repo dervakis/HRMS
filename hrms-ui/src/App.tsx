@@ -8,6 +8,10 @@ import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
 import ProtectedRoute from './common/ProtectedRoute'
 import ManageTravel from './pages/ManageTravel'
+import ManageExpense from './pages/ManageExpense'
+import EmployeeDocument from './pages/EmployeeDocument'
+import TravelDocument from './pages/TravelDocument'
+import EmployeeTravelExpense from './pages/EmployeeTravelExpense'
 
 function App() {
   const router = createBrowserRouter([
@@ -30,6 +34,20 @@ function App() {
         {
           path: '/travel',
           element: <ManageTravel/>
+        },
+        {
+          path: '/expense',
+          element: <ManageExpense/>
+        },
+        {
+          path: '/document',
+          element: <EmployeeDocument/>
+        },
+        {path: '/travel-document',
+          element: <TravelDocument/>
+        },
+        {path: 'travel-expense',
+          element: <EmployeeTravelExpense/>
         }
       ]
     },

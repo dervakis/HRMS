@@ -3,8 +3,10 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
+import com.intern.hrms.service.EmployeeDocumentService;
 import com.intern.hrms.service.EmployeeService;
 import com.intern.hrms.utility.MailSend;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,10 +29,12 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final Logger logger = Logger.getLogger(EmployeeController.class.getName());
     private final MailSend mailSend;
+    private final EmployeeDocumentService employeeDocumentService;
 
-    public EmployeeController(EmployeeService employeeService, MailSend mailSend) {
+    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService) {
         this.employeeService = employeeService;
         this.mailSend = mailSend;
+        this.employeeDocumentService = employeeDocumentService;
     }
 
     @GetMapping("/login")
@@ -40,6 +44,12 @@ public class EmployeeController {
         response.put("token", token);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new SuccessResponse<Map<String, String>>("Login successfully", response)
+        );
+    }
+    @GetMapping("/documents/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<EmployeeDocumentResponse>>> getEmployeeDocuments(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, employeeDocumentService.getEmployeeDocuments(employeeId))
         );
     }
 

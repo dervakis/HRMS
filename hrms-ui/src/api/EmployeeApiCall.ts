@@ -1,6 +1,7 @@
+import type EmployeeDocument from "../pages/EmployeeDocument";
 import type { ApiResponseType } from "../types/ApiResponse";
 import type { LoginDetailType } from "../types/AuthType";
-import type { TravelEmployeeType } from "../types/TravelPlan";
+import type { EmployeeDocumentType, TravelEmployeeType } from "../types/TravelPlan";
 import { Api, employeeApi } from "./AxiosBase"
 
 export const resetPasswordRequest = async (email:string):Promise<ApiResponseType<Object>> =>{
@@ -21,6 +22,11 @@ export const login = async (creadential:LoginDetailType) =>{
 
 export const getEmployees = async (): Promise<TravelEmployeeType[]> => {
     const response = await Api.get(`/employee`);
+    return response.data.data;
+}
+
+export const getEmployeeDocuments = async(userId:number) : Promise<EmployeeDocumentType[]> => {
+    const response = await Api.get(`/employee/documents/${userId}`);
     return response.data.data;
 }
 
