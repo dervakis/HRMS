@@ -106,4 +106,16 @@ public class TravelPlanService {
         }).toList();
         return  result;
     }
+    public List<TravelPlanResponseDTO> getTravelPlansByEmployee(int employeeId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        return employee.getTravelEmployee().stream().map(
+                travelEmployee -> {
+                    TravelPlan plan = travelEmployee.getTravelPlan();
+                    TravelPlanResponseDTO res = modelMapper.map(plan, TravelPlanResponseDTO.class);
+                    List<EmployeeResponseDTO> emp =  modelMapper.map(plan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType());
+                    res.setTravelEmployees(emp);
+                    return  res;
+                }
+        ).toList();
+    }
 }

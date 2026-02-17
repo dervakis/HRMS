@@ -36,6 +36,12 @@ public class TravelPlanController {
                 new SuccessResponse<>(null, travelPlanService.getTravelPlans())
         );
     }
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<SuccessResponse<Object>> getTravelPlanByEmployee(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, travelPlanService.getTravelPlansByEmployee(employeeId))
+        );
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('HR')")

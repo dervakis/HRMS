@@ -39,3 +39,23 @@ export interface EmployeeDocumentType{
     documentTypeId : number
     documentTypeName : string
 }
+
+export interface TravelDocumentSubmitType{
+    employeeTravelDocumentId? : number
+    employeeId : number
+    travelPlanId: number
+    documentTypeId: number
+}
+
+export interface EmployeeTravelDocumentType{
+    employeeTravelDocumentId : number
+    actionDate: Date
+    documentStatus: string
+    documentTypeId: number
+    documentTypeName: string
+    employeeDocumentId: number
+    approver: TravelEmployeeType
+    travelEmployeeEmployeeId: number
+    travelEmployeeTravelPlanId: number
+}
+

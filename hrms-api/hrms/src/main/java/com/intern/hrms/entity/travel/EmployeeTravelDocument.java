@@ -13,6 +13,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"fk_travel_employee_id","fk_document_type_id"})
+)
 public class EmployeeTravelDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,10 +40,11 @@ public class EmployeeTravelDocument {
     @JoinColumn(name = "fk_approver_employee_id")
     private Employee approver; // hr is responsible for approver
 
-    public EmployeeTravelDocument(TravelEmployee travelEmployee, DocumentType documentType) {
+    public EmployeeTravelDocument(TravelEmployee travelEmployee, DocumentType documentType,EmployeeDocument employeeDocument ) {
         this.actionDate = LocalDate.now();
-        this.documentStatus = DocumentStatusEnum.Pending;
+        this.documentStatus = DocumentStatusEnum.Uploaded;
         this.travelEmployee = travelEmployee;
         this.documentType = documentType;
+        this.employeeDocument = employeeDocument;
     }
 }

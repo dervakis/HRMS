@@ -3,6 +3,8 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.travel.request.EmployeeDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
+import com.intern.hrms.dto.travel.request.TravelDocumentSubmitRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeTravelDocumentResponseDTO;
 import com.intern.hrms.entity.travel.EmployeeDocument;
 import com.intern.hrms.entity.travel.EmployeeTravelDocument;
 import com.intern.hrms.enums.DocumentStatusEnum;
@@ -49,11 +51,18 @@ public class DocumentController {
                 new SuccessResponse<>("Document Uploaded Successfully", null)
         );
     }
-    @PutMapping("request/{employeeTravelDocumentId}")
-    public ResponseEntity<SuccessResponse<Object>> submitDocumentRequest(@PathVariable int employeeTravelDocumentId){
-        travelDocumentService.submitDocumentRequest(employeeTravelDocumentId);
+//    @PutMapping("request/{employeeTravelDocumentId}")
+//    public ResponseEntity<SuccessResponse<Object>> submitDocumentRequest(@PathVariable int employeeTravelDocumentId){
+//        travelDocumentService.submitDocumentRequest(employeeTravelDocumentId);
+//        return ResponseEntity.ok(
+//                new SuccessResponse<>("Travel Document request Submitted Successfully", null)
+//        );
+//    }
+    @PostMapping("/submit")
+    public ResponseEntity<SuccessResponse<Object>> submitDocumentRequest(@RequestBody TravelDocumentSubmitRequestDTO dto){
+        travelDocumentService.submitDocumentRequest(dto);
         return ResponseEntity.ok(
-                new SuccessResponse<>("Travel Document request Submitted Successfully", null)
+                new SuccessResponse<>("Document Submitted Successfully", null)
         );
     }
     @PatchMapping("verify/{employeeTravelDocumentId}/{status}")
@@ -64,7 +73,7 @@ public class DocumentController {
         );
     }
     @GetMapping("request/{employeeId}")
-    public ResponseEntity<SuccessResponse<List<EmployeeTravelDocument>>> getDocumentRequest(@PathVariable int employeeId){
+    public ResponseEntity<SuccessResponse<List<EmployeeTravelDocumentResponseDTO>>> getDocumentRequest(@PathVariable int employeeId){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null, travelDocumentService.getAllDocumentRequest(employeeId))
         );

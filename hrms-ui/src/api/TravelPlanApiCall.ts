@@ -7,6 +7,10 @@ export const getTravelPlans = async () : Promise<TravelPlanType[]> => {
     console.log('api is called');
     return response.data.data;
 }
+export const getTravelPlansByEmployee = async (userId:number) : Promise<TravelPlanType[]> => {
+    const response = await Api.get(`/travel-plan/employee/${userId}`);
+    return response.data.data;
+}
 
 export const createTravelPlan = async(travelplan:TravelPlanCreate) : Promise<ApiResponseType<Object>> => {
     const response = await Api.post(`/travel-plan`, travelplan);
