@@ -14,6 +14,8 @@ import TravelDocument from './pages/TravelDocument'
 import EmployeeTravelExpense from './pages/EmployeeTravelExpense'
 import DocumentVarification from './pages/DocumentVarification'
 import ManageGames from './pages/game/ManageGames'
+import ManageJob from './pages/job/ManageJob'
+import OpenJob from './pages/job/OpenJob'
 
 function App() {
   const router = createBrowserRouter([
@@ -54,6 +56,14 @@ function App() {
         {path: '/travel-expense',
           element: <ProtectedRoute><EmployeeTravelExpense/></ProtectedRoute>
         },
+        {
+          path: '/manage-job',
+          element: <ProtectedRoute allowedRoles={['hr']}><ManageJob/></ProtectedRoute>
+        },
+        {
+          path: '/open-job',
+          element: <ProtectedRoute><OpenJob/></ProtectedRoute>
+        }
         // {path: '/game',
         //   element: <ManageGames/>
         // }

@@ -2,6 +2,8 @@ package com.intern.hrms.service.job;
 
 import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.request.JobRequestDTO;
+import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
+import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.job.Job;
 import com.intern.hrms.entity.job.JobReferral;
@@ -11,10 +13,12 @@ import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
 import com.intern.hrms.utility.FileStorage;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -100,5 +104,23 @@ public class JobService {
         jobReferral.setReferralStatus(ReferralStatusEnum.New);
         jobReferralRepository.save(jobReferral);
         return jobReferral;
+    }
+    public List<JobResponseDTO> getJobs(){
+        List<Job> jobs = jobRepository.findAll();
+        return modelMapper.map(jobs, new TypeToken<List<JobResponseDTO>>(){}.getType());
+    }
+    public List<JobResponseDTO> getOpenJobs(){
+        List<Job> jobs = jobRepository.findAllByIsOpen(true);
+        return modelMapper.map(jobs, new TypeToken<List<JobResponseDTO>>(){}.getType());
+    }
+
+    public List<JobReferralResponseDTO> getJobReferralByJob(int jobId){
+        List<JobReferral> jobReferrals = jobReferralRepository.findAllByJob_JobId(jobId);
+        return modelMapper.map(jobReferrals, new TypeToken<List<JobReferralResponseDTO>>(){}.getType());
+    }
+
+    public List<JobReferralResponseDTO> getJobReferralByEmployee(int employeeId){
+        List<JobReferral> jobReferrals = jobReferralRepository.findAllByReferrer_EmployeeId(employeeId);
+        return modelMapper.map(jobReferrals, new TypeToken<List<JobReferralResponseDTO>>(){}.getType());
     }
 }

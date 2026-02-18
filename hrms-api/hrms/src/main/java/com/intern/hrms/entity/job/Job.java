@@ -28,7 +28,6 @@ public class Job {
     @JoinColumn(name = "fk_created_by_employee_id")
     private Employee createdBy; //recruiter open position for that
 
-
     @OneToMany(mappedBy = "job")
     private List<JobReferral> jobReferrals;
 }

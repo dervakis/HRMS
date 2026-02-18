@@ -92,8 +92,6 @@ function ManageTravel() {
         })
     }
     
-
-    //there has one reset field on use form for to do reset explore and use it
     return (
         <>
             <div className='grid grid-cols-3 gap-6'>

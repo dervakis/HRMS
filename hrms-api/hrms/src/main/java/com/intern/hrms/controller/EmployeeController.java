@@ -4,11 +4,14 @@ import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
+import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
+import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.service.EmployeeDocumentService;
 import com.intern.hrms.service.EmployeeService;
+import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.utility.MailSend;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +34,13 @@ public class EmployeeController {
     private final Logger logger = Logger.getLogger(EmployeeController.class.getName());
     private final MailSend mailSend;
     private final EmployeeDocumentService employeeDocumentService;
+    private final JobService jobService;
 
-    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService) {
+    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService, JobService jobService) {
         this.employeeService = employeeService;
         this.mailSend = mailSend;
         this.employeeDocumentService = employeeDocumentService;
+        this.jobService = jobService;
     }
 
     @GetMapping("/login")
@@ -48,6 +53,13 @@ public class EmployeeController {
     public ResponseEntity<SuccessResponse<List<EmployeeDocumentResponse>>> getEmployeeDocuments(@PathVariable int employeeId){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null, employeeDocumentService.getEmployeeDocuments(employeeId))
+        );
+    }
+
+    @GetMapping("/referral/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<JobReferralResponseDTO>>> getJobReferralByEmployee(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null,jobService.getJobReferralByEmployee(employeeId))
         );
     }
 
