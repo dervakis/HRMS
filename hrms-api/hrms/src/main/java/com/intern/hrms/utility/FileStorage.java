@@ -73,6 +73,7 @@ public class FileStorage {
                 throw new RuntimeException("Issue in creating Directories in upload employee document.");
             }
         }
+        System.out.println(file.getSize());
 //        String url = directory.getPath();
 //        System.out.println(url);
 //        String url2 = directory.getAbsolutePath();

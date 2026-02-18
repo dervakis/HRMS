@@ -46,7 +46,7 @@ public class JobService {
         newJob =  jobRepository.save(newJob);
 
         try {
-            if(!dto.getJobDescription().isEmpty()){
+            if(dto.getJobDescription() != null && !dto.getJobDescription().isEmpty()){
                 String url = fileStorage.uploadFile("job-description/","JD_"+newJob.getJobId(),dto.getJobDescription());
                 newJob.setJobDescriptionUrl(url);
                 jobRepository.save(newJob);
@@ -59,17 +59,16 @@ public class JobService {
     public Job updateJob(JobRequestDTO dto){
         Job job = jobRepository.findById(dto.getJobId()).orElseThrow();
         modelMapper.map(dto, job);
-        if(!dto.getJobDescription().isEmpty()){
-            try{
-                if(job.getJobDescriptionUrl() == null){
-                    String url = fileStorage.uploadFile("job-description/","JD_"+job.getJobId(),dto.getJobDescription());
+        if(dto.getJobDescription() != null) {
+            try {
+                if (!dto.getJobDescription().isEmpty()) {
+                    String url = fileStorage.uploadFile("job-description/", "JD_" + job.getJobId(), dto.getJobDescription());
                     job.setJobDescriptionUrl(url);
-                }
-                else{
+                } else {
                     fileStorage.UpdateFile(job.getJobDescriptionUrl(), dto.getJobDescription());
                 }
-            }catch (IOException exception){
-                System.out.println("Issue in file Uploading for JobId : "+dto.getJobId());
+            } catch (IOException exception) {
+                System.out.println("Issue in file Uploading for JobId : " + dto.getJobId());
             }
         }
         jobRepository.save(job);
