@@ -16,6 +16,7 @@ import DocumentVarification from './pages/DocumentVarification'
 import ManageGames from './pages/game/ManageGames'
 import ManageJob from './pages/job/ManageJob'
 import OpenJob from './pages/job/OpenJob'
+import Refferal from './pages/job/Refferal'
 
 function App() {
   const router = createBrowserRouter([
@@ -63,6 +64,10 @@ function App() {
         {
           path: '/open-job',
           element: <ProtectedRoute><OpenJob/></ProtectedRoute>
+        },
+        {
+          path: '/refferal',
+          element: <ProtectedRoute><Refferal/></ProtectedRoute>
         }
         // {path: '/game',
         //   element: <ManageGames/>

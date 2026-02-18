@@ -105,7 +105,7 @@ function ManageJob() {
                         </div>
 
                         <div className="text-xs text-gray-600 space-y-1">
-                            <p>Salary: ${job.salary}</p>
+                            <p>Salary: ₹{job.salary}</p>
                             <p>Requirement: {job.requirement}</p>
                             <p>Location: {job.location}</p>
                             <p>Referrals: {job.referralCount ?? 0}</p>

@@ -1,5 +1,5 @@
 import type { ApiResponseType } from "../types/ApiResponse";
-import type { JobReferralCreateType, JobType } from "../types/Job";
+import type { JobReferralCreateType, JobReferralType, JobType } from "../types/Job";
 import { Api } from "./AxiosBase";
 
 export const getJobs = async(): Promise<JobType[]> =>{
@@ -12,17 +12,17 @@ export const getOpenJobs = async(): Promise<JobType[]> => {
     return response.data.data;
 }
 
-export const getJobReferralByJob = async(jobId:number) : Promise<JobType[]> => {
+export const getJobReferralByJob = async(jobId:number) : Promise<JobReferralType[]> => {
     const response = await Api.get(`/job/referral/${jobId}`);
     return response.data.data;
 }
 
-export const getJobReferralByEmployee = async(employeeId:number) : Promise<JobType[]> => {
+export const getJobReferralByEmployee = async(employeeId:number) : Promise<JobReferralType[]> => {
     const response = await Api.get(`/employee/referral/${employeeId}`);
     return response.data.data;
 }
 
-export const createJobReferral = async(referral:JobReferralCreateType) : Promise<ApiResponseType<Object>> => {
+export const createJobReferral = async(referral:FormData) : Promise<ApiResponseType<Object>> => {
     const response = await Api.post('/job/referral', referral);
     return response.data;
 } 

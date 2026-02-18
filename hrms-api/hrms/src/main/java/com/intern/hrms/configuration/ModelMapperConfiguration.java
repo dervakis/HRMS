@@ -1,6 +1,7 @@
 package com.intern.hrms.configuration;
 
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
+import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.dto.travel.request.EmployeeTravelExpenseRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelPlanRequestDTO;
@@ -52,8 +53,8 @@ public class ModelMapperConfiguration {
 //        modelMapper.createTypeMap(EmployeeTravelExpenseRequestDTO.class, EmployeeTravelExpense.class)
 //                .addMappings(m -> m.skip(EmployeeTravelExpense::setTravelEmployee))
 //                .implicitMappings();
-//        modelMapper.typeMap(Job.class, JobResponseDTO.class)
-//                        .addMappings(m -> m.<Integer>map(Job::getJobReferrals, JobResponseDTO::setReferralCount));
+        modelMapper.typeMap(JobReferralRequestDTO.class, JobReferral.class)
+                        .addMappings(m -> m.skip(JobReferral::setJobReferralId));
 
         modelMapper.typeMap(TravelEmployee.class, EmployeeResponseDTO.class)
                 .addMappings(m -> {

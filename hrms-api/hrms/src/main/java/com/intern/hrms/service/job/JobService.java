@@ -92,7 +92,7 @@ public class JobService {
         jobReferral.setReferrer(referrer);
         jobReferral.setJob(job);
         jobReferral.setJobReferralId(UUID.randomUUID());
-        if(dto.getResumeFile().isEmpty())
+        if(dto.getResumeFile() == null || dto.getResumeFile().isEmpty())
             throw new RuntimeException("Resume file not attached with referral");
         try{
             String url = fileStorage.uploadFile("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
