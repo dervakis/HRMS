@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { addDocument, getDocumetTypes, getEmployeeDocument, getTravelDocumentRequest, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
+import { addDocument, getDocumentByUrl, getDocumetTypes, getEmployeeDocument, getTravelDocumentRequest, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
 
 export const useGetDocumentTypes = ()=>{
     return useQuery({
@@ -20,6 +20,15 @@ export const useGetEmployeeDocument = (documentId:number) => {
         queryFn: () => getEmployeeDocument(documentId),
         staleTime: Infinity,
         enabled: !!documentId
+    });
+}
+
+export const useGetDocumentByUrl = (url:string) => {
+    return useQuery({
+        queryKey: ['Document', url],
+        queryFn: () => getDocumentByUrl(url),
+        staleTime: Infinity,
+        enabled: false
     });
 }
 

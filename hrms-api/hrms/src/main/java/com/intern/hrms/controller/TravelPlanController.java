@@ -4,6 +4,7 @@ import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.travel.request.TravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelEmployeeRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelPlanRequestDTO;
+import com.intern.hrms.dto.travel.response.TravelPlanResponseDTO;
 import com.intern.hrms.entity.travel.TravelPlan;
 import com.intern.hrms.service.TravelDocumentService;
 import com.intern.hrms.service.TravelPlanService;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/travel-plan")
@@ -37,9 +39,15 @@ public class TravelPlanController {
         );
     }
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<SuccessResponse<Object>> getTravelPlanByEmployee(@PathVariable int employeeId){
+    public ResponseEntity<SuccessResponse<List<TravelPlanResponseDTO>>> getTravelPlanByEmployee(@PathVariable int employeeId){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null, travelPlanService.getTravelPlansByEmployee(employeeId))
+        );
+    }
+    @GetMapping("/running/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<TravelPlanResponseDTO>>> getTravelPlanForExpense(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, travelPlanService.getTravelPlansForExpense(employeeId))
         );
     }
 

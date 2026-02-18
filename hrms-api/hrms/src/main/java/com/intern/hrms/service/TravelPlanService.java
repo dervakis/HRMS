@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -109,6 +110,27 @@ public class TravelPlanService {
     public List<TravelPlanResponseDTO> getTravelPlansByEmployee(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow();
         return employee.getTravelEmployee().stream().map(
+                travelEmployee -> {
+                    TravelPlan plan = travelEmployee.getTravelPlan();
+                    TravelPlanResponseDTO res = modelMapper.map(plan, TravelPlanResponseDTO.class);
+                    List<EmployeeResponseDTO> emp =  modelMapper.map(plan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType());
+                    res.setTravelEmployees(emp);
+                    return  res;
+                }
+        ).toList();
+    }
+    public List<TravelPlanResponseDTO> getTravelPlansForExpense(int employeeId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        return employee.getTravelEmployee().stream()
+                .filter(travelEmployee -> {
+                    LocalDateTime deadline = travelEmployee.getTravelPlan().getEndTime().plusDays(10);
+                    if(travelEmployee.getTravelPlan().getStartTime().isBefore(LocalDateTime.now())
+                    && LocalDateTime.now().isBefore(deadline)){
+                        return true;
+                    }
+                    return false;
+                })
+                .map(
                 travelEmployee -> {
                     TravelPlan plan = travelEmployee.getTravelPlan();
                     TravelPlanResponseDTO res = modelMapper.map(plan, TravelPlanResponseDTO.class);

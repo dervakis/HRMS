@@ -57,6 +57,11 @@ public class EmployeeDocumentService {
         return fileStorage.getDocument(employeeDocument.getDocumentUrl());
     }
 
+    public Resource getDocumentByUrl(String url){
+        System.out.println("coming heere");
+        return fileStorage.getDocument(url);
+    }
+
     public void updateEmployeeDocument(int employeeDocumentId, MultipartFile file) throws IOException{
         EmployeeDocument employeeDocument= employeeDocumentRepository.findById(employeeDocumentId).orElseThrow(
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)

@@ -20,5 +20,6 @@ public class EmployeeTravelExpenseRequestDTO {
     private Double amount;
     private MultipartFile file;
     private Integer travelExpenseTypeId;
-    private Integer EmployeeTravelId;
+    private Integer EmployeeId;
+    private Integer TravelPlanId;
 }

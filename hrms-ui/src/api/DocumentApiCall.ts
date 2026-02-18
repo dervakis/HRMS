@@ -17,6 +17,13 @@ export const getEmployeeDocument = async(documentId: number) : Promise<Blob> =>{
     return response.data;
 }
 
+export const getDocumentByUrl = async(url: string) : Promise<Blob> =>{
+    const response = await Api.get(`/document/url/`, {responseType : 'blob',
+        params : {url:url}
+    });
+    return response.data;
+}
+
 export const updateEmployeeDocument = async({documentId, form}:{documentId:number,form:FormData}) : Promise<ApiResponseType<Object>> => {
     const response = await Api.put(`/document/${documentId}`, form, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;

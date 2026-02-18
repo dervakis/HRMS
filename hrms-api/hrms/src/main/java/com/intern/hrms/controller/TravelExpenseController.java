@@ -47,8 +47,8 @@ public class TravelExpenseController {
         );
     }
 
-    @PatchMapping("/verify/{employeeTravelExpenseId}")
-    public ResponseEntity<SuccessResponse<Object>> verifyTravelExpense(@PathVariable int employeeTravelExpenseId, @RequestParam TravelExpenseStatusEnum status, Principal principal){
+    @PatchMapping("/verify/{employeeTravelExpenseId}/{status}")
+    public ResponseEntity<SuccessResponse<Object>> verifyTravelExpense(@PathVariable int employeeTravelExpenseId, @PathVariable TravelExpenseStatusEnum status, Principal principal){
         travelExpenseService.verifyEmployeeExpense(employeeTravelExpenseId, status, principal.getName());
         return ResponseEntity.ok(
                 new SuccessResponse<>("Expense Verified Successfully", null)
@@ -57,12 +57,23 @@ public class TravelExpenseController {
 
     @PostMapping()
     public ResponseEntity<SuccessResponse<EmployeeTravelExpense>> addTravelExpense(EmployeeTravelExpenseRequestDTO dto) throws IOException {
-
+        travelExpenseService.draftEmployeeExpense(dto);
         return ResponseEntity.ok(
-          new SuccessResponse<>(null, travelExpenseService.draftEmployeeExpense(dto))
+          new SuccessResponse<>("Travel expense saved successfully", null)
         );
     }
 
-
+    @GetMapping("/travel-plan/{travelPlanId}")
+    public ResponseEntity<SuccessResponse<Object>> getExpenseByTravelPlan(@PathVariable int travelPlanId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, travelExpenseService.getExpenseByTravelPlan(travelPlanId))
+        );
+    }
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<SuccessResponse<Object>> getExpenseByEmployee(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, travelExpenseService.getExpenseByEmployee(employeeId))
+        );
+    }
 
 }

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { createTravelPlan, getTravelPlans, getTravelPlansByEmployee, manageTravelDocument, manageTravelEmployee, updateTravelPlan } from "../api/TravelPlanApiCall"
+import { createTravelPlan, getTravelPlans, getTravelPlansByEmployee, getTravelPlansForExpense, manageTravelDocument, manageTravelEmployee, updateTravelPlan } from "../api/TravelPlanApiCall"
 
 export const useGetTravelPlan = () => {
     return useQuery({
@@ -10,8 +10,16 @@ export const useGetTravelPlan = () => {
 
 export const useGetTravelPlanByEmployee = (userId:number) => {
     return useQuery({
-        queryKey:['travelPlans', userId],
+        queryKey:['travelPlansE', userId],
         queryFn: () => getTravelPlansByEmployee(userId),
+        enabled: !!userId
+    });
+}
+
+export const useGetTravelPlanForExpense = (userId:number) => {
+    return useQuery({
+        queryKey:['travelPlansEx', userId],
+        queryFn: () => getTravelPlansForExpense(userId),
         enabled: !!userId
     });
 }

@@ -12,6 +12,11 @@ export const getTravelPlansByEmployee = async (userId:number) : Promise<TravelPl
     return response.data.data;
 }
 
+export const getTravelPlansForExpense = async (userId:number) : Promise<TravelPlanType[]> => {
+    const response = await Api.get(`/travel-plan/running/${userId}`);
+    return response.data.data;
+}
+
 export const createTravelPlan = async(travelplan:TravelPlanCreate) : Promise<ApiResponseType<Object>> => {
     const response = await Api.post(`/travel-plan`, travelplan);
     return response.data;

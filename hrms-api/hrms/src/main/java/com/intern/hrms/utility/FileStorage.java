@@ -96,10 +96,12 @@ public class FileStorage {
 
     public Resource getDocument(String url){
         Path documentpath = Paths.get(System.getProperty("user.dir")+"/"+url);
+        System.out.println(url+"//////ato ready chene");
         try {
             Resource document = new UrlResource(documentpath.toUri());
             if(!document.exists())
                 throw new RuntimeException("document not exist in folder");
+            System.out.println("Atleas it return");
             return document;
         }catch(Exception e){
             throw new RuntimeException(e.getMessage());

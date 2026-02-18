@@ -87,6 +87,13 @@ public class DocumentController {
         //for pdf and ohter format handling require
     }
 
+    @GetMapping("/url/")
+    public ResponseEntity<Resource> getDocumentByUrl(@RequestParam String url) throws IOException{
+        Resource response = employeeDocumentService.getDocumentByUrl(url);
+        String type = Files.probeContentType(response.getFile().toPath());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(type)).body(response);
+    }
+
     @PutMapping("/{documentId}")
     public ResponseEntity<SuccessResponse<Object>> updateEmployeeDocument(@PathVariable int documentId, MultipartFile file)throws IOException{
         employeeDocumentService.updateEmployeeDocument(documentId, file);

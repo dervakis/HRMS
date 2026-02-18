@@ -1,17 +1,17 @@
 package com.intern.hrms.service;
 
 import com.intern.hrms.dto.travel.request.EmployeeTravelExpenseRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeTravelExpenseResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.EmployeeTravelExpense;
 import com.intern.hrms.entity.travel.TravelEmployee;
 import com.intern.hrms.entity.travel.TravelExpenseType;
+import com.intern.hrms.entity.travel.TravelPlan;
 import com.intern.hrms.enums.TravelExpenseStatusEnum;
-import com.intern.hrms.repository.EmployeeRepository;
-import com.intern.hrms.repository.EmployeeTravelExpenseRepository;
-import com.intern.hrms.repository.TravelEmployeeRepository;
-import com.intern.hrms.repository.TravelExpenseTypeRepository;
+import com.intern.hrms.repository.*;
 import com.intern.hrms.utility.FileStorage;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,14 +27,16 @@ public class TravelExpenseService {
     private final TravelEmployeeRepository travelEmployeeRepository;
     private final FileStorage fileStorage;
     private final EmployeeRepository employeeRepository;
+    private final TravelPlanRepository travelPlanRepository;
 
-    public TravelExpenseService(TravelExpenseTypeRepository travelExpenseTypeRepository, ModelMapper modelMapper, EmployeeTravelExpenseRepository employeeTravelExpenseRepository, TravelEmployeeRepository travelEmployeeRepository, FileStorage fileStorage, EmployeeRepository employeeRepository) {
+    public TravelExpenseService(TravelExpenseTypeRepository travelExpenseTypeRepository, ModelMapper modelMapper, EmployeeTravelExpenseRepository employeeTravelExpenseRepository, TravelEmployeeRepository travelEmployeeRepository, FileStorage fileStorage, EmployeeRepository employeeRepository, TravelPlanRepository travelPlanRepository) {
         this.travelExpenseTypeRepository = travelExpenseTypeRepository;
         this.modelMapper = modelMapper;
         this.employeeTravelExpenseRepository = employeeTravelExpenseRepository;
         this.travelEmployeeRepository = travelEmployeeRepository;
         this.fileStorage = fileStorage;
         this.employeeRepository = employeeRepository;
+        this.travelPlanRepository = travelPlanRepository;
     }
 
     public TravelExpenseType addExpenseType(String type, int maxAmount){
@@ -52,12 +54,15 @@ public class TravelExpenseService {
         EmployeeTravelExpense expense =  dto.getEmployeeTravelExpenseId() != null
                 ? employeeTravelExpenseRepository.findById(dto.getEmployeeTravelExpenseId()).orElseThrow()
                 : new EmployeeTravelExpense();
-        TravelEmployee travelEmployee = travelEmployeeRepository.findById(dto.getEmployeeTravelId()).orElseThrow(
-                () -> new RuntimeException("Invalid Travel Employee id passed : id"+dto.getEmployeeTravelId())
-        );
+//        TravelEmployee travelEmployee = travelEmployeeRepository.findById(dto.getEmployeeTravelId()).orElseThrow(
+//                () -> new RuntimeException("Invalid Travel Employee id passed : id"+dto.getEmployeeTravelId())
+//        );
+        Employee employee = employeeRepository.getReferenceById(dto.getEmployeeId());
+        TravelPlan travelPlan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
+        TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, travelPlan);
         TravelExpenseType expenseType = travelExpenseTypeRepository.findById(dto.getTravelExpenseTypeId()).orElseThrow();
         modelMapper.map(dto, expense);
-//        expense.setTravelEmployee(travelEmployee);
+        expense.setTravelEmployee(travelEmployee);
         if(expense.getExpenseDate().isBefore(travelEmployee.getTravelPlan().getStartTime().toLocalDate())
         || expense.getExpenseDate().isAfter(travelEmployee.getTravelPlan().getEndTime().toLocalDate())){
             throw new RuntimeException("Invalid Expense Date must be in between travel time");
@@ -65,7 +70,7 @@ public class TravelExpenseService {
         if(expense.getAmount() > expenseType.getMaxAmount()){
             throw new RuntimeException("Spent Amount Must be <"+expenseType.getMaxAmount()+" for this expense type");
         }
-        if(!dto.getFile().isEmpty()){
+        if(dto.getFile() != null){
             String url= fileStorage.uploadExpenseBill(expense.getEmployeeTravelExpenseId()+"_"+expenseType.getTravelExpenseTypeName(),dto.getFile());
             expense.setProofUrl(url);
         }
@@ -102,5 +107,16 @@ public class TravelExpenseService {
         expense.setUpdatedAt(LocalDate.now());
         expense.setApprover(approver);
         employeeTravelExpenseRepository.save(expense);
+    }
+
+    public List<EmployeeTravelExpenseResponseDTO> getExpenseByEmployee(int employeeId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        List<EmployeeTravelExpense> expenses =employeeTravelExpenseRepository.findAllByTravelEmployee_Employee(employee);
+        return modelMapper.map(expenses, new TypeToken<List<EmployeeTravelExpenseResponseDTO>>(){}.getType());
+    }
+
+    public List<EmployeeTravelExpenseResponseDTO> getExpenseByTravelPlan(int travelPlanId){
+        List<EmployeeTravelExpense> expenses =employeeTravelExpenseRepository.findAllByTravelEmployee_TravelPlan_TravelPlanIdAndStatusNot(travelPlanId,TravelExpenseStatusEnum.Draft);
+        return modelMapper.map(expenses, new TypeToken<List<EmployeeTravelExpenseResponseDTO>>(){}.getType());
     }
 }
