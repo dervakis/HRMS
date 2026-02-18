@@ -8,6 +8,7 @@ import { Logout, toggleSidebar } from '../redux-store/UserSlice';
 
 function Navbar() {
   const dispatch = useDispatch<AppDispatchType>();
+  const user = useSelector((state:RootStateType)=>state.user);
   return (
     <NavbarComponent fluid rounded className='bg-white shadow-md border-b-2 border-blue-500'>
       <div className='flex items-center gap-3'>
@@ -15,7 +16,7 @@ function Navbar() {
       <span className='self-center whitespace-nowrap text-xl font-semibold'>HRMS</span>
       </div>
       <div className='flex items-center gap-4'>
-        <span className='text-sm font-medium text-gray-700'>Username</span>
+        <span className='text-sm font-medium text-gray-700'>{user.fullName}</span>
         <Avatar rounded size='md' />
         {/* image link img = ''kari ne add */}
         <Button color='red' size='md' onClick={()=> dispatch(Logout())}><LogOut/></Button>

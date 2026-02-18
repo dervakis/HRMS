@@ -3,6 +3,7 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
@@ -38,12 +39,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<SuccessResponse<Map<String, String>>> login(@RequestParam String email, @RequestParam String password){
-        String token = employeeService.login(email, password);
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
+    public ResponseEntity<SuccessResponse<LoginResponseDTO>> login(@RequestParam String email, @RequestParam String password){
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                new SuccessResponse<Map<String, String>>("Login successfully", response)
+                new SuccessResponse<>("Login successfully", employeeService.login(email, password))
         );
     }
     @GetMapping("/documents/{employeeId}")

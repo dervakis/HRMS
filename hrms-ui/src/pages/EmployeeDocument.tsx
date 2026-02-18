@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 function EmployeeDocument() {
     const { data: alldocumentTypes } = useGetDocumentTypes();
     const user = useSelector((state: RootStateType) => state.user);
-    const { data: allEmployeeDocuments } = useGetEmployeeDocuments(user.userId);
+    const { data: allEmployeeDocuments, refetch } = useGetEmployeeDocuments(user.userId);
     const { mutate, isPending, isError, error } = useAddDocument();
     const [documentId, setDocumentId] = useState<number>();
     const { data: employeeDocument, isLoading } = useGetEmployeeDocument(documentId!);
@@ -63,6 +63,7 @@ function EmployeeDocument() {
             onSuccess: (data) => {
                 console.log(data);
                 toast.success(data.message);
+                refetch();
             },
             onError: (error) => {
                 console.log(error)

@@ -13,6 +13,7 @@ import EmployeeDocument from './pages/EmployeeDocument'
 import TravelDocument from './pages/TravelDocument'
 import EmployeeTravelExpense from './pages/EmployeeTravelExpense'
 import DocumentVarification from './pages/DocumentVarification'
+import ManageGames from './pages/game/ManageGames'
 
 function App() {
   const router = createBrowserRouter([
@@ -26,33 +27,36 @@ function App() {
     },
     {
       path:'/',
-      element: <MainLayout/>,
-      // element: <ProtectedRoute><MainLayout/></ProtectedRoute>
+      // element: <MainLayout/>,
+      element: <ProtectedRoute><MainLayout/></ProtectedRoute>,
       children: [
         {path:'/',
           element: <>Main Body</>
         },
         {
-          path: '/travel',
-          element: <ManageTravel/>
+          path: '/manage-travel',
+          element: <ProtectedRoute allowedRoles={['hr']}><ManageTravel/></ProtectedRoute>
         },
         {
-          path: '/expense',
-          element: <ManageExpense/>
+          path: '/manage-expense',
+          element: <ProtectedRoute allowedRoles={['hr']}><ManageExpense/></ProtectedRoute>
+        },
+        {path: '/verify-docuement',
+          element: <ProtectedRoute allowedRoles={['hr']}><DocumentVarification/></ProtectedRoute>
         },
         {
-          path: '/document',
-          element: <EmployeeDocument/>
+          path: '/documents',
+          element: <ProtectedRoute><EmployeeDocument/></ProtectedRoute>
         },
         {path: '/travel-document',
-          element: <TravelDocument/>
+          element: <ProtectedRoute><TravelDocument/></ProtectedRoute>
         },
-        {path: 'travel-expense',
-          element: <EmployeeTravelExpense/>
+        {path: '/travel-expense',
+          element: <ProtectedRoute><EmployeeTravelExpense/></ProtectedRoute>
         },
-        {path: '/document-verify',
-          element: <DocumentVarification/>
-        }
+        // {path: '/game',
+        //   element: <ManageGames/>
+        // }
 
       ]
     },

@@ -44,8 +44,8 @@ function Login() {
     const onSubmit: SubmitHandler<LoginDetailType> = (loginDetail) => {
         mutateLogin(loginDetail, {
             onSuccess: (data) => {
-                console.log(data.data.token);
-                dispatch(Authenticate(data.data.token));
+                // console.log(data);
+                dispatch(Authenticate(data));
                 navigate('/');
             }
         })

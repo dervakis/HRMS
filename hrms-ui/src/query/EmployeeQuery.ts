@@ -17,7 +17,7 @@ export const useSubmitNewPassword = () => {
 }
 
 export const useLogin = () => {
-    return useMutation<ApiResponseType<{token: string}>, ApiErrorType, LoginDetailType>({
+    return useMutation({
         mutationFn: login
     });
 }

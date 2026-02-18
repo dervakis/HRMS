@@ -8,7 +8,7 @@ function ProtectedRoute({allowedRoles, children}:({allowedRoles?:string[], child
     const role = useSelector((state:RootStateType) => state.user.role);
     if(!isAuthenticated)
         return <Navigate to='/login'/>
-    if(isAuthenticated && allowedRoles && !allowedRoles.includes(role))
+    if(isAuthenticated && allowedRoles && !allowedRoles.includes(role.toLowerCase()))
         return <Navigate to='/'/>
 
   return (

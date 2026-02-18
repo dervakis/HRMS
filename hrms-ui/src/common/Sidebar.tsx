@@ -1,14 +1,15 @@
 import { Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems } from 'flowbite-react';
-import { FileText, Home, Mail, Plane, Settings, Wallet } from 'lucide-react';
+import { Files, FileText, Home, IndianRupee, Landmark, Mail, Plane, Settings, ShieldCheck, Wallet } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import type { RootStateType } from '../redux-store/store';
 import { NavLink } from 'react-router-dom';
 
 function Sidebar2() {
-  const isCollapsed = useSelector((state: RootStateType) => state.user.isCollapsed);
+  // const isCollapsed = useSelector((state: RootStateType) => state.user.isCollapsed);
+  const user = useSelector((state: RootStateType) => state.user);
   return (
-    <Sidebar collapsed={isCollapsed} className='h-full border-r-2 border-blue-300' >
+    <Sidebar collapsed={user.isCollapsed} className='h-full border-r-2 border-blue-300' >
       <SidebarItems>
         <SidebarItemGroup>
           <NavLink to='/' className={({ isActive }: { isActive: boolean }) => isActive ? 'bg-blue-600' : ''}>
@@ -19,9 +20,17 @@ function Sidebar2() {
                 </SidebarItem>
               )}
           </NavLink>
+          <NavLink to='/documents'>
+              {
+              ({ isActive }: { isActive: boolean }) => (
+                <SidebarItem icon={FileText} className={isActive ? 'bg-blue-300' : ''}>
+                  My Documents
+                </SidebarItem>
+              )}
+            </NavLink>
 
           <SidebarCollapse icon={Plane} label="Travel Plane">
-            <NavLink to='/travel'>
+            <NavLink hidden={user.role != 'HR'} to='/manage-travel'>
               {
               ({ isActive }: { isActive: boolean }) => (
                 <SidebarItem icon={Settings} className={isActive ? 'bg-blue-300' : ''}>
@@ -29,26 +38,38 @@ function Sidebar2() {
                 </SidebarItem>
               )}
             </NavLink>
-            <NavLink to='/expense'>
+            <NavLink hidden={user.role != 'HR'} to='/manage-expense'>
               {
               ({ isActive }: { isActive: boolean }) => (
-                <SidebarItem icon={Wallet} className={isActive ? 'bg-blue-300' : ''}>
+                <SidebarItem icon={Landmark} className={isActive ? 'bg-blue-300' : ''}>
                   Manage Expense
                 </SidebarItem>
               )}
             </NavLink>
-            <NavLink to='/documents'>
+            <NavLink hidden={user.role != 'HR'} to='/verify-docuement'>
               {
               ({ isActive }: { isActive: boolean }) => (
-                <SidebarItem icon={FileText} className={isActive ? 'bg-blue-300' : ''}>
-                  Documents
+                <SidebarItem icon={ShieldCheck} className={isActive ? 'bg-blue-300' : ''}>
+                  Document Varification
                 </SidebarItem>
               )}
             </NavLink>
-            {/* <SidebarItem>Option 1</SidebarItem>
-            <SidebarItem href="#">2</SidebarItem>
-            <SidebarItem href="#">3</SidebarItem>
-            <SidebarItem href="#">4</SidebarItem> */}
+            <NavLink to='/travel-document'>
+              {
+              ({ isActive }: { isActive: boolean }) => (
+                <SidebarItem icon={Files} className={isActive ? 'bg-blue-300' : ''}>
+                  Travel Documents
+                </SidebarItem>
+              )}
+            </NavLink>
+            <NavLink to='/travel-expense'>
+              {
+              ({ isActive }: { isActive: boolean }) => (
+                <SidebarItem icon={IndianRupee} className={isActive ? 'bg-blue-300' : ''}>
+                  My Expenses
+                </SidebarItem>
+              )}
+            </NavLink>
           </SidebarCollapse>
         </SidebarItemGroup>
       </SidebarItems>

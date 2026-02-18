@@ -1,5 +1,5 @@
 import { Plus, Eye, Pencil } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetTravelPlanForExpense } from "../query/TravelPlanQuery";
 import { useSelector } from "react-redux";
 import type { RootStateType } from "../redux-store/store";
@@ -19,13 +19,12 @@ function EmployeeTravelExpense() {
   const { register, handleSubmit, reset } = useForm<TravelExpenseSubmitType>();
   const createExpenseMutation = useCreateTravelExpense();
   const submitExpenseMutation = useSubmitTravelExpense();
-  const [documentUrl, setDocumentUrl] = useState<string>();
-  const { data: document, isLoading } = useGetDocumentByUrl(documentUrl!);
+  const { data: document, isLoading, refetch } = useGetDocumentByUrl(selectedExpense?.proofUrl!);
 
-  if (document != undefined) {
-    const bloburl = URL.createObjectURL(document);
-    window.open(bloburl, '_blank');
-  }
+  useEffect(()=>{
+    if(document != undefined)
+      window.open(URL.createObjectURL(document!), '_blank')
+  },[document])
   const { data: expenses } = useGetExpenseByEmployee(user.userId);
 
   const getStatusColor = (status: string) => {
@@ -241,8 +240,8 @@ function EmployeeTravelExpense() {
               {new Date(selectedExpense?.expenseDate!).toLocaleDateString('en-GB')}
             </p>
             <p>
-              <strong>Amount:</strong> $
-              {selectedExpense?.amount}
+              <strong>Amount:</strong>
+              ₹{selectedExpense?.amount}
             </p>
             <p>
               <strong>Status:</strong>{" "}
@@ -256,7 +255,7 @@ function EmployeeTravelExpense() {
               <strong>Remark:</strong>{" "}
               {selectedExpense?.remark ?? "—"}
             </p>
-            {selectedExpense?.proofUrl && <Button onClick={() => setDocumentUrl(selectedExpense?.proofUrl)}>Bill</Button>}
+            {selectedExpense?.proofUrl && <Button onClick={() => refetch()}>Bill</Button>}
           </div>
         </ModalBody>
 

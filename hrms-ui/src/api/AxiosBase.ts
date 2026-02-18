@@ -19,7 +19,9 @@ Api.interceptors.response.use(
     }
 )
 Api.interceptors.request.use((config) => {
-    config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6IiQyYSQxMCRpRlRzakVrM0ZHdllCa3g2S2MySFEuZGpyV2ViSElXeDdobE1CS3N3Ti5XT3Q0QTR6TFJBZSIsInVzZXJuYW1lIjoia2lzaGFuLmRlcnZhbGl5YTI4MjhAZ21haWwuY29tIiwic3ViIjoia2lzaGFuLmRlcnZhbGl5YTI4MjhAZ21haWwuY29tIiwiaWF0IjoxNzcxMzg0ODE0LCJleHAiOjE3NzE0MjA4MTR9.skO8qm2Mz0XwsjMvhlwhxsgXIEuiNa6PTanW0FKTSeo';
+    const authToken = localStorage.getItem('authToken');
+    if(authToken)
+        config.headers.Authorization = 'Bearer '+authToken;
     return config;
 })
 // Api.interceptors.request.use((config) => {

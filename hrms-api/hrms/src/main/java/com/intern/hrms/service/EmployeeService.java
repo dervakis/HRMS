@@ -2,6 +2,7 @@ package com.intern.hrms.service;
 
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.repository.DepartmentRepository;
@@ -67,10 +68,11 @@ public class EmployeeService {
         );
     }
 
-    public String login(String email, String password){
+    public LoginResponseDTO login(String email, String password){
         Employee employee = getByEmail(email);
         if(passwordEncoder.matches(password, employee.getPassword())){
-            return jwtService.generateToken(email,employee.getPassword());
+            String authToken = jwtService.generateToken(email,employee.getPassword());
+            return new LoginResponseDTO(authToken, employee.getRole().getRoleName(), employee.getFirstName()+" "+employee.getLastName(), employee.getEmail(), employee.getEmployeeId());
         }else{
             throw new RuntimeException("Wrong Credential for Login");
         }

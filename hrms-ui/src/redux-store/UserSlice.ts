@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import type { LoginResponseType } from "../types/AuthType";
 
 const userSlice = createSlice({
     name: 'user',
@@ -7,13 +8,18 @@ const userSlice = createSlice({
         isAuthenticated: false,
         role: '',
         isCollapsed: false, 
-        fullName: 'Kishan Dervaliya',
-        email: 'kishan.dervaliya2828@gmail.com',
-        userId: 1
+        fullName: '',
+        email: '',
+        userId: 0
     },
     reducers: {
-        Authenticate : (state, action:PayloadAction<string>) => {
-            state.authToken = action.payload;
+        Authenticate : (state, action:PayloadAction<LoginResponseType>) => {
+            state.authToken = action.payload.authToken;
+            localStorage.setItem('authToken', action.payload.authToken);
+            state.role = action.payload.role;
+            state.fullName = action.payload.fullName;
+            state.email = action.payload.email;
+            state.userId = action.payload.userId;
             state.isAuthenticated = true;
         },
         Logout: (state) => {
