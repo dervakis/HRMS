@@ -1,17 +1,17 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
 import { createTravelExpense, getExpenseByEmployee, getExpenseByTravelPlan, getExpenseType, submitTravelExpense, verifyTravelExpense } from "../api/ExpenseApiCall"
 
 export const useGetExpenseByEmployee = (userId:number) => {
     return useQuery({
         queryKey: ['ExpenseE', userId],
-        queryFn: () => getExpenseByEmployee(userId)
+        queryFn: userId ? () => getExpenseByEmployee(userId) : skipToken
     })
 }
 
 export const useGetExpenseByTravelPlan = (travelPlanId:number) => {
     return useQuery({
         queryKey: ['ExpenseT', travelPlanId],
-        queryFn: () => getExpenseByTravelPlan(travelPlanId)
+        queryFn: travelPlanId ? () => getExpenseByTravelPlan(travelPlanId) : skipToken
     })
 }
 

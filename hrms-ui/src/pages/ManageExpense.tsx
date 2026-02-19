@@ -52,7 +52,7 @@ function ManageExpense() {
               <TableHeadCell>Type</TableHeadCell>
               <TableHeadCell>Amount</TableHeadCell>
               <TableHeadCell>Status</TableHeadCell>
-              <TableHeadCell>Remark</TableHeadCell>
+              {/* <TableHeadCell>Remark</TableHeadCell> */}
               <TableHeadCell>Action</TableHeadCell>
             </TableHead>
 
@@ -78,9 +78,9 @@ function ManageExpense() {
                   <TableCell>
                     <Badge color={getStatusColor(expense.status)}>{expense.status}</Badge>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {expense.remark ?? "—"}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <div className="flex gap-2">
                       {expense.status === "Submitted" && (
@@ -123,7 +123,7 @@ function ManageExpense() {
               {new Date(selectedExpense?.expenseDate!).toLocaleDateString('en-GB')}
             </p>
             <p>
-              <strong>Amount:</strong> $
+              <strong>Amount:</strong> ₹
               {selectedExpense?.amount}
             </p>
             <p>
@@ -134,10 +134,10 @@ function ManageExpense() {
               <strong>Approver:</strong>{" "}
               {selectedExpense?.approver?.firstName ?? "—"}
             </p>
-            <p>
+            {/* <p>
               <strong>Remark:</strong>{" "}
               {selectedExpense?.remark ?? "—"}
-            </p>
+            </p> */}
             {selectedExpense?.proofUrl && <Button onClick={() => {refetch2()}}>Bill</Button>}
           </div>
         </ModalBody>

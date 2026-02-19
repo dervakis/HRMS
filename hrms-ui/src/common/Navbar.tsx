@@ -16,7 +16,7 @@ function Navbar() {
       <span className='self-center whitespace-nowrap text-xl font-semibold'>HRMS</span>
       </div>
       <div className='flex items-center gap-4'>
-        <span className='text-sm font-medium text-gray-700'>{user.fullName}</span>
+        <span className='text-sm font-medium text-gray-700'>{user.fullName.toUpperCase()} ({user.role.toLowerCase()})</span>
         <Avatar rounded size='md' />
         {/* image link img = ''kari ne add */}
         <Button color='red' size='md' onClick={()=> dispatch(Logout())}><LogOut/></Button>

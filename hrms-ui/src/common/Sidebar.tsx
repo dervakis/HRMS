@@ -1,5 +1,5 @@
 import { Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems } from 'flowbite-react';
-import { BookmarkCheck, Briefcase, BriefcaseBusiness, Files, FileText, Home, IndianRupee, Landmark, Mail, Plane, Settings, Share2, ShieldCheck, Wallet } from 'lucide-react';
+import { BookmarkCheck, Briefcase, BriefcaseBusiness, Files, FileText, Home, IndianRupee, Landmark, Mail, Network, Plane, Settings, Share2, ShieldCheck, Wallet } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import type { RootStateType } from '../redux-store/store';
@@ -105,6 +105,15 @@ function Sidebar2() {
               )}
             </NavLink>
           </SidebarCollapse>
+          <NavLink to='/org-chart'>
+              {
+                ({isActive} : {isActive: boolean}) => (
+                  <SidebarItem icon={Network} className={isActive ? 'bg-blue-300' : ''}>
+                    My Organization
+                  </SidebarItem>
+                )
+              }
+          </NavLink>
         </SidebarItemGroup>
       </SidebarItems>
     </Sidebar>

@@ -16,3 +16,18 @@ export interface ResetPasswordDetailType{
     password:string,
     confirmPassword:string
 }
+
+export interface EmployeeDetailType{
+    employeeId: number
+    firstName:string
+    lastName: string
+    email: string
+    dateOfBirth: Date
+    joiningDate: Date
+    managerId: number
+    departmentId: number
+    departmentName: string
+    roleId: number
+    roleName: string
+    childEmployee?: EmployeeDetailType[]
+}

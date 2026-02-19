@@ -1,6 +1,6 @@
 import type EmployeeDocument from "../pages/EmployeeDocument";
 import type { ApiResponseType } from "../types/ApiResponse";
-import type { LoginDetailType, LoginResponseType } from "../types/AuthType";
+import type { EmployeeDetailType, LoginDetailType, LoginResponseType } from "../types/AuthType";
 import type { EmployeeDocumentType, TravelEmployeeType } from "../types/TravelPlan";
 import { Api, employeeApi } from "./AxiosBase"
 
@@ -30,3 +30,8 @@ export const getEmployeeDocuments = async(userId:number) : Promise<EmployeeDocum
     return response.data.data;
 }
 
+export const getOrgChartByEmployee = async(employeeId:number): Promise<EmployeeDetailType> => {
+    const response = await Api.get(`/employee/chart/${employeeId}`);
+    // console.log(response)
+    return response.data.data
+}

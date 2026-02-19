@@ -5,15 +5,15 @@ const userSlice = createSlice({
     name: 'user',
     initialState: {
         authToken: '',
-        // isAuthenticated: false,
-        isAuthenticated:true,
-        // role: '',
-        role: 'HR',
+        isAuthenticated: false,
+        // isAuthenticated:true,
+        role: '',
+        // role: 'HR',
         isCollapsed: false, 
         fullName: '',
         email: '',
-        // userId: 0
-        userId:1
+        userId: 0
+        // userId:1
     },
     reducers: {
         Authenticate : (state, action:PayloadAction<LoginResponseType>) => {

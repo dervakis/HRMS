@@ -18,6 +18,7 @@ import ManageJob from './pages/job/ManageJob'
 import OpenJob from './pages/job/OpenJob'
 import Refferal from './pages/job/Refferal'
 import ManageJobReferral from './pages/job/ManageJobReferral'
+import OrganizationChart from './pages/general/OrganizationChart'
 
 function App() {
   const router = createBrowserRouter([
@@ -73,6 +74,10 @@ function App() {
         {
           path: '/manage-referral',
           element: <ProtectedRoute allowedRoles={['hr']}><ManageJobReferral/></ProtectedRoute>
+        },
+        {
+          path: '/org-chart',
+          element: <ProtectedRoute><OrganizationChart/></ProtectedRoute>
         }
         // {path: '/game',
         //   element: <ManageGames/>

@@ -1,4 +1,4 @@
-import { Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Textarea, TextInput } from 'flowbite-react';
+import { Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
 import { Palette, Plus, X } from 'lucide-react';
 import React, { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
@@ -30,6 +30,7 @@ function ManageTravel() {
                     reset();
                     setOpenModal(undefined);
                     toast.success(data.message);
+                    refetchTravelPlan();
                 }
             })
 
@@ -40,6 +41,7 @@ function ManageTravel() {
                 reset();
                 setOpenModal(undefined);
                 toast.success(data.message);
+                refetchTravelPlan()
             },
             onError: (error) => {
                 console.log(error)
@@ -75,6 +77,8 @@ function ManageTravel() {
         {
             onSuccess: (data) => {
                 toast.success(data.message);
+                setOpenModal(undefined)
+                refetchTravelPlan()
             },
             onError: (error) => {
                 console.log(error)
@@ -88,6 +92,8 @@ function ManageTravel() {
         }, {
             onSuccess: (data) => {
                 toast.success(data.message);
+                setOpenModal(undefined)
+                refetchTravelPlan()
             }
         })
     }
@@ -206,7 +212,7 @@ function ManageTravel() {
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={handleSelect}>Save</Button>
+                    <Button onClick={handleSelect}>{isPending2 && <Spinner size='sm'/>}Save</Button>
                     <Button color="gray" onClick={() => setOpenModal(undefined)}>Close</Button>
                 </ModalFooter>
             </Modal>
