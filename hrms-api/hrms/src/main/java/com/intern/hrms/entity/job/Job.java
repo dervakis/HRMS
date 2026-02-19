@@ -17,7 +17,7 @@ public class Job {
     @Column(name = "pk_job_id")
     private int jobId;
     private String title;
-    private boolean isOpen=false;
+    private Boolean isOpen=false;
     private LocalDate openedAt;
     private int salary;
     private int requirement;

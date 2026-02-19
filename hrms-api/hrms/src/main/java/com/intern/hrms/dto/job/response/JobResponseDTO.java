@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class JobResponseDTO {
     private int jobId;
     private String title;
-    private boolean isOpen;
+    private Boolean isOpen;
     private LocalDate openedAt;
     private int salary;
     private int requirement;

@@ -1,5 +1,5 @@
 import { Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems } from 'flowbite-react';
-import { BookmarkCheck, Briefcase, BriefcaseBusiness, Files, FileText, Home, IndianRupee, Landmark, Mail, Network, Plane, Settings, Share2, ShieldCheck, Wallet } from 'lucide-react';
+import { BookmarkCheck, Briefcase, BriefcaseBusiness, Files, FileText, Home, IndianRupee, Landmark, Mail, Network, Plane, Settings, Share2, ShieldCheck, Swords, Wallet } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import type { RootStateType } from '../redux-store/store';
@@ -115,6 +115,18 @@ function Sidebar2() {
               }
           </NavLink>
         </SidebarItemGroup>
+        <SidebarCollapse icon={Swords} label='Game'>
+          <NavLink hidden={user.role != 'HR'} to='/manage-game'>
+            {
+                ({isActive} : {isActive: boolean}) => (
+                  <SidebarItem icon={Settings} className={isActive ? 'bg-blue-300' : ''}>
+                    Manage Game
+                  </SidebarItem>
+                )
+              }
+          </NavLink>
+
+        </SidebarCollapse>
       </SidebarItems>
     </Sidebar>
   )

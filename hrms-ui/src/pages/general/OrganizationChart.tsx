@@ -9,9 +9,9 @@ import { Tree, TreeNode } from 'react-organizational-chart'
 function ChartNode({ detail, setSelectNode }: { detail: EmployeeDetailType, setSelectNode: Function }) {
     const user = useSelector((state: RootStateType) => state.user);
     return (
-        <Card className={`w-30 inline-block ${user.userId == detail.employeeId && 'border border-3 border-green-400 border-dashed'}`}
+        <Card className={`w-30 inline-block ${user.userId == detail?.employeeId && 'border border-3 border-green-400 border-dashed'}`}
             onClick={() => setSelectNode(detail)}>
-            {detail.firstName + " " + detail.lastName}
+            {detail?.firstName + " " + detail?.lastName}
         </Card>
     );
 }

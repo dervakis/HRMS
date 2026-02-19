@@ -78,10 +78,11 @@ function App() {
         {
           path: '/org-chart',
           element: <ProtectedRoute><OrganizationChart/></ProtectedRoute>
+        },
+        {
+          path: '/manage-game',
+          element: <ProtectedRoute allowedRoles={['hr']}><ManageGames/></ProtectedRoute>
         }
-        // {path: '/game',
-        //   element: <ManageGames/>
-        // }
 
       ]
     },

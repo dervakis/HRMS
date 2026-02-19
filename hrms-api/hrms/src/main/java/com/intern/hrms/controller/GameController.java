@@ -24,6 +24,12 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
+    @PostMapping("/slot")
+    public ResponseEntity<SuccessResponse<Game>> addSlot(@RequestBody SlotRequestDTO dto){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, gameService.addSlot(dto.getGameId(), dto.getSlotStart()))
+        );
+    }
 
     @PostMapping
     public ResponseEntity<SuccessResponse<Game>> addGame(@Validated @RequestBody GameRequestDTO dto){
@@ -39,12 +45,6 @@ public class GameController {
         );
     }
 
-    @PostMapping("/slot")
-    public ResponseEntity<SuccessResponse<Game>> addSlot(@RequestBody SlotRequestDTO dto){
-        return ResponseEntity.ok(
-                new SuccessResponse<>(null, gameService.addSlot(dto.getGameId(), dto.getSlotStart()))
-        );
-    }
 
     @PostMapping("/cycle/{gameId}")
     public ResponseEntity<SuccessResponse<GameCycle>> addCycle(@PathVariable int gameId){

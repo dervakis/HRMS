@@ -1,5 +1,7 @@
 package com.intern.hrms.controller;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.request.JobRequestDTO;
@@ -91,8 +93,10 @@ public class JobController {
 
     @GetMapping
     public ResponseEntity<SuccessResponse<List<JobResponseDTO>>> getJobs(){
+        List<JobResponseDTO> tem = jobService.getJobs();
+//        System.out.println(tem[0);
         return ResponseEntity.ok(
-                new SuccessResponse<>(null,jobService.getJobs())
+                new SuccessResponse<>(null,tem)
         );
     }
 

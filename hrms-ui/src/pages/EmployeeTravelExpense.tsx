@@ -25,7 +25,7 @@ function EmployeeTravelExpense() {
     if(document != undefined)
       window.open(URL.createObjectURL(document!), '_blank')
   },[document])
-  const { data: expenses } = useGetExpenseByEmployee(user.userId);
+  const { data: expenses, refetch:expensesRefetch } = useGetExpenseByEmployee(user.userId);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -55,7 +55,11 @@ function EmployeeTravelExpense() {
       form.append('employeeTravelExpenseId', data.employeeTravelExpenseId!.toString())
     }
     createExpenseMutation.mutate(form, {
-      onSuccess: (data) => toast.success(data.message),
+      onSuccess: (data) => {
+        setOpenModal(undefined)
+        expensesRefetch();
+        toast.success(data.message);
+      },
       onError: (err) => console.log(err)
     })
   };
@@ -174,7 +178,7 @@ function EmployeeTravelExpense() {
           </ModalHeader>
 
           <ModalBody>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div>
                 <Label>Select Travel Paln</Label>
                 <Select {...register('TravelPlanId', { required: true })}>

@@ -86,7 +86,7 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(
                 ()->new RuntimeException("No such job found with id: "+jobId)
         );
-        job.setOpen(isOpen);
+        job.setIsOpen(isOpen);
         job.setOpenedAt(LocalDate.now());
         jobRepository.save(job);
     }
