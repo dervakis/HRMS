@@ -7,11 +7,14 @@ import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.job.Job;
 import com.intern.hrms.entity.job.JobReferral;
+import com.intern.hrms.entity.job.JobSharing;
 import com.intern.hrms.enums.ReferralStatusEnum;
 import com.intern.hrms.repository.EmployeeRepository;
 import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
+import com.intern.hrms.repository.job.JobSharingRepository;
 import com.intern.hrms.utility.FileStorage;
+import com.intern.hrms.utility.MailSend;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -29,13 +32,17 @@ public class JobService {
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
     private final JobReferralRepository jobReferralRepository;
+    private final MailSend mailSend;
+    private final JobSharingRepository jobSharingRepository;
 
-    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository, JobReferralRepository jobReferralRepository) {
+    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository, JobReferralRepository jobReferralRepository, MailSend mailSend, JobSharingRepository jobSharingRepository) {
         this.modelMapper = modelMapper;
         this.fileStorage = fileStorage;
         this.employeeRepository = employeeRepository;
         this.jobRepository = jobRepository;
         this.jobReferralRepository = jobReferralRepository;
+        this.mailSend = mailSend;
+        this.jobSharingRepository = jobSharingRepository;
     }
 
     public Job createJob(JobRequestDTO dto, String username){
@@ -84,6 +91,12 @@ public class JobService {
         jobRepository.save(job);
     }
 
+    public void jobReferralStatus(UUID jobReferralId, ReferralStatusEnum status){
+        JobReferral referral = jobReferralRepository.findById(jobReferralId).orElseThrow();
+        referral.setReferralStatus(status);
+        jobReferralRepository.save(referral);
+    }
+
     public JobReferral sendJobReferral(JobReferralRequestDTO dto, String username){
         Employee referrer = employeeRepository.getReferenceByEmail(username);
         Job job = jobRepository.getReferenceById(dto.getJobId());
@@ -102,7 +115,34 @@ public class JobService {
         }
         jobReferral.setReferralStatus(ReferralStatusEnum.New);
         jobReferralRepository.save(jobReferral);
+        try{
+
+        mailSend.sendTextWithAttachment(job.getCreatedBy().getEmail(),
+                "Referral for Job - "+ job.getTitle(),
+                "Pleas find Referral for job.\nI am referring this candidate for job\n"
+        + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
+                        "\nReferrer : "+jobReferral.getReferrer().getEmail(),
+                jobReferral.getResumeUrl()
+        );
+        }catch (Exception e){
+            System.out.println("Error in sending Referral Mail"+e.getMessage());
+        }
         return jobReferral;
+    }
+    public void shareJob(int jobId, String email, String username){
+        Job job = jobRepository.findById(jobId).orElseThrow();
+        Employee employee = employeeRepository.getReferenceByEmail(email);
+        JobSharing jobSharing = new JobSharing(email, job,employee);
+        jobSharingRepository.save(jobSharing);
+        try{
+        mailSend.sendTextWithAttachment(email, "Job Open for - "+job.getTitle(),
+                "Hello,\nJob Opening on Roima for position - "+job.getTitle()+
+                "\nPlease refer attached Job description for more details"+
+                "\nShared By :"+employee.getFirstName()+" "+employee.getLastName(),
+                job.getJobDescriptionUrl());
+        }catch (Exception e){
+            throw new RuntimeException("Error in sharing email : "+e.getMessage());
+        }
     }
     public List<JobResponseDTO> getJobs(){
         List<Job> jobs = jobRepository.findAll();

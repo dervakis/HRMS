@@ -25,4 +25,11 @@ public class JobSharing {
     @ManyToOne
     @JoinColumn(name = "fk_shared_by_employee_id")
     private Employee sharedBy;
+
+    public JobSharing(String email, Job sharedJob, Employee sharedBy) {
+        this.email = email;
+        this.date = LocalDate.now();
+        this.sharedJob = sharedJob;
+        this.sharedBy = sharedBy;
+    }
 }

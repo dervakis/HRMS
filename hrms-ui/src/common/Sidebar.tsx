@@ -80,7 +80,7 @@ function Sidebar2() {
                 </SidebarItem>
               )}
             </NavLink>
-            <NavLink hidden={user.role != 'HR'} to='/job-referral'>
+            <NavLink hidden={user.role != 'HR'} to='/manage-referral'>
               {
               ({ isActive }: { isActive: boolean }) => (
                 <SidebarItem icon={BookmarkCheck} className={isActive ? 'bg-blue-300' : ''}>

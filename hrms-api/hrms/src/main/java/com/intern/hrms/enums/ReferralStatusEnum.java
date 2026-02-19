@@ -2,7 +2,7 @@ package com.intern.hrms.enums;
 
 public enum ReferralStatusEnum {
     New,
-    Inreview,
+    Interview,
     Selected,
     Rejected
 }

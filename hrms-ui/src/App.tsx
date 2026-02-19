@@ -17,6 +17,7 @@ import ManageGames from './pages/game/ManageGames'
 import ManageJob from './pages/job/ManageJob'
 import OpenJob from './pages/job/OpenJob'
 import Refferal from './pages/job/Refferal'
+import ManageJobReferral from './pages/job/ManageJobReferral'
 
 function App() {
   const router = createBrowserRouter([
@@ -68,6 +69,10 @@ function App() {
         {
           path: '/refferal',
           element: <ProtectedRoute><Refferal/></ProtectedRoute>
+        },
+        {
+          path: '/manage-referral',
+          element: <ProtectedRoute allowedRoles={['hr']}><ManageJobReferral/></ProtectedRoute>
         }
         // {path: '/game',
         //   element: <ManageGames/>

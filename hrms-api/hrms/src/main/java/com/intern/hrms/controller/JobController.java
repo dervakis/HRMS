@@ -7,6 +7,7 @@ import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
 import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.entity.job.Job;
 import com.intern.hrms.entity.job.JobReferral;
+import com.intern.hrms.enums.ReferralStatusEnum;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.validation.Create;
 import com.intern.hrms.validation.Update;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/job")
@@ -50,6 +52,14 @@ public class JobController {
         );
     }
 
+    @PatchMapping("/referral/{referralId}/{status}")
+    public ResponseEntity<SuccessResponse<Object>>manageReferralStatus(@PathVariable UUID referralId, @PathVariable ReferralStatusEnum status){
+        jobService.jobReferralStatus(referralId, status);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Referral Status Changed Successfully", null)
+        );
+    }
+
     @PostMapping("/referral")
     public ResponseEntity<SuccessResponse<Object>> sendJobReferral(JobReferralRequestDTO dto, Principal principal){
         jobService.sendJobReferral(dto, principal.getName());
@@ -69,6 +79,13 @@ public class JobController {
     public ResponseEntity<SuccessResponse<List<JobResponseDTO>>> getOpenJobs(){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null,jobService.getOpenJobs())
+        );
+    }
+    @PostMapping("/share/{jobId}/{email}")
+    public ResponseEntity<SuccessResponse<Object>> shareJob(@PathVariable int jobId, @PathVariable String email,Principal principal){
+        jobService.shareJob(jobId, email, principal.getName());
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Job Shared Successfully", null)
         );
     }
 

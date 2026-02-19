@@ -41,3 +41,13 @@ export const manageJobStatus = async({jobId, isOpen}:{jobId:number, isOpen:boole
     const response = await Api.patch(`/job/${jobId}/${isOpen}`);
     return response.data;
 }
+
+export const shareJob = async({jobId, email}: {jobId:number, email:string}): Promise<ApiResponseType<Object>> => {
+    const response = await Api.post(`/job/share/${jobId}/${email}`);
+    return response.data;
+}
+
+export const manageReferralStatus = async({referralId, status}: {referralId:string, status:string}) : Promise<ApiResponseType<Object>> => {
+    const response = await Api.patch(`/job/referral/${referralId}/${status}`);
+    return response.data;
+}

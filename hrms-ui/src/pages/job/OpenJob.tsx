@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useCreateJobReferral, useGetOpenJobs } from '../../query/JobQuery'
-import { Badge, Button, Card, FileInput, Label, Modal, ModalBody, ModalFooter, ModalHeader, TextInput } from 'flowbite-react';
+import { useCreateJobReferral, useGetOpenJobs, useShareJob } from '../../query/JobQuery'
+import { Badge, Button, Card, FileInput, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, TextInput } from 'flowbite-react';
 import type { JobReferralCreateType, JobType } from '../../types/Job';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -45,6 +45,10 @@ function OpenJob() {
             }
         });
     };
+    const jobShareMutation = useShareJob();
+    const [openShare, setOpenShare] = useState(false);
+    const [email, setEmail] = useState<string>();
+
     return (
         <>
             <div className='grid grid-cols-3 gap-6'>
@@ -62,7 +66,7 @@ function OpenJob() {
                             <p>Location: {job.location}</p>
                             <p>Referrals: {job.referralCount ?? 0}</p>
                         </div>
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex gap-2 justify-center mt-3">
                             <Button size="sm" color="blue" onClick={() => openReferralModal(job)}>
                                 Refer Candidate
                             </Button>
@@ -71,6 +75,7 @@ function OpenJob() {
                                     View JD
                                 </Button>
                             )}
+                            <Button size='sm' color='blue' onClick={() => { setOpenShare(true); setSelectedJob(job) }}>Share</Button>
                         </div>
                     </Card>
                 ))}
@@ -104,6 +109,35 @@ function OpenJob() {
                             </Button>
                         </ModalFooter>
                     </form>
+                </Modal>
+
+                <Modal show={openShare} onClose={() => setOpenShare(false)}>
+                    <ModalHeader>
+                        Share Job Opening Detail
+                    </ModalHeader>
+                    <ModalBody>
+                        <div>
+                            <Label>Share to Email</Label>
+                            <TextInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color='green' onClick={()=> {
+                            jobShareMutation.mutate({jobId:selectedJob?.jobId!, email:email!}, {
+                                onSuccess: (res) => {
+                                    toast.success(res.message);
+                                    setOpenShare(false);
+                                    setEmail('');
+                                },
+                                onError: (error) => toast.error(error.message)
+                            })
+                        }} disabled={jobShareMutation.isPending}>
+                            {jobShareMutation.isPending && <Spinner size='sm'/>}Share
+                        </Button>
+                        <Button color="gray" onClick={() => setOpenShare(false)}>
+                            Cancel
+                        </Button>
+                    </ModalFooter>
                 </Modal>
             </div>
         </>
