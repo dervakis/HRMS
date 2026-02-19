@@ -2,6 +2,7 @@ package com.intern.hrms.service;
 
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.general.response.EmployeeDetailResponseDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
@@ -12,12 +13,14 @@ import com.intern.hrms.security.JwtService;
 import com.intern.hrms.utility.RandomStringGenerator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Stack;
 
 @Service
 @Validated
@@ -97,5 +100,28 @@ public class EmployeeService {
         }
         employee.setPassword(passwordEncoder.encode(resetPasswordRequestDTO.getNewPassword()));
         employeeRepository.save(employee);
+    }
+
+    public EmployeeDetailResponseDTO getOrganisationChartData(int employeeId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        Employee parent = employee.getManager();
+        EmployeeDetailResponseDTO prev = modelMapper.map(parent, EmployeeDetailResponseDTO.class);
+        // add my colligse
+        prev.setChildEmployee(
+                modelMapper.map(parent.getEmployees(), new TypeToken<List<EmployeeDetailResponseDTO>>(){}.getType())
+        );
+
+        parent = parent.getManager();
+//        Stack<EmployeeDetailResponseDTO> stack = new Stack<>();
+        while(parent!= null){
+            EmployeeDetailResponseDTO tem = modelMapper.map(parent, EmployeeDetailResponseDTO.class);
+            tem.getChildEmployee().add(prev);
+            prev = tem;
+            parent = parent.getManager();
+        }
+
+        return prev;
+//        EmployeeDetailResponseDTO child = result;
+
     }
 }

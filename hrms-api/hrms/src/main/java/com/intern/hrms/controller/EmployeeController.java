@@ -3,6 +3,7 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
+import com.intern.hrms.dto.general.response.EmployeeDetailResponseDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
 import com.intern.hrms.dto.job.response.JobResponseDTO;
@@ -60,6 +61,13 @@ public class EmployeeController {
     public ResponseEntity<SuccessResponse<List<JobReferralResponseDTO>>> getJobReferralByEmployee(@PathVariable int employeeId){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null,jobService.getJobReferralByEmployee(employeeId))
+        );
+    }
+
+    @GetMapping("/chart/{employeeId}")
+    public ResponseEntity<SuccessResponse<EmployeeDetailResponseDTO>> getChartByEmployee(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, employeeService.getOrganisationChartData(employeeId))
         );
     }
 
