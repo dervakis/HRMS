@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,20 @@ public class EmployeeController {
         employeeService.forgetPassword(email,resetPasswordRequestDTO);
         return ResponseEntity.ok(
                 new SuccessResponse<>("Password Changed Successfully", null)
+        );
+    }
+    @PostMapping("/interest/{gameId}")
+    public ResponseEntity<SuccessResponse<Object>> addEmployeeInterest(@PathVariable int gameId, Principal principal){
+        employeeService.addEmployeeInterest(gameId, principal.getName());
+        return ResponseEntity.ok(
+          new SuccessResponse<>("Employee Interest Added Successfully", null)
+        );
+    }
+    @DeleteMapping("/interest/{gameId}")
+    public ResponseEntity<SuccessResponse<Object>> removeEmployeeInterest(@PathVariable int gameId, Principal principal){
+        employeeService.removeEmployeeInterest(gameId, principal.getName());
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Employee Interest Removed", null)
         );
     }
 

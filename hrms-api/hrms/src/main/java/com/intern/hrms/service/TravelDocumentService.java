@@ -4,6 +4,7 @@ import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentSubmitRequestDTO;
 import com.intern.hrms.dto.travel.response.EmployeeTravelDocumentResponseDTO;
+import com.intern.hrms.dto.travel.response.ProvidedTravelDocumetnResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.*;
 import com.intern.hrms.enums.DocumentStatusEnum;
@@ -114,7 +115,9 @@ public class TravelDocumentService {
 
     public void submitProvidedDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, String username) throws IOException {
         DocumentType type = documentTypeRepository.getReferenceById(providedTravelDocumentRequestDTO.getDocumentTypeId());
-        TravelEmployee travelEmployee = travelEmployeeRepository.getReferenceById(providedTravelDocumentRequestDTO.getTravelEmployeeId());
+        Employee employee = employeeRepository.getReferenceById(providedTravelDocumentRequestDTO.getEmployeeId());
+        TravelPlan plan = travelPlanRepository.getReferenceById(providedTravelDocumentRequestDTO.getTravelPlanId());
+        TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, plan);
         Employee provider = employeeRepository.getReferenceByEmail(username);
         String url = fileStorage.uploadProvidedDocument(type.getDocumentTypeName(),travelEmployee.getTravelEmployeeId(),providedTravelDocumentRequestDTO.getFile());
         ProvidedTravelDocument providedTravelDocument = new ProvidedTravelDocument(
@@ -124,5 +127,12 @@ public class TravelDocumentService {
                 travelEmployee
         );
         providedTravelDocumentRepository.save(providedTravelDocument);
+    }
+
+    public List<ProvidedTravelDocumetnResponseDTO> getProvideDocumentByEmployee(int travelPlanId, int employeeId){
+        Employee employee = employeeRepository.getReferenceById(employeeId);
+        TravelPlan travelPlan = travelPlanRepository.getReferenceById(travelPlanId);
+        List<ProvidedTravelDocument> docs = providedTravelDocumentRepository.findAllByTravelEmployee_EmployeeAndTravelEmployee_TravelPlan(employee, travelPlan);
+        return modelMapper.map(docs, new TypeToken<List<ProvidedTravelDocumetnResponseDTO>>(){}.getType());
     }
 }

@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useGetEmployeeDocuments } from "../query/EmployeeQuery";
-import { useGetTravelDocumentRequest, useSubmitTravelDocument } from "../query/DocumentQuery";
-import { useGetTravelPlanByEmployee } from "../query/TravelPlanQuery";
+import { useGetDocumentByUrl, useGetTravelDocumentRequest, useSubmitTravelDocument } from "../query/DocumentQuery";
+import { useGetProvidedDocument, useGetTravelPlanByEmployee } from "../query/TravelPlanQuery";
 import { useSelector } from "react-redux";
 import type { RootStateType } from "../redux-store/store";
 import toast from "react-hot-toast";
@@ -11,7 +11,8 @@ function TravelDocument() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedTravelId, setSelectedTravelId] = useState<number>();
   const user = useSelector((state: RootStateType) => state.user);
-
+  const [url, setUrl] = useState<string>();
+  const { data: document, refetch:refetchDocument } = useGetDocumentByUrl(url!);
   const { data: travelPlans = [] } = useGetTravelPlanByEmployee(user.userId);
   const { data: employeeDocs = [] } = useGetEmployeeDocuments(user.userId);
   const { data: travelRequests = [], refetch } = useGetTravelDocumentRequest(user.userId);
@@ -34,8 +35,8 @@ function TravelDocument() {
       employeeId: user.userId,
       travelPlanId,
       documentTypeId,
-    },{
-      onSuccess : (data) => {
+    }, {
+      onSuccess: (data) => {
         console.log(data);
         setOpenModal(false);
         toast.success(data.message);
@@ -43,6 +44,15 @@ function TravelDocument() {
       }
     });
   };
+  const { data: providedDocuments } = useGetProvidedDocument({ travelPlanId: selectedTravelId!, employeeId: user.userId })
+  useEffect(() => {
+    if (document != undefined)
+      window.open(URL.createObjectURL(document!), '_blank')
+  }, [document])
+  useEffect(() => {
+    if (url != undefined)
+      refetchDocument()
+  }, [url])
 
   const getDocumentStatus = (travelPlanId: number, documentTypeId: number) => {
     const employeeDocument = employeeDocs.find(
@@ -150,6 +160,28 @@ function TravelDocument() {
                 </Card>
               );
             })}
+
+            <Card className="border border-gray-200 mt-4">
+              <h5 className="text-sm font-semibold mb-2">Provided Documents</h5>
+
+              {!providedDocuments ? (
+                <p className="text-xs text-gray-500">No provided documents.</p>
+              ) : (
+                providedDocuments?.map(doc => (
+                  <div key={doc.providedTravelDocumentId} className="flex justify-between items-center border-b py-2">
+                    <div>
+                      <p className="text-sm font-medium">{doc.documentTypeName}</p>
+                      <p className="text-xs text-gray-500">
+                        Uploaded At: {new Date(doc.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button size="xs" color="blue" onClick={() => setUrl(doc.documentUrl)}>
+                      View
+                    </Button>
+                  </div>
+                ))
+              )}
+            </Card>
           </div>
         </ModalBody>
         <ModalFooter>

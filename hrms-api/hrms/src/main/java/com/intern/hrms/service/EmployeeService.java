@@ -6,9 +6,13 @@ import com.intern.hrms.dto.general.response.EmployeeDetailResponseDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
+import com.intern.hrms.entity.game.EmployeeInterest;
+import com.intern.hrms.entity.game.Game;
 import com.intern.hrms.repository.DepartmentRepository;
 import com.intern.hrms.repository.EmployeeRepository;
 import com.intern.hrms.repository.RoleRepository;
+import com.intern.hrms.repository.game.EmployeeInterestRepository;
+import com.intern.hrms.repository.game.GameRepository;
 import com.intern.hrms.security.JwtService;
 import com.intern.hrms.utility.RandomStringGenerator;
 import org.modelmapper.ModelMapper;
@@ -31,14 +35,18 @@ public class EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
     private final RoleRepository roleRepository;
+    private final GameRepository gameRepository;
+    private final EmployeeInterestRepository employeeInterestRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository, JwtService jwtService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, DepartmentRepository departmentRepository, RoleRepository roleRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, JwtService jwtService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, DepartmentRepository departmentRepository, RoleRepository roleRepository, GameRepository gameRepository, EmployeeInterestRepository employeeInterestRepository) {
         this.employeeRepository = employeeRepository;
         this.jwtService = jwtService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.departmentRepository = departmentRepository;
         this.roleRepository = roleRepository;
+        this.gameRepository = gameRepository;
+        this.employeeInterestRepository = employeeInterestRepository;
     }
 
     public Employee addEmployee( EmployeeRequestDTO employeeRequestDTO){
@@ -104,24 +112,31 @@ public class EmployeeService {
 
     public EmployeeDetailResponseDTO getOrganisationChartData(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        EmployeeDetailResponseDTO prev = modelMapper.map(employee, EmployeeDetailResponseDTO.class);
+        if(employee.getEmployees() != null){
+            prev.setChildEmployee(
+                    //emp na child emp
+                    modelMapper.map(employee.getEmployees(), new TypeToken<List<EmployeeDetailResponseDTO>>(){}.getType())
+            );
+        }
         Employee parent = employee.getManager();
-        EmployeeDetailResponseDTO prev = modelMapper.map(parent, EmployeeDetailResponseDTO.class);
-        // add my colligse
-        prev.setChildEmployee(
-                modelMapper.map(parent.getEmployees(), new TypeToken<List<EmployeeDetailResponseDTO>>(){}.getType())
-        );
-
-        parent = parent.getManager();
-//        Stack<EmployeeDetailResponseDTO> stack = new Stack<>();
         while(parent!= null){
             EmployeeDetailResponseDTO tem = modelMapper.map(parent, EmployeeDetailResponseDTO.class);
             tem.getChildEmployee().add(prev);
             prev = tem;
             parent = parent.getManager();
         }
-
         return prev;
-//        EmployeeDetailResponseDTO child = result;
-
+    }
+    public void addEmployeeInterest(int gameId, String username){
+        Game game = gameRepository.getReferenceById(gameId);
+        Employee employee = employeeRepository.getReferenceByEmail(username);
+        employeeInterestRepository.save(new EmployeeInterest(game,employee));
+        return;
+    }
+    public void removeEmployeeInterest(int gameId, String username){
+        Employee employee = employeeRepository.getReferenceByEmail(username);
+        employeeInterestRepository.deleteByEmployee_EmployeeIdAndGame_GameId(gameId, employee.getEmployeeId());
+        return;
     }
 }

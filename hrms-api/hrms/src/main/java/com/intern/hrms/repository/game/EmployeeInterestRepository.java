@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface EmployeeInterestRepository extends JpaRepository<EmployeeInterest, Integer> {
     List<EmployeeInterest> findAllByGame(Game game);
+
+    void deleteByEmployee_EmployeeIdAndGame_GameId(int employeeEmployeeId, int gameGameId);
 }

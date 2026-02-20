@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { createTravelPlan, getTravelPlans, getTravelPlansByEmployee, getTravelPlansForExpense, manageTravelDocument, manageTravelEmployee, updateTravelPlan } from "../api/TravelPlanApiCall"
+import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
+import { addProvidedDocument, createTravelPlan, getProvidedDocument, getTravelPlans, getTravelPlansByEmployee, getTravelPlansForExpense, manageTravelDocument, manageTravelEmployee, updateTravelPlan } from "../api/TravelPlanApiCall"
 
 export const useGetTravelPlan = () => {
     return useQuery({
@@ -45,5 +45,18 @@ export const useManageTravelEmployee = () =>{
 export const useManageTravelDocument = () => {
     return useMutation({
         mutationFn: manageTravelDocument
+    });
+}
+
+export const useAddProvidedDocument = () => {
+    return useMutation({
+        mutationFn: addProvidedDocument
+    })
+}
+
+export const useGetProvidedDocument = ({travelPlanId, employeeId}:{travelPlanId:number, employeeId:number}) =>{
+    return useQuery({
+        queryKey: ['Provided', travelPlanId, employeeId],
+        queryFn: travelPlanId && employeeId ? () => getProvidedDocument({travelPlanId, employeeId}) : skipToken
     });
 }

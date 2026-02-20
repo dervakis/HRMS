@@ -13,6 +13,8 @@ public class ProvidedTravelDocumentRequestDTO {
     @NotNull(message = "document type can not be null")
     private Integer documentTypeId;
     @NotNull(message = "employee id is mandatory field")
-    private Integer travelEmployeeId;
+//    private Integer travelEmployeeId;
+    private Integer employeeId;
+    private Integer travelPlanId;
     private MultipartFile file;
 }

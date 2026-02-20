@@ -1,5 +1,5 @@
 import type { ApiResponseType } from "../types/ApiResponse";
-import type { TravelPlanCreate, TravelPlanType } from "../types/TravelPlan";
+import type { ProvidedDocumentResponseType, TravelPlanCreate, TravelPlanType } from "../types/TravelPlan";
 import { Api } from "./AxiosBase"
 
 export const getTravelPlans = async () : Promise<TravelPlanType[]> => {
@@ -35,4 +35,14 @@ export const manageTravelEmployee = async ({travelPlanId, employeeIds}:{travelPl
 export const manageTravelDocument = async ({travelPlanId, documentTypeIds}:{travelPlanId: number,documentTypeIds: number[]}): Promise<ApiResponseType<Object>> =>{
     const response = await Api.post('/travel-plan/employee-document', {travelPlanId, documentTypeIds});
     return response.data;
+}
+
+export const addProvidedDocument = async (form:FormData): Promise<ApiResponseType<Object>> => {
+    const response = await Api.post(`/document/provided`,form, {headers: {'Content-Type': 'multipart/form-data'}});
+    return response.data;
+}
+
+export const getProvidedDocument = async ({travelPlanId, employeeId}:{travelPlanId:number, employeeId:number}): Promise<ProvidedDocumentResponseType[]> => {
+    const response = await Api.get(`/document/provided/${travelPlanId}/${employeeId}`);
+    return response.data.data;
 }

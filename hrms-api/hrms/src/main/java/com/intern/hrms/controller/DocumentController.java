@@ -5,6 +5,7 @@ import com.intern.hrms.dto.travel.request.EmployeeDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentSubmitRequestDTO;
 import com.intern.hrms.dto.travel.response.EmployeeTravelDocumentResponseDTO;
+import com.intern.hrms.dto.travel.response.ProvidedTravelDocumetnResponseDTO;
 import com.intern.hrms.entity.travel.EmployeeDocument;
 import com.intern.hrms.entity.travel.EmployeeTravelDocument;
 import com.intern.hrms.enums.DocumentStatusEnum;
@@ -76,6 +77,13 @@ public class DocumentController {
     public ResponseEntity<SuccessResponse<List<EmployeeTravelDocumentResponseDTO>>> getDocumentRequest(@PathVariable int employeeId){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null, travelDocumentService.getAllDocumentRequest(employeeId))
+        );
+    }
+
+    @GetMapping("/provided/{travelPlan}/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<ProvidedTravelDocumetnResponseDTO>>> getProvideDocumentByEmployee(@PathVariable int travelPlan, @PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, travelDocumentService.getProvideDocumentByEmployee(travelPlan, employeeId))
         );
     }
 

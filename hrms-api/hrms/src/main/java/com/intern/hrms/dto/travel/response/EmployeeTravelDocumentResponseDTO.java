@@ -24,5 +24,6 @@ public class EmployeeTravelDocumentResponseDTO {
     private Integer documentTypeId;
     private String documentTypeName;
     private Integer employeeDocumentId;
+    private String employeeDocumentUrl;
     private EmployeeResponseDTO approver;
 }

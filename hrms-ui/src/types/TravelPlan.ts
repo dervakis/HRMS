@@ -57,6 +57,7 @@ export interface EmployeeTravelDocumentType {
     approver: TravelEmployeeType
     travelEmployeeEmployeeId: number
     travelEmployeeTravelPlanId: number
+    employeeDocumentUrl:string
 }
 
 //expense realated typs
@@ -92,4 +93,14 @@ export interface TravelExpenseSubmitType{
     EmployeeId: number
     TravelPlanId: number
 }
+
+export interface ProvidedDocumentResponseType{
+    providedTravelDocumentId: number
+    date: Date
+    documentTypeId: number
+    documentTypeName: string 
+    documentUrl: string
+    provider: TravelEmployeeType
+}
+
 
