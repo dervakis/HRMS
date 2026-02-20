@@ -64,7 +64,7 @@ function OpenJob() {
                             <p>Salary: ₹{job.salary}</p>
                             <p>Requirement: {job.requirement}</p>
                             <p>Location: {job.location}</p>
-                            <p>Referrals: {job.referralCount ?? 0}</p>
+                            {/* <p>Referrals: {job.referralCount ?? 0}</p> */}
                         </div>
                         <div className="flex gap-2 justify-center mt-3">
                             <Button size="sm" color="blue" onClick={() => openReferralModal(job)}>

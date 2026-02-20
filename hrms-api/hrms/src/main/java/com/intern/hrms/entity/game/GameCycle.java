@@ -1,5 +1,6 @@
 package com.intern.hrms.entity.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +23,13 @@ public class GameCycle {
 
     @ManyToOne
     @JoinColumn(name = "fk_game_id")
+    @JsonIgnore
     private Game game;
 
-    public GameCycle(LocalDateTime startDate, int noOfSlot, Game game) {
+    public GameCycle(LocalDateTime startDate, int interestCount, Game game) {
         this.startDate = startDate;
-        this.noOfSlot = noOfSlot;
-        this.leftSlot = 0;
+        this.noOfSlot = (int) Math.ceil(interestCount/2.0);
+        this.leftSlot = interestCount;
         this.game = game;
     }
 }

@@ -1,5 +1,5 @@
 import { Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems } from 'flowbite-react';
-import { BookmarkCheck, Briefcase, BriefcaseBusiness, Files, FileText, Home, IndianRupee, Landmark, Mail, Network, Plane, Settings, Share2, ShieldCheck, Swords, Wallet } from 'lucide-react';
+import { BookmarkCheck, Briefcase, BriefcaseBusiness, CalendarCheck, Files, FileText, Home, IndianRupee, Landmark, Mail, Network, Plane, Settings, Share2, ShieldCheck, Swords, Wallet } from 'lucide-react';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import type { RootStateType } from '../redux-store/store';
@@ -9,7 +9,7 @@ function Sidebar2() {
   // const isCollapsed = useSelector((state: RootStateType) => state.user.isCollapsed);
   const user = useSelector((state: RootStateType) => state.user);
   return (
-    <Sidebar collapsed={user.isCollapsed} className='h-full border-r-2 border-blue-300' >
+    <Sidebar collapsed={user.isCollapsed} className='h-full w-54 border-r-2 border-blue-300' >
       <SidebarItems>
         <SidebarItemGroup>
           <NavLink to='/' className={({ isActive }: { isActive: boolean }) => isActive ? 'bg-blue-600' : ''}>
@@ -121,6 +121,15 @@ function Sidebar2() {
                 ({isActive} : {isActive: boolean}) => (
                   <SidebarItem icon={Settings} className={isActive ? 'bg-blue-300' : ''}>
                     Manage Game
+                  </SidebarItem>
+                )
+              }
+          </NavLink>
+          <NavLink to='/book-game'>
+            {
+                ({isActive} : {isActive: boolean}) => (
+                  <SidebarItem icon={CalendarCheck} className={isActive ? 'bg-blue-300' : ''}>
+                    Book GameSlot
                   </SidebarItem>
                 )
               }

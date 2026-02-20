@@ -8,7 +8,7 @@ import type { TravelExpenseResponseType, TravelExpenseSubmitType } from "../type
 import { useForm, type SubmitErrorHandler, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetDocumentByUrl } from "../query/DocumentQuery";
-import { Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
+import { Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
 
 function EmployeeTravelExpense() {
   const [openModal, setOpenModal] = useState<string>();
@@ -103,9 +103,10 @@ function EmployeeTravelExpense() {
       </div>
       }
 
-      <Card>
+      <Card >
         <Table>
           <TableHead>
+            <TableHeadCell>Travel Plan</TableHeadCell>
             <TableHeadCell>Detail</TableHeadCell>
             <TableHeadCell>Date</TableHeadCell>
             <TableHeadCell>Type</TableHeadCell>
@@ -118,6 +119,9 @@ function EmployeeTravelExpense() {
           <TableBody>
             {expenses?.map((expense) => (
               <TableRow key={expense.employeeTravelExpenseId} className="bg-white">
+                <TableCell>
+                  {expense.travelEmployeeTravelPlanTitle}
+                </TableCell>
                 <TableCell className="font-medium">
                   {expense.expenseDetail}
                 </TableCell>
@@ -149,9 +153,9 @@ function EmployeeTravelExpense() {
 
                         <Button size="xs" onClick={() => {
                           submitExpenseMutation.mutate(expense.employeeTravelExpenseId, {
-                            onSuccess: (data) => toast.success(data.message)
+                            onSuccess: (data) => {toast.success(data.message); expensesRefetch()}
                           })
-                        }}>Submit</Button>
+                        }}>{submitExpenseMutation.isPending && <Spinner size="sm"/>}Submit</Button>
                       </>
                     )}
                     <Button size="xs" color="gray"

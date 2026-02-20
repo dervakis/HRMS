@@ -17,3 +17,9 @@ export interface GameCreateType{
     startingTime:string
     endingTime:string
 }
+export interface GameCycleType{
+    gameCycleId:number
+    startDate:Date
+    noOfSlot:number
+    leftSlot:number
+}

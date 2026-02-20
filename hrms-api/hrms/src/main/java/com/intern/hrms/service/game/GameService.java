@@ -1,6 +1,7 @@
 package com.intern.hrms.service.game;
 
 import com.intern.hrms.dto.game.request.GameRequestDTO;
+import com.intern.hrms.dto.game.response.InterestedEmployeeResponseDTO;
 import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.Game;
 import com.intern.hrms.entity.game.GameCycle;
@@ -9,6 +10,10 @@ import com.intern.hrms.repository.game.EmployeeInterestRepository;
 import com.intern.hrms.repository.game.GameCycleRepository;
 import com.intern.hrms.repository.game.GameRepository;
 import com.intern.hrms.repository.game.GameSlotRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -16,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -23,12 +29,14 @@ public class GameService {
     private final GameSlotRepository gameSlotRepository;
     private final GameCycleRepository gameCycleRepository;
     private final EmployeeInterestRepository employeeInterestRepository;
+    private final ModelMapper modelMapper;
 
-    public GameService(GameRepository gameRepository, GameSlotRepository gameSlotRepository, GameCycleRepository gameCycleRepository, EmployeeInterestRepository employeeInterestRepository) {
+    public GameService(GameRepository gameRepository, GameSlotRepository gameSlotRepository, GameCycleRepository gameCycleRepository, EmployeeInterestRepository employeeInterestRepository, ModelMapper modelMapper) {
         this.gameRepository = gameRepository;
         this.gameSlotRepository = gameSlotRepository;
         this.gameCycleRepository = gameCycleRepository;
         this.employeeInterestRepository = employeeInterestRepository;
+        this.modelMapper = modelMapper;
     }
 
     public Game addGame(GameRequestDTO dto){
@@ -67,12 +75,26 @@ public class GameService {
         return game;
     }
 
-    public GameCycle createGameCycle(int gameId){
+    public void createGameCycle(int gameId){
         Game game = gameRepository.getReferenceById(gameId);
         List<EmployeeInterest> employeeInterests = employeeInterestRepository.findAllByGame(game);
         if(employeeInterests.size() <= 0)
             throw new RuntimeException("Intrested People are 0 no need to create cycle");
-        return gameCycleRepository.save(new GameCycle(LocalDateTime.now(),(int) employeeInterests.size()/2, game));
+        gameCycleRepository.save(new GameCycle(LocalDateTime.now(),employeeInterests.size(), game));
+    }
+
+    public GameCycle getGameCycle(int gameId){
+        return gameCycleRepository.findByGame_GameId(gameId, Sort.by(Sort.Direction.DESC,"startDate"), Limit.of(1));
+    }
+
+    public List<Game> getInterestedGame(int employeeId){
+        List<EmployeeInterest> employeeInterest = employeeInterestRepository.getEmployeeInterestByEmployee_EmployeeId(employeeId);
+        return employeeInterest.stream().map(EmployeeInterest::getGame).collect(Collectors.toList());
+    }
+
+    public List<InterestedEmployeeResponseDTO> getInterestedEmployee(int gameId){
+        List<EmployeeInterest> employees = employeeInterestRepository.findAllByGame_GameId(gameId);
+        return modelMapper.map(employees, new TypeToken<List<InterestedEmployeeResponseDTO>>(){}.getType());
     }
 
 }

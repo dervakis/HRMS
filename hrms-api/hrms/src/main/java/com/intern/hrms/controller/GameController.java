@@ -3,6 +3,7 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.game.request.GameRequestDTO;
 import com.intern.hrms.dto.game.request.SlotRequestDTO;
+import com.intern.hrms.dto.game.response.InterestedEmployeeResponseDTO;
 import com.intern.hrms.entity.game.Game;
 import com.intern.hrms.entity.game.GameCycle;
 import com.intern.hrms.service.game.GameService;
@@ -37,7 +38,24 @@ public class GameController {
             new SuccessResponse<>("Game Added Successfully", gameService.addGame(dto))
         );
     }
-
+    @GetMapping("/cycle/{gameId}")
+    public ResponseEntity<SuccessResponse<GameCycle>> getGameCycle(@PathVariable int gameId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, gameService.getGameCycle(gameId))
+        );
+    }
+    @GetMapping("/interested-employee/{gameId}")
+    public ResponseEntity<SuccessResponse<List<InterestedEmployeeResponseDTO>>> getInterestedEmployee(@PathVariable int gameId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, gameService.getInterestedEmployee(gameId))
+        );
+    }
+    @GetMapping("/interest/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<Game>>> getInterestedGame(@PathVariable int employeeId){
+        return ResponseEntity.ok(
+                new SuccessResponse<>(null, gameService.getInterestedGame(employeeId))
+        );
+    }
     @GetMapping
     public ResponseEntity<SuccessResponse<List<Game>>> getGames(){
         return ResponseEntity.ok(
@@ -45,12 +63,14 @@ public class GameController {
         );
     }
 
-
     @PostMapping("/cycle/{gameId}")
     public ResponseEntity<SuccessResponse<GameCycle>> addCycle(@PathVariable int gameId){
+        gameService.createGameCycle(gameId);
         return ResponseEntity.ok(
-                new SuccessResponse<>(null, gameService.createGameCycle(gameId))
+                new SuccessResponse<>("Cycle Created Successfully", null)
         );
     }
+
+
 
 }

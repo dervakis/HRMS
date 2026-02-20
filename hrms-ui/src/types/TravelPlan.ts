@@ -81,6 +81,7 @@ export interface TravelExpenseResponseType {
     travelExpenseType: TravelExpenseType
     travelEmployeeEmployeeId: number
     travelEmployeeTravelPlanId: number
+    travelEmployeeTravelPlanTitle: string
 }
 
 export interface TravelExpenseSubmitType{

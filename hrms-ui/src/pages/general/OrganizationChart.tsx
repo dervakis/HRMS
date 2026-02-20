@@ -8,10 +8,9 @@ import { Tree, TreeNode } from 'react-organizational-chart'
 import type { TravelEmployeeType } from '../../types/TravelPlan';
 import InputField from '../../common/InputField';
 
-function ChartNode({ detail, setSelectNode }: { detail: EmployeeDetailType, setSelectNode: Function }) {
-    const user = useSelector((state: RootStateType) => state.user);
+function ChartNode({ employeeId, detail, setSelectNode }: {employeeId:number, detail: EmployeeDetailType, setSelectNode: Function }) {
     return (
-        <Card className={`w-30 inline-block ${user.userId == detail?.employeeId && 'bg-blue-300'}`}
+        <Card className={`w-30 inline-block ${employeeId == detail?.employeeId && 'bg-blue-300'}`}
             onClick={() => setSelectNode(detail)}>
             {detail?.firstName + " " + detail?.lastName}
         </Card>
@@ -27,7 +26,7 @@ function OrganizationChart() {
     const [query, setQuery] = useState('')
     // console.log(data)
     const makeTree = (emp: EmployeeDetailType) => (
-        <TreeNode label={<ChartNode detail={emp} setSelectNode={setSelectNode} />}>
+        <TreeNode label={<ChartNode employeeId={selectedEmployeeId} detail={emp} setSelectNode={setSelectNode} />}>
             {emp.childEmployee && emp.childEmployee.map(makeTree)}
         </TreeNode>
     )
@@ -48,7 +47,7 @@ function OrganizationChart() {
                         <InputField value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.stopPropagation()}></InputField>
                         {filterEmployee && (
                             filterEmployee.map(emp =>
-                                <DropdownItem key={emp.employeeId} onClick={() => setSelectedEmployeeId(emp.employeeId)}>
+                                <DropdownItem key={emp.employeeId} onClick={() => {setSelectedEmployeeId(emp.employeeId); setQuery('')}}>
                                     {emp.firstName + ' ' + emp.lastName}
                                 </DropdownItem>
                             )
@@ -58,7 +57,7 @@ function OrganizationChart() {
             </div>
 
             <div className='justify-items-center'>
-                <Tree label={<ChartNode detail={data!} setSelectNode={setSelectNode} />}>
+                <Tree label={<ChartNode employeeId={selectedEmployeeId} detail={data!} setSelectNode={setSelectNode} />}>
                     {data?.childEmployee && data.childEmployee.map(makeTree)}
                 </Tree>
             </div>

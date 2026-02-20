@@ -28,4 +28,5 @@ public class EmployeeTravelExpenseResponseDTO {
     private TravelExpenseType travelExpenseType;
     private Integer travelEmployeeEmployeeId;
     private Integer travelEmployeeTravelPlanId;
+    private String travelEmployeeTravelPlanTitle;
 }
