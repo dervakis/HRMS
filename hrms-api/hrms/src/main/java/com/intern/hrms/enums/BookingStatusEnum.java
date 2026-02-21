@@ -1,6 +1,6 @@
 package com.intern.hrms.enums;
 
-public enum SlotBookingStatusEnum {
+public enum BookingStatusEnum {
     Booked,
     Waiting,
     Cancelled

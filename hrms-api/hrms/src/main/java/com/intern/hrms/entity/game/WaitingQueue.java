@@ -19,10 +19,10 @@ public class WaitingQueue {
     private int waitingQueueId;
 
     @ManyToOne
-    @JoinColumn(name = "fk_game_slot_booking_id")
-    private GameSlotBooking gameSlotBooking;
+    @JoinColumn(name = "fk_game_booking_id")
+    private GameBooking gameBooking;
 
-    public WaitingQueue(GameSlotBooking gameSlotBooking) {
-        this.gameSlotBooking = gameSlotBooking;
+    public WaitingQueue(GameBooking gameBooking) {
+        this.gameBooking = gameBooking;
     }
 }

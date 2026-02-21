@@ -7,7 +7,8 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-public class SlotRequestDTO {
+public class OperationalHourRequestDTO {
     private int gameId;
-    private LocalTime slotStart;
+    private LocalTime start;
+    private LocalTime end;
 }

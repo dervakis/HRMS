@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -16,16 +17,19 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pk_game_id")
     private int gameId;
+    @Column(unique = true)
     private String gameName;
     private int durationInMinute;
     private int maxPlayer;
+    private Boolean isDeleted = false;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
-    @OneToMany(mappedBy = "game")
-    private List<GameSlot> gameSlots;
-
-    public Game(String gameName, int durationInMinute, int maxPlayer) {
+    public Game(String gameName, int durationInMinute, int maxPlayer, LocalTime startTime, LocalTime endTime) {
         this.gameName = gameName;
         this.durationInMinute = durationInMinute;
         this.maxPlayer = maxPlayer;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }

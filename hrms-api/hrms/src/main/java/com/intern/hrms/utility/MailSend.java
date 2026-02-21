@@ -7,9 +7,11 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.List;
 
 @Service
 public class MailSend {
@@ -23,23 +25,33 @@ public class MailSend {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendText(String to, String subject, String body){
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setTo(to);
-        simpleMailMessage.setText(body);
-        simpleMailMessage.setFrom("HRMS <"+mail+">");
-        javaMailSender.send(simpleMailMessage);
-    }
-    public void sendTextWithAttachment(String to, String subject, String body, String attachPath)throws MessagingException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper= new MimeMessageHelper(message, true);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(body);
-        FileSystemResource file = new FileSystemResource(new File(System.getProperty("user.dir")+"/"+attachPath));
-//        System.out.println();
-        helper.addAttachment(file.getFilename(), file);
-        javaMailSender.send(message);
+    @Async
+    public void sendMail(List<String> to, List<String> cc, String subject, String body, String attachPath) {
+        try{
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to.toArray(new String[0]));
+            helper.setSubject(subject);
+            helper.setText(body, false);
+
+            // Optional CC
+            if (cc != null && !cc.isEmpty()) {
+                helper.setCc(cc.toArray(new String[0]));
+            }
+            // Optional Attachment
+            if (attachPath != null && !attachPath.isBlank()) {
+                FileSystemResource file = new FileSystemResource(
+                        new File(System.getProperty("user.dir") + "/" + attachPath)
+                );
+                helper.addAttachment(file.getFilename(), file);
+            }
+
+            helper.setFrom("HRMS <" + mail + ">");
+            javaMailSender.send(message);
+        }catch (Exception e){
+            System.out.println("Issue in Mail sending : "+e.getMessage());
+        }
     }
 }
+
+

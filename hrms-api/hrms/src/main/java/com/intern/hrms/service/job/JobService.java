@@ -117,7 +117,7 @@ public class JobService {
         jobReferralRepository.save(jobReferral);
         try{
 
-        mailSend.sendTextWithAttachment(job.getCreatedBy().getEmail(),
+        mailSend.sendMail(List.of(job.getCreatedBy().getEmail()),null,
                 "Referral for Job - "+ job.getTitle(),
                 "Pleas find Referral for job.\nI am referring this candidate for job\n"
         + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
@@ -135,7 +135,7 @@ public class JobService {
         JobSharing jobSharing = new JobSharing(email, job,employee);
         jobSharingRepository.save(jobSharing);
         try{
-        mailSend.sendTextWithAttachment(email, "Job Open for - "+job.getTitle(),
+        mailSend.sendMail(List.of(email), null, "Job Open for - "+job.getTitle(),
                 "Hello,\nJob Opening on Roima for position - "+job.getTitle()+
                 "\nPlease refer attached Job description for more details"+
                 "\nShared By :"+employee.getFirstName()+" "+employee.getLastName(),

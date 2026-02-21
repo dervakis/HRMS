@@ -1,5 +1,6 @@
 package com.intern.hrms.repository.game;
 
+import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface EmployeeInterestRepository extends JpaRepository<EmployeeIntere
     List<EmployeeInterest> findAllByGame_GameId(int gameGameId);
 
     EmployeeInterest getEmployeeInterestByEmployee_EmployeeIdAndGame_GameId(int employeeEmployeeId, int gameGameId);
+
+    EmployeeInterest findByGameAndEmployee(Game game, Employee employee);
 }

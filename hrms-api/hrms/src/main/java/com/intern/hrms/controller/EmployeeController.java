@@ -90,14 +90,15 @@ public class EmployeeController {
     public ResponseEntity<SuccessResponse<Object>> requestForgetPassword(@PathVariable String email){
         String token = employeeService.requestForgetPassword(email);
 
-        mailSend.sendText(email,
+        mailSend.sendMail(List.of(email), null,
                 "Reset Password on HRMS Portal",
                 """
                         Dear user,
                         
                         Your Reset Password Request is Arrived. Please click below link for set new password.
                         
-                        Click: """+"http://localhost:5173/reset-password?token="+token
+                        Click: """+"http://localhost:5173/reset-password?token="+token,
+                null
         );
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new SuccessResponse<>("Token for reset Password forwarded to your mail.", null)

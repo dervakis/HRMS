@@ -2,11 +2,10 @@ package com.intern.hrms.entity;
 
 import com.intern.hrms.entity.achivement.Post;
 import com.intern.hrms.entity.game.EmployeeInterest;
-import com.intern.hrms.entity.game.GameSlotBooking;
+import com.intern.hrms.entity.game.GameBooking;
 import com.intern.hrms.entity.job.JobReferral;
 import com.intern.hrms.entity.travel.EmployeeDocument;
 import com.intern.hrms.entity.travel.TravelEmployee;
-import com.intern.hrms.entity.travel.TravelPlan;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,5 +61,5 @@ public class Employee {
     private List<EmployeeInterest> employeeInterests; // game in whihc emp intrested
 
     @ManyToMany(mappedBy = "players")
-    private List<GameSlotBooking> gameSlotBookings;
+    private List<GameBooking> gameBookings;
 }

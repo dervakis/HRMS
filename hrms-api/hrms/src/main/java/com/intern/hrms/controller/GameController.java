@@ -2,18 +2,19 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.game.request.GameRequestDTO;
-import com.intern.hrms.dto.game.request.SlotRequestDTO;
+import com.intern.hrms.dto.game.request.OperationalHourRequestDTO;
 import com.intern.hrms.dto.game.response.InterestedEmployeeResponseDTO;
 import com.intern.hrms.entity.game.Game;
 import com.intern.hrms.entity.game.GameCycle;
 import com.intern.hrms.service.game.GameService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Tag(name = "Game Controller")
@@ -25,17 +26,29 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
-    @PostMapping("/slot")
-    public ResponseEntity<SuccessResponse<Game>> addSlot(@RequestBody SlotRequestDTO dto){
-        return ResponseEntity.ok(
-                new SuccessResponse<>(null, gameService.addSlot(dto.getGameId(), dto.getSlotStart()))
-        );
-    }
-
     @PostMapping
+    @PreAuthorize("hasRole('HR')")
     public ResponseEntity<SuccessResponse<Game>> addGame(@Validated @RequestBody GameRequestDTO dto){
         return ResponseEntity.ok(
             new SuccessResponse<>("Game Added Successfully", gameService.addGame(dto))
+        );
+    }
+
+    @DeleteMapping("/{gameId}")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<SuccessResponse<Objects>> deleteGame(@PathVariable int gameId){
+        gameService.deleteGame(gameId);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Game deleted successfully", null)
+        );
+    }
+
+    @PutMapping("/operation-hour")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<SuccessResponse<Objects>> updateOperationalHour(@RequestBody OperationalHourRequestDTO dto){
+        gameService.updateOperationalHour(dto);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Operational hour updated successfully", null)
         );
     }
     @GetMapping("/cycle/{gameId}")
@@ -62,15 +75,4 @@ public class GameController {
                 new SuccessResponse<>(null, gameService.getGames())
         );
     }
-
-    @PostMapping("/cycle/{gameId}")
-    public ResponseEntity<SuccessResponse<GameCycle>> addCycle(@PathVariable int gameId){
-        gameService.createGameCycle(gameId);
-        return ResponseEntity.ok(
-                new SuccessResponse<>("Cycle Created Successfully", null)
-        );
-    }
-
-
-
 }
