@@ -22,6 +22,7 @@ import OrganizationChart from './pages/general/OrganizationChart'
 import GameBooking from './pages/game/GameBooking'
 import BookingHistory from './pages/game/BookingHistory'
 import TodayBooking from './pages/game/TodayBooking'
+import Configuration from './pages/general/Configuration'
 // import GameBooking from './pages/game/GameBooking'
 
 function App() {
@@ -98,6 +99,10 @@ function App() {
         {
           path: '/today-booking',
           element: <ProtectedRoute><TodayBooking/></ProtectedRoute>
+        },
+        {
+          path: '/configuration',
+          element: <ProtectedRoute><Configuration/></ProtectedRoute>
         }
 
       ]

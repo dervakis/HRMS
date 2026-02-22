@@ -114,7 +114,6 @@ function Sidebar2() {
                 )
               }
           </NavLink>
-        </SidebarItemGroup>
         <SidebarCollapse icon={Gamepad2} label='Game'>
           <NavLink hidden={user.role != 'HR'} to='/manage-game'>
             {
@@ -152,8 +151,16 @@ function Sidebar2() {
                 )
               }
           </NavLink>
-
         </SidebarCollapse>
+        <NavLink to='/configuration'>
+              {
+              ({ isActive }: { isActive: boolean }) => (
+                <SidebarItem icon={Settings} className={isActive ? 'bg-blue-300' : ''}>
+                  Configuration
+                </SidebarItem>
+              )}
+            </NavLink>
+        </SidebarItemGroup>
       </SidebarItems>
     </Sidebar>
   )

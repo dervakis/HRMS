@@ -4,11 +4,13 @@ import com.intern.hrms.dto.job.request.JobReferralRequestDTO;
 import com.intern.hrms.dto.job.request.JobRequestDTO;
 import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
 import com.intern.hrms.dto.job.response.JobResponseDTO;
+import com.intern.hrms.entity.AppConfiguration;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.job.Job;
 import com.intern.hrms.entity.job.JobReferral;
 import com.intern.hrms.entity.job.JobSharing;
 import com.intern.hrms.enums.ReferralStatusEnum;
+import com.intern.hrms.repository.AppConfigurationRepository;
 import com.intern.hrms.repository.EmployeeRepository;
 import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
@@ -34,8 +36,9 @@ public class JobService {
     private final JobReferralRepository jobReferralRepository;
     private final MailSend mailSend;
     private final JobSharingRepository jobSharingRepository;
+    private final AppConfigurationRepository  appConfigurationRepository;
 
-    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository, JobReferralRepository jobReferralRepository, MailSend mailSend, JobSharingRepository jobSharingRepository) {
+    public JobService(ModelMapper modelMapper, FileStorage fileStorage, EmployeeRepository employeeRepository, JobRepository jobRepository, JobReferralRepository jobReferralRepository, MailSend mailSend, JobSharingRepository jobSharingRepository, AppConfigurationRepository  appConfigurationRepository) {
         this.modelMapper = modelMapper;
         this.fileStorage = fileStorage;
         this.employeeRepository = employeeRepository;
@@ -43,6 +46,7 @@ public class JobService {
         this.jobReferralRepository = jobReferralRepository;
         this.mailSend = mailSend;
         this.jobSharingRepository = jobSharingRepository;
+        this.appConfigurationRepository =  appConfigurationRepository;
     }
 
     public Job createJob(JobRequestDTO dto, String username){
@@ -116,14 +120,14 @@ public class JobService {
         jobReferral.setReferralStatus(ReferralStatusEnum.New);
         jobReferralRepository.save(jobReferral);
         try{
-
-        mailSend.sendMail(List.of(job.getCreatedBy().getEmail()),null,
-                "Referral for Job - "+ job.getTitle(),
-                "Pleas find Referral for job.\nI am referring this candidate for job\n"
-        + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
-                        "\nReferrer : "+jobReferral.getReferrer().getEmail(),
-                jobReferral.getResumeUrl()
-        );
+            List<String> emails = appConfigurationRepository.findByConfigKey("referral_to").stream().map(AppConfiguration::getConfigValue).toList();
+            mailSend.sendMail(emails,null,
+                    "Referral for Job - "+ job.getTitle(),
+                    "Pleas find Referral for job.\nI am referring this candidate for job\n"
+            + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
+                            "\nReferrer : "+jobReferral.getReferrer().getEmail(),
+                    jobReferral.getResumeUrl()
+            );
         }catch (Exception e){
             System.out.println("Error in sending Referral Mail"+e.getMessage());
         }
@@ -131,7 +135,7 @@ public class JobService {
     }
     public void shareJob(int jobId, String email, String username){
         Job job = jobRepository.findById(jobId).orElseThrow();
-        Employee employee = employeeRepository.getReferenceByEmail(email);
+        Employee employee = employeeRepository.getReferenceByEmail(username);
         JobSharing jobSharing = new JobSharing(email, job,employee);
         jobSharingRepository.save(jobSharing);
         try{

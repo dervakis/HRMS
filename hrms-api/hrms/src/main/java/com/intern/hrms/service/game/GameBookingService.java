@@ -198,7 +198,7 @@ public class GameBookingService {
     public List<GameBookingResponseDTO> getTodayBookedForGame(int gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow();
         GameCycle cycle = gameCycleRepository.findByGameAndIsActive(game, true).orElseThrow();
-        List<GameBooking> bookings = gameBookingRepository.findByGameAndGameCycleAndBookingDateAndBookingStatus(game, cycle, LocalDate.of(2026, 2,23), BookingStatusEnum.Booked);
+        List<GameBooking> bookings = gameBookingRepository.findByGameAndGameCycleAndBookingDateAndBookingStatus(game, cycle, LocalDate.now(), BookingStatusEnum.Booked);
         return modelMapper.map(bookings, new TypeToken<List<GameBookingResponseDTO>>(){}.getType());
     }
 
