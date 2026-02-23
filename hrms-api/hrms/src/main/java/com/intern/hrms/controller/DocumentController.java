@@ -52,13 +52,7 @@ public class DocumentController {
                 new SuccessResponse<>("Document Uploaded Successfully", null)
         );
     }
-//    @PutMapping("request/{employeeTravelDocumentId}")
-//    public ResponseEntity<SuccessResponse<Object>> submitDocumentRequest(@PathVariable int employeeTravelDocumentId){
-//        travelDocumentService.submitDocumentRequest(employeeTravelDocumentId);
-//        return ResponseEntity.ok(
-//                new SuccessResponse<>("Travel Document request Submitted Successfully", null)
-//        );
-//    }
+
     @PostMapping("/submit")
     public ResponseEntity<SuccessResponse<Object>> submitDocumentRequest(@RequestBody TravelDocumentSubmitRequestDTO dto){
         travelDocumentService.submitDocumentRequest(dto);
@@ -66,6 +60,15 @@ public class DocumentController {
                 new SuccessResponse<>("Document Submitted Successfully", null)
         );
     }
+
+    @PutMapping("/resubmit/{employeeTravelDocumentId}")
+    public ResponseEntity<SuccessResponse<Object>> reSubmitDocumentRequest(@PathVariable int employeeTravelDocumentId){
+        travelDocumentService.reSubmitDocumentRequest(employeeTravelDocumentId);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Document Submitted Successfully", null)
+        );
+    }
+
     @PatchMapping("verify/{employeeTravelDocumentId}/{status}")
     public ResponseEntity<SuccessResponse<Object>> verifyDocumentRequest(@PathVariable int employeeTravelDocumentId, @PathVariable DocumentStatusEnum status, Principal principal){
         travelDocumentService.verifyDocumentRequest(principal.getName(), employeeTravelDocumentId,status);

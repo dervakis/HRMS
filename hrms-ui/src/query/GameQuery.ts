@@ -1,5 +1,5 @@
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
-import { cancelBooking, createGame, createGameBooking, deleteGame, getAllEmployeeBookings, getEmployeeBookingsInCycle, getGameCycle, getGames, getInterestedEmployee, getInterestedGame, getTodayBookedForGame, updateOperationalHour } from "../api/GameApiCall"
+import { addInterest, cancelBooking, createGame, createGameBooking, deleteGame, getAllEmployeeBookings, getEmployeeBookingsInCycle, getGameCycle, getGames, getInterestedEmployee, getInterestedGame, getTodayBookedForGame, removeInterest, updateOperationalHour } from "../api/GameApiCall"
 import { use } from "react"
 
 export const useGetGames = () => {
@@ -27,7 +27,7 @@ export const useUpdateOperationalHour = () => {
     })
 }
 
-export const useGetGameCycle = (gameId:number) => {
+export const useGetGameCycle = (gameId: number) => {
     return useQuery({
         queryKey: ['GameCycle', gameId],
         queryFn: gameId ? () => getGameCycle(gameId) : skipToken
@@ -38,6 +38,18 @@ export const useGetInterestedEmployee = (gameId: number) => {
     return useQuery({
         queryKey: ["interestedEmployee", gameId],
         queryFn: gameId ? () => getInterestedEmployee(gameId) : skipToken,
+    })
+}
+
+export const useAddInterest = () => {
+    return useMutation({
+        mutationFn: addInterest
+    })
+}
+
+export const useRemoveInterest = () => {
+    return useMutation({
+        mutationFn: removeInterest
     })
 }
 
@@ -68,14 +80,14 @@ export const useGetTodayBookedForGame = (gameId: number) => {
     })
 }
 
-export const useGetEmployeeBookingsInCycle = (gameId: number,employeeId: number) => {
+export const useGetEmployeeBookingsInCycle = (gameId: number, employeeId: number) => {
     return useQuery({
         queryKey: ["cycleBookings", gameId, employeeId],
         queryFn: gameId && employeeId ? () => getEmployeeBookingsInCycle(gameId, employeeId) : skipToken,
     })
 }
 
-export const useGetAllEmployeeBookings = (employeeId: number, page: number,size: number) => {
+export const useGetAllEmployeeBookings = (employeeId: number, page: number, size: number) => {
     return useQuery({
         queryKey: ["employeeBookings", employeeId, page, size],
         queryFn: () => getAllEmployeeBookings(employeeId, page, size),

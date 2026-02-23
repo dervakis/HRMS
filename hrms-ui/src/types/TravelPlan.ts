@@ -88,7 +88,7 @@ export interface TravelExpenseSubmitType{
     employeeTravelExpenseId?:number
     expenseDetail?: string
     expenseDate?: Date
-    amount?: number
+    amount: number
     file: FileList
     travelExpenseTypeId: number
     EmployeeId: number

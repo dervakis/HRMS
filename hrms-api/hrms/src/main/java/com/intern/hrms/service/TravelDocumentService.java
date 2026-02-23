@@ -47,14 +47,6 @@ public class TravelDocumentService {
         this.providedTravelDocumentRepository = providedTravelDocumentRepository;
         this.modelMapper = modelMapper;
     }
-    //below both are request for request creation for employee like this many document needs
-//    public void createSingleEmployeeTravelDocument(TravelEmployee travelEmployee, List<DocumentType> documentTypes){
-//        List<EmployeeTravelDocument> travelDocuments = new ArrayList<>();
-//        documentTypes.forEach(type ->{
-//            travelDocuments.add(new EmployeeTravelDocument(travelEmployee, type));
-//        });
-//        employeeTravelDocumentRepository.saveAll(travelDocuments);
-//    }
     public void createAllEmployeeTravelDocument(TravelDocumentRequestDTO travelDocumentRequestDTO){
         TravelPlan travelPlan = travelPlanRepository.findById(travelDocumentRequestDTO.getTravelPlanId()).orElseThrow(
                 ()-> new RuntimeException("No such Travel Plan Exist for document Request Id: "+travelDocumentRequestDTO.getTravelPlanId())
@@ -68,6 +60,7 @@ public class TravelDocumentService {
         travelPlan.setDocumentTypes(documentTypes);
         travelPlanRepository.save(travelPlan);
     }
+
     public List<EmployeeTravelDocumentResponseDTO> getAllDocumentRequest(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 ()-> new RuntimeException("No Employee found with this id")
@@ -76,19 +69,6 @@ public class TravelDocumentService {
         return modelMapper.map(employeeTravelDocuments, new TypeToken<List<EmployeeTravelDocumentResponseDTO>>(){}.getType());
     }
 
-//    public void submitDocumentRequest(int employeeTravelDocumentId){
-//        EmployeeTravelDocument documentRequest = employeeTravelDocumentRepository.findById(employeeTravelDocumentId).orElseThrow(
-//                ()-> new RuntimeException("No such travel Document record found for employee, Id "+employeeTravelDocumentId)
-//        );
-//        int employeeId = documentRequest.getTravelEmployee().getEmployee().getEmployeeId();
-//        int documentTypeId = documentRequest.getDocumentType().getDocumentTypeId();
-//
-
-//
-//        documentRequest.setDocumentStatus(DocumentStatusEnum.Uploaded);
-//        documentRequest.setEmployeeDocument(employeeDocument);
-//        employeeTravelDocumentRepository.save(documentRequest);
-//    }
     public void submitDocumentRequest(TravelDocumentSubmitRequestDTO dto){
         TravelPlan travelPlan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
         Employee employee = employeeRepository.getReferenceById(dto.getEmployeeId());
@@ -99,6 +79,12 @@ public class TravelDocumentService {
                 ()->new RuntimeException("Employee has not Uploaded Document with specified type")
         );
         employeeTravelDocumentRepository.save(new EmployeeTravelDocument(travelEmployee, documentType, employeeDocument));
+    }
+
+    public void reSubmitDocumentRequest(int employeeTravelDocumentId){
+        EmployeeTravelDocument request = employeeTravelDocumentRepository.findById(employeeTravelDocumentId).orElseThrow();
+        request.setDocumentStatus(DocumentStatusEnum.Uploaded);
+        employeeTravelDocumentRepository.save(request);
     }
 
     public void verifyDocumentRequest(String username, int employeeTravelDocumentId, DocumentStatusEnum status){

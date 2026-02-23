@@ -67,7 +67,10 @@ public class EmployeeDocumentService {
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
         );
         fileStorage.UpdateFile(employeeDocument.getDocumentUrl(), file);
+        employeeDocument.setUploadedAt(LocalDate.now());
+        employeeDocumentRepository.save(employeeDocument);
     }
+
     public List<EmployeeDocumentResponse> getEmployeeDocuments(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 ()-> new RuntimeException("Employe not exist with id : "+employeeId)

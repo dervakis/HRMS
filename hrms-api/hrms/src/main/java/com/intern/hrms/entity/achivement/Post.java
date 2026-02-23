@@ -24,7 +24,8 @@ public class Post {
     private String description;
     private LocalDateTime createdAt;
     private String imageUrl;
-    private boolean isPublic;
+    private Boolean isPublic;
+    private Boolean isSystemGenerated;
 
     @ManyToOne
     @JoinColumn(name = "fk_author_employee_id")

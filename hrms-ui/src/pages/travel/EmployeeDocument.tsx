@@ -15,7 +15,7 @@ function EmployeeDocument() {
     const { data: allEmployeeDocuments, refetch } = useGetEmployeeDocuments(user.userId);
     const { mutate, isPending, isError, error } = useAddDocument();
     const [documentId, setDocumentId] = useState<number>();
-    const { data: employeeDocument, isLoading } = useGetEmployeeDocument(documentId!);
+    const { data: employeeDocument, isLoading, refetch:refetchDoc } = useGetEmployeeDocument(documentId!);
     const { mutate: mutate2, isPending: isPending2, isError: isError2, error: error2 } = useUpdateEmployeeDocument();
 
     const [openModal, setOpenModal] = useState<string>();
@@ -58,7 +58,8 @@ function EmployeeDocument() {
                 onSuccess: (data) => {
                     // console.log(data);
                     toast.success(data.message);
-                    refetch();
+                    // refetch();
+                    refetchDoc();
                     setOpenModal(undefined);
                     reset();
                 },
@@ -84,7 +85,6 @@ function EmployeeDocument() {
         reset();
     };
 
-    // je no hoy e  j te dekhado
     const availableDocumentTypes = useMemo(() => {
         const uploadedIds = allEmployeeDocuments?.map((d) => d.documentTypeId);
         // console.log(uploadedIds)
@@ -110,10 +110,7 @@ function EmployeeDocument() {
                         </div>
                         <div className="text-xs text-gray-500">
                             Updated At :{" "}
-                            {new Date(doc.uploadedAt).toLocaleDateString("en-GB", {
-                                hour: "numeric",
-                                minute: "2-digit",
-                            })}
+                            {new Date(doc.uploadedAt).toLocaleDateString("en-GB")}
                         </div>
                     </Card>
                 ))}

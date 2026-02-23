@@ -136,7 +136,7 @@ public class EmployeeService {
     }
     public void removeEmployeeInterest(int gameId, String username){
         Employee employee = employeeRepository.getReferenceByEmail(username);
-        employeeInterestRepository.deleteByEmployee_EmployeeIdAndGame_GameId(gameId, employee.getEmployeeId());
+        employeeInterestRepository.deleteByEmployee_EmployeeIdAndGame_GameId(employee.getEmployeeId(), gameId);
         return;
     }
 }

@@ -6,10 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -37,10 +34,11 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                                 .requestMatchers("/swagger-ui/**" , "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/role/**").permitAll()
                                 .requestMatchers("/api/employee/login/**", "/api/employee/forget-password/**").permitAll()
-                                .requestMatchers("/employee/**").permitAll()
+                                .requestMatchers("/api/config/**").hasRole("HR")
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

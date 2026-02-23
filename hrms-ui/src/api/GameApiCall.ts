@@ -37,6 +37,16 @@ export const getInterestedGame = async (employeeId: number): Promise<GameType[]>
     return response.data.data
 }
 
+export const addInterest = async(gameId:number): Promise<ApiResponseType<Object>> =>{
+    const response = await Api.post(`/employee/interest/${gameId}`)
+    return response.data
+}
+
+export const removeInterest = async(gameId:number): Promise<ApiResponseType<Object>> =>{
+    const response = await Api.delete(`/employee/interest/${gameId}`)
+    return response.data
+}
+
 export const createGameBooking = async (data: GameBookingSubmitType): Promise<ApiResponseType<Object>> => {
     const response = await Api.post(`/booking`, data)
     return response.data

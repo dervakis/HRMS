@@ -1,5 +1,5 @@
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
-import { addDocument, getDocumentByUrl, getDocumetTypes, getEmployeeDocument, getTravelDocumentRequest, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
+import { addDocument, getDocumentByUrl, getDocumetTypes, getEmployeeDocument, getTravelDocumentRequest, reSubmitTravelDocument, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
 
 export const useGetDocumentTypes = ()=>{
     return useQuery({
@@ -33,7 +33,7 @@ export const useGetDocumentByUrl = (url:string) => {
 
 export const useGetTravelDocumentRequest = (userId:number) => {
     return useQuery({
-        queryKey: ['travelDocument'],
+        queryKey: ['travelDocument', userId],
         queryFn: userId ? () => getTravelDocumentRequest(userId) : skipToken,
     });
 }
@@ -46,5 +46,11 @@ export const useSubmitTravelDocument = () => {
 export const useVerifyTravelDocument = () => {
     return useMutation({
         mutationFn: verifyTravelDocument
+    });
+}
+
+export const useReSubmitTravelDocument = () => {
+    return useMutation({
+        mutationFn: reSubmitTravelDocument
     });
 }

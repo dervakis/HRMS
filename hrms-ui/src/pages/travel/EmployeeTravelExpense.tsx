@@ -8,7 +8,7 @@ import type { TravelExpenseResponseType, TravelExpenseSubmitType } from "../../t
 import { useForm, type SubmitErrorHandler, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetDocumentByUrl } from "../../query/DocumentQuery";
-import { Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
+import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
 
 function EmployeeTravelExpense() {
   const [openModal, setOpenModal] = useState<string>();
@@ -16,16 +16,16 @@ function EmployeeTravelExpense() {
   const user = useSelector((state: RootStateType) => state.user);
   const { data: openTravel } = useGetTravelPlanForExpense(user.userId!);
   const { data: expenseType } = useGetExpenseType();
-  const { register, handleSubmit, reset } = useForm<TravelExpenseSubmitType>();
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<TravelExpenseSubmitType>();
   const createExpenseMutation = useCreateTravelExpense();
   const submitExpenseMutation = useSubmitTravelExpense();
   const { data: document, isLoading, refetch } = useGetDocumentByUrl(selectedExpense?.proofUrl!);
 
-  useEffect(()=>{
-    if(document != undefined)
+  useEffect(() => {
+    if (document != undefined)
       window.open(URL.createObjectURL(document!), '_blank')
-  },[document])
-  const { data: expenses, refetch:expensesRefetch } = useGetExpenseByEmployee(user.userId);
+  }, [document])
+  const { data: expenses, refetch: expensesRefetch } = useGetExpenseByEmployee(user.userId);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -39,6 +39,16 @@ function EmployeeTravelExpense() {
         return "failure";
     }
   };
+  const resetForm = () => {
+    reset({
+      employeeTravelExpenseId: undefined,
+      expenseDetail: undefined,
+      expenseDate: undefined,
+      amount: undefined,
+      travelExpenseTypeId: undefined,
+      TravelPlanId: undefined
+    });
+  }
 
   const onSubmit: SubmitHandler<TravelExpenseSubmitType> = (data) => {
     console.log(data);
@@ -59,12 +69,10 @@ function EmployeeTravelExpense() {
         setOpenModal(undefined)
         expensesRefetch();
         toast.success(data.message);
+        resetForm();
       },
       onError: (err) => console.log(err)
     })
-  };
-  const onError: SubmitErrorHandler<TravelExpenseSubmitType> = (err) => {
-    console.log(err);
   };
   const onEdit = (expense: TravelExpenseResponseType) => {
     reset({
@@ -140,7 +148,7 @@ function EmployeeTravelExpense() {
                 {/* <TableCell>
                   {expense.remark ?? "—"}
                 </TableCell> */}
-                <TableCell>
+                <TableCell className="flex justify-center">
                   <div className="flex gap-2">
                     {expense.status === "Draft" && (
                       <>
@@ -153,18 +161,21 @@ function EmployeeTravelExpense() {
 
                         <Button size="xs" onClick={() => {
                           submitExpenseMutation.mutate(expense.employeeTravelExpenseId, {
-                            onSuccess: (data) => {toast.success(data.message); expensesRefetch()}
+                            onSuccess: (data) => { toast.success(data.message); expensesRefetch() }
                           })
-                        }}>{submitExpenseMutation.isPending && <Spinner size="sm"/>}Submit</Button>
+                        }}>{submitExpenseMutation.isPending && <Spinner size="sm" />}Submit</Button>
                       </>
                     )}
-                    <Button size="xs" color="gray"
-                      onClick={() => {
-                        setSelectedExpense(expense);
-                        refetch()
-                      }}>
-                      <Eye size={14} />
-                    </Button>
+                    {
+                      expense.proofUrl &&
+                      <Button size="xs" color="gray"
+                        onClick={() => {
+                          setSelectedExpense(expense);
+                          refetch()
+                        }}>
+                        <Eye size={14} />
+                      </Button>
+                    }
                   </div>
                 </TableCell>
               </TableRow>
@@ -174,7 +185,7 @@ function EmployeeTravelExpense() {
       </Card>
 
       <Modal show={openModal === "create" || openModal === "edit"}>
-        <form onSubmit={handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader>
             {openModal === "edit"
               ? "Edit Expense"
@@ -182,7 +193,7 @@ function EmployeeTravelExpense() {
           </ModalHeader>
 
           <ModalBody>
-            <div className="space-y-2">
+            <div >
               <div>
                 <Label>Select Travel Paln</Label>
                 <Select {...register('TravelPlanId', { required: true })}>
@@ -200,16 +211,33 @@ function EmployeeTravelExpense() {
               </div>
               <div>
                 <Label>Expense Date</Label>
-                <TextInput {...register('expenseDate', { required: true })} type="date" />
+                <TextInput {...register('expenseDate', {
+                  validate: (value) => {
+                    if (!value)
+                      return "Expense date is mandatory";
+                    const travelPlan = openTravel?.find((obj) => obj.travelPlanId == watch('TravelPlanId'));
+                    if (new Date(value) < new Date(travelPlan?.startTime!) || new Date(value) > new Date(travelPlan?.endTime!))
+                      return "Expense date out of travel plan range."
+                    return true;
+                  }
+                })} type="date" />
               </div>
               <div>
                 <Label>Amount</Label>
-                <TextInput type="number" placeholder="Enter amount" {...register('amount')} />
+                <TextInput type="number" placeholder="Enter amount" {...register('amount', {
+                  required: 'Amount is mandatory for expense',
+                  validate: (value) => {
+                    const type = expenseType?.find((obj) => obj.travelExpenseTypeId == watch('travelExpenseTypeId'));
+                    if (Number(value) > type?.maxAmount! || Number(value) < 1)
+                      return 'Amount must be between 1 - ' + type?.maxAmount
+                    return true;
+                  }
+                })} />
               </div>
 
               <div>
                 <Label>Expense Type</Label>
-                <Select {...register('travelExpenseTypeId')}>
+                <Select {...register('travelExpenseTypeId', { required: "Expense Type Required" })}>
                   <option value=''>Select</option>
                   {expenseType?.map(type => (
                     <option key={type.travelExpenseTypeId} value={type.travelExpenseTypeId}>
@@ -224,11 +252,15 @@ function EmployeeTravelExpense() {
                 <TextInput {...register('file')} type="file" />
               </div>
             </div>
+            {Object.keys(errors).length > 0 && <Alert color="failure" className="p-2 mt-2">{errors.expenseDate?.message || errors.travelExpenseTypeId?.message || errors.amount?.message}</Alert>}
           </ModalBody>
 
           <ModalFooter>
             <Button type="submit">Save as Draft</Button>
-            <Button color="gray" onClick={() => setOpenModal(undefined)}>
+            <Button color="gray" onClick={() => {
+              setOpenModal(undefined);
+              resetForm();
+            }}>
               Cancel
             </Button>
           </ModalFooter>

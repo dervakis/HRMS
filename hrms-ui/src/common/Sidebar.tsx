@@ -58,7 +58,7 @@ function Sidebar2() {
               {
               ({ isActive }: { isActive: boolean }) => (
                 <SidebarItem icon={Files} className={isActive ? 'bg-blue-300' : ''}>
-                  Travel Documents
+                  My Travel Trips 
                 </SidebarItem>
               )}
             </NavLink>

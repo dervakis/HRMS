@@ -7,6 +7,7 @@ import com.intern.hrms.repository.game.GameBookingRepository;
 import com.intern.hrms.service.game.GameBookingService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ public class WaitingQueueScheduler {
     }
 
     @Scheduled(cron = "0 0/10 * * * *")
+    @Transactional
     public void runTenMinuteCycle(){
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);

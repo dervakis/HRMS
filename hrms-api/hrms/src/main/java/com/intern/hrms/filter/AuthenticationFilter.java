@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -49,7 +52,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         if(header == null || !header.startsWith("Bearer ")){
             logger.warning("Authentication Filter : No Token found inside Header");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized Request : No token found");
+            response.sendError(401, "Unauthorized Request : No token found");
         }
         String token = header.substring(7);
         String username = jwtService.extractUsername(token);
@@ -63,13 +66,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            }else{
+                response.sendError(401, "Token Validation Failed, Login again");
             }
 
         }
         filterChain.doFilter(request, response);
-
 
     }
 }

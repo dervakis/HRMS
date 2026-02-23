@@ -152,6 +152,7 @@ public class GameBookingService {
             emails.add(emp.getEmail());
             EmployeeInterest interest = employeeInterestRepository.findByGameAndEmployee(game, emp);
             interest.setSlotPlayed(interest.getSlotPlayed() + 1);
+            employeeInterestRepository.save(interest);
         }
         gameBookingRepository.save(selected);
         mailSend.sendMail(emails,null,

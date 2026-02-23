@@ -40,6 +40,11 @@ export const submitTravelDocument = async(data:TravelDocumentSubmitType): Promis
     return response.data;
 }
 
+export const reSubmitTravelDocument = async(employeeTravelDocumentId:number): Promise<ApiResponseType<Object>> => {
+    const response = await Api.put(`/document/resubmit/${employeeTravelDocumentId}`);
+    return response.data;
+}
+
 export const verifyTravelDocument = async({docRequestId, status}:{docRequestId:number, status:string}) : Promise<ApiResponseType<Object>> =>{
     const response = await Api.patch(`/document/verify/${docRequestId}/${status}`);
     return response.data;

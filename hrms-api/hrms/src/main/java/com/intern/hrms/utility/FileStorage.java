@@ -85,8 +85,10 @@ public class FileStorage {
 //        return "testing";
     }
 
-    public void UpdateFile(String url, MultipartFile file)throws IOException{
-        file.transferTo(new File(System.getProperty("user.dir")+"/"+url));
+    public String UpdateFile(String url, MultipartFile file)throws IOException{
+        File location = new File(System.getProperty("user.dir")+"/"+url);
+        file.transferTo(location);
+        return location.getCanonicalPath();
     }
 
     public String getFileExtension(String name){

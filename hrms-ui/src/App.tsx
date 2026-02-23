@@ -23,6 +23,7 @@ import BookingHistory from './pages/game/BookingHistory'
 import TodayBooking from './pages/game/TodayBooking'
 import Configuration from './pages/general/Configuration'
 import Login from './pages/general/Login'
+import Profile from './pages/general/Profile'
 // import GameBooking from './pages/game/GameBooking'
 
 function App() {
@@ -103,6 +104,10 @@ function App() {
         {
           path: '/configuration',
           element: <ProtectedRoute><Configuration/></ProtectedRoute>
+        },
+        {
+          path: '/profile',
+          element: <ProtectedRoute><Profile/></ProtectedRoute>
         }
 
       ]

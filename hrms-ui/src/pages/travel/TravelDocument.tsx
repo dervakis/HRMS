@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useGetEmployeeDocuments } from "../../query/EmployeeQuery";
-import { useGetDocumentByUrl, useGetTravelDocumentRequest, useSubmitTravelDocument } from "../../query/DocumentQuery";
+import { useGetDocumentByUrl, useGetTravelDocumentRequest, useReSubmitTravelDocument, useSubmitTravelDocument } from "../../query/DocumentQuery";
 import { useGetProvidedDocument, useGetTravelPlanByEmployee } from "../../query/TravelPlanQuery";
 import { useSelector } from "react-redux";
 import type { RootStateType } from "../../redux-store/store";
@@ -17,6 +17,7 @@ function TravelDocument() {
   const { data: employeeDocs = [] } = useGetEmployeeDocuments(user.userId);
   const { data: travelRequests = [], refetch } = useGetTravelDocumentRequest(user.userId);
   const submitMutation = useSubmitTravelDocument();
+  const reSubmitMutation = useReSubmitTravelDocument();
   const selectedTravel = useMemo(() => {
     return travelPlans.find(
       (t) => t.travelPlanId === selectedTravelId
@@ -74,6 +75,7 @@ function TravelDocument() {
       return {
         employeeHasDocument: true,
         documentStatus: "Pending Submition",
+        documentUrl: employeeDocument.documentUrl
       }
     }
 
@@ -82,6 +84,8 @@ function TravelDocument() {
       documentStatus: travelDocRequest.documentStatus,
       actionDate: travelDocRequest.actionDate,
       approverName: travelDocRequest.approver?.firstName,
+      documentUrl: travelDocRequest.employeeDocumentUrl,
+      employeeTravelDocumentId: travelDocRequest.employeeTravelDocumentId
     }
   };
 
@@ -133,16 +137,17 @@ function TravelDocument() {
                       </p>
                       {status.actionDate && (
                         <p className="text-xs text-gray-500">
-                          Action Date:{" "}{new Date(status.actionDate).toLocaleDateString()}
+                          Action Date:{" "}{new Date(status.actionDate).toLocaleDateString('en-GB')}
                         </p>
                       )}
                       {status.approverName && (
                         <p className="text-xs text-gray-500">
-                          Approved By: {status.approverName}
+                          Verify By: {status.approverName}
                         </p>
                       )}
                     </div>
-                    <div>
+                    <div className="flex gap-2">
+                      {status.documentUrl && <Button size="xs" color={'gray'} onClick={()=>setUrl(status.documentUrl)}>View</Button>}
                       {!status.employeeHasDocument && (
                         <span className="text-xs text-red-500 font-medium">
                           Not Uploaded
@@ -154,6 +159,18 @@ function TravelDocument() {
                           <Button size="xs" onClick={() => handleSubmitRequest(selectedTravel.travelPlanId, doc.documentTypeId)}>
                             Submit
                           </Button>
+                        )}
+                        {status.employeeHasDocument &&
+                        status.documentStatus ===
+                        "Reupload" && (
+                          <Button size="xs" onClick={() => {
+                            reSubmitMutation.mutate(status.employeeTravelDocumentId!,{
+                              onSuccess: () => {
+                                toast.success("Document request re-submitted successfully");
+                                refetch();
+                              }
+                            })
+                          }}>Reupload</Button>
                         )}
                     </div>
                   </div>

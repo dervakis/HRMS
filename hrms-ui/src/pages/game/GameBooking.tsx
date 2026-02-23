@@ -185,7 +185,7 @@ function GameBooking() {
                                                 </div>
                                             </div>
                                         </div>
-                                            {booking.bookingStatus != 'Cancelled' && booking.bookedBy.employeeId == user.userId && (
+                                            {(booking.bookingStatus != 'Cancelled' && (new Date(`${booking.bookingDate}T${booking.bookingTime}`) > new Date())) && booking.bookedBy.employeeId == user.userId && (
                                                 <Button color="red" size="xs" onClick={() => handleCancel(booking.gameBookingId)} disabled={cancelMutation.isPending}>Cancel</Button>
                                             )}
                                     </Card>

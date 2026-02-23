@@ -12,14 +12,14 @@ function DocumentVarification() {
     const [openModal, setOpenModal] = useState(false);
     const [url, setUrl] = useState<string>();
     const { data: travelPlans = [] } = useGetTravelPlan();
-    const { data: travelDocumentRequests = [], isLoading } = useGetTravelDocumentRequest(selectedEmployee?.employeeId!);
+    const { data: travelDocumentRequests = [], isLoading,refetch:refetchRequest } = useGetTravelDocumentRequest(selectedEmployee?.employeeId!);
     const { data: document, refetch } = useGetDocumentByUrl(url!);
     const verifyMutation = useVerifyTravelDocument();
 
     const selectedPlan: TravelPlanType | undefined = travelPlans.find(t => t.travelPlanId === selectedPlanId);
 
     const remainingDocuments = useMemo(() => {
-        const submittedIds = travelDocumentRequests.map(d => d.documentTypeId);
+        const submittedIds = travelDocumentRequests.filter(d => d.documentStatus == 'Verified').map(d => d.documentTypeId);
         return selectedPlan?.documentTypes.filter(doc => !submittedIds.includes(doc.documentTypeId));
     }, [selectedPlan, travelDocumentRequests]);
 
@@ -103,7 +103,7 @@ function DocumentVarification() {
                                                     {doc.documentStatus}</span>
                                             </p>
                                             <p className="text-xs text-gray-500">Action Date: {new Date(doc.actionDate).toLocaleDateString()}</p>
-                                            <p className="text-xs text-gray-500">Employee Document ID: {doc.employeeDocumentId}</p>
+                                            {/* <p className="text-xs text-gray-500">Employee Document ID: {doc.employeeDocumentId}</p> */}
                                         </div>
                                         <div className="flex gap-2">
                                             {doc.documentStatus === "Uploaded" && (
@@ -112,13 +112,21 @@ function DocumentVarification() {
                                                         docRequestId: doc.employeeTravelDocumentId, status: "Verified"
                                                     },
                                                         {
-                                                            onSuccess: data => toast.success(data.message)
+                                                            onSuccess: data => {
+                                                                toast.success(data.message);
+                                                                setOpenModal(false);
+                                                                refetchRequest();
+                                                            }
                                                         }
-                                                    )}>Verify</Button>
+                                                    )}>Approve</Button>
                                                     <Button size="xs" color="red" onClick={() => verifyMutation.mutate(
                                                         { docRequestId: doc.employeeTravelDocumentId, status: "Reupload" },
                                                         {
-                                                            onSuccess: data => toast.success(data.message),
+                                                            onSuccess: data => {
+                                                                toast.success(data.message);
+                                                                setOpenModal(false);
+                                                                refetchRequest();
+                                                            },
                                                             onError: error => console.log(error)
                                                         }
                                                     )}>Reupload</Button>
