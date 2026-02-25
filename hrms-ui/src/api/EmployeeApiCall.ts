@@ -1,5 +1,5 @@
 import type { ApiResponseType } from "../types/ApiResponse";
-import type { EmployeeDetailType, LoginDetailType, LoginResponseType } from "../types/AuthType";
+import type { DepartmentType, EmployeeDetailType, LoginDetailType, LoginResponseType, RoleType } from "../types/AuthType";
 import type { EmployeeDocumentType, TravelEmployeeType } from "../types/TravelPlan";
 import { Api } from "./AxiosBase"
 
@@ -33,4 +33,14 @@ export const getOrgChartByEmployee = async(employeeId:number): Promise<EmployeeD
     const response = await Api.get(`/employee/chart/${employeeId}`);
     // console.log(response)
     return response.data.data
+}
+
+export const getRoles = async(): Promise<RoleType[]> => {
+    const response = await Api.get(`/role`);
+    return response.data.data;
+}
+
+export const getDepartments = async(): Promise<DepartmentType[]> => {
+    const response = await Api.get(`/department`);
+    return response.data.data;
 }

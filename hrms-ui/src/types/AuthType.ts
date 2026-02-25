@@ -31,3 +31,13 @@ export interface EmployeeDetailType{
     roleName: string
     childEmployee?: EmployeeDetailType[]
 }
+
+export interface RoleType{
+    roleId:number
+    roleName: string 
+}
+
+export interface DepartmentType{
+    departmentId:number
+    departmentName:string
+}

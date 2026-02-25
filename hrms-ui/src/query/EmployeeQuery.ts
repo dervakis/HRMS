@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getEmployeeDocuments, getEmployees, getOrgChartByEmployee, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
+import { getDepartments, getEmployeeDocuments, getEmployees, getOrgChartByEmployee, getRoles, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
 import { type ApiErrorType, type ApiResponseType } from "../types/ApiResponse"
 import { type LoginDetailType, type ResetPasswordDetailType } from "../types/AuthType"
 import { updateEmployeeDocument } from "../api/DocumentApiCall"
@@ -47,5 +47,19 @@ export const useGetOrgChartByEmployee = (employeeId:number) =>{
     return useQuery({
         queryKey: ['OrgChart', employeeId],
         queryFn: () => getOrgChartByEmployee(employeeId)
+    })
+}
+
+export const useGetRoles = ()=>{
+    return useQuery({
+        queryKey: ['Roles'],
+        queryFn: () => getRoles()
+    })
+}
+
+export const useGetDepartments = ()=>{
+    return useQuery({
+        queryKey: ['Departments'],
+        queryFn: () => getDepartments()
     })
 }

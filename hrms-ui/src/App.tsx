@@ -24,6 +24,7 @@ import TodayBooking from './pages/game/TodayBooking'
 import Configuration from './pages/general/Configuration'
 import Login from './pages/general/Login'
 import Profile from './pages/general/Profile'
+import Feed from './pages/achievement/Feed'
 // import GameBooking from './pages/game/GameBooking'
 
 function App() {
@@ -108,6 +109,10 @@ function App() {
         {
           path: '/profile',
           element: <ProtectedRoute><Profile/></ProtectedRoute>
+        },
+        {
+          path: '/achievement',
+          element: <ProtectedRoute><Feed/></ProtectedRoute>
         }
 
       ]

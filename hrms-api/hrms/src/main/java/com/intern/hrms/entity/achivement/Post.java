@@ -11,59 +11,54 @@ import org.hibernate.annotations.ManyToAny;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pk_post_id")
-    private int postId;
-    private String title;
-    private String description;
-    private LocalDateTime createdAt;
-    private String imageUrl;
-    private Boolean isPublic;
-    private Boolean isSystemGenerated;
+    public class Post {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "pk_post_id")
+        private int postId;
+        private String title;
+        private String description;
+        private LocalDateTime createdAt;
+        private Boolean isPublic;
+        private Boolean isSystemGenerated;
+        private Boolean isActive = true;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_author_employee_id")
-    private Employee author;
+        @ManyToOne
+        @JoinColumn(name = "fk_author_employee_id")
+        private Employee author;
 
-    @ManyToMany
-    @JoinTable(
-            name = "roleWiseVisibility",
-            joinColumns = @JoinColumn(name = "fk_post_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_role_id")
-    )
-    private List<Role> roles; //which role can view this post like only hr or s. dev (if ispublic false)
+        @ManyToMany
+        @JoinTable(
+                name = "roleWiseVisibility",
+                joinColumns = @JoinColumn(name = "fk_post_id"),
+                inverseJoinColumns = @JoinColumn(name = "fk_role_id")
+        )
+        private Set<Role> roles; //which role can view this post like only hr or s. dev (if ispublic false)
 
-    @ManyToMany
-    @JoinTable(
-            name = "departmentWiseVisibility",
-            joinColumns = @JoinColumn(name = "fk_post_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_department_id")
-    )
-    private List<Department> departments; // which department are allow to watch post (if ispublic false)
+        @ManyToMany
+        @JoinTable(
+                name = "departmentWiseVisibility",
+                joinColumns = @JoinColumn(name = "fk_post_id"),
+                inverseJoinColumns = @JoinColumn(name = "fk_department_id")
+        )
+        private Set<Department> departments; // which department are allow to watch post (if ispublic false)
 
-    @ManyToMany
-    @JoinTable(
-            name = "postLikes",
-            joinColumns = @JoinColumn(name = "fk_post_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_employee_id")
-    )
-    private List<Employee> likedBy;
+        @ManyToMany
+        @JoinTable(
+                name = "postLikes",
+                joinColumns = @JoinColumn(name = "fk_post_id"),
+                inverseJoinColumns = @JoinColumn(name = "fk_employee_id")
+        )
+        private Set<Employee> likedBy;
 
-    @ManyToMany
-    @JoinTable(
-            name = "postTags",
-            joinColumns = @JoinColumn(name = "fk_post_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_tag_id")
-    )
-    private List<Tag> postTags;
+        private String tags;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+        @OneToMany(mappedBy = "post")
+        private List<Comment> comments;
 
-}
+    }

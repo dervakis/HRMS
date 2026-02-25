@@ -1,5 +1,6 @@
 package com.intern.hrms.controller;
 
+import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.entity.Role;
 import com.intern.hrms.service.RoleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,8 +25,8 @@ public class RoleController {
     }
 
     @GetMapping
-    public List<Role> getRoles(){
-        return roleService.getRoles();
+    public SuccessResponse<List<Role>> getRoles(){
+        return new SuccessResponse<>(null, roleService.getRoles());
     }
 
     @PostMapping("/{roleName}")

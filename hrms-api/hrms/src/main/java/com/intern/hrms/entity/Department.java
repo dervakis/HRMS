@@ -1,5 +1,6 @@
 package com.intern.hrms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Department {
     private String departmentName;
 
     @OneToMany(mappedBy = "department")
+    @JsonIgnore
     private List<Employee> employees;
 
     public Department(String departmentName){

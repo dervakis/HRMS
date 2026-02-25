@@ -4,6 +4,8 @@ import com.intern.hrms.entity.Department;
 import com.intern.hrms.repository.DepartmentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
@@ -17,5 +19,9 @@ public class DepartmentService {
                 department -> {throw new RuntimeException("Department Already Exist with this name : "+department.getDepartmentName());}
         );
         return departmentRepository.save(new Department(departmentName.toUpperCase()));
+    }
+
+    public List<Department> getDepartment(){
+        return departmentRepository.findAll();
     }
 }
