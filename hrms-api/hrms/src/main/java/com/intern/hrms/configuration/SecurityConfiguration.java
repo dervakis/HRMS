@@ -31,7 +31,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/swagger-ui/**" , "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui/**" , "/v3/api-docs/**", "/ws/**").permitAll()
                                 .requestMatchers("/api/role/**").permitAll()
                                 .requestMatchers("/api/employee/login/**", "/api/employee/forget-password/**").permitAll()
                                 .requestMatchers("/api/config/**").hasRole("HR")

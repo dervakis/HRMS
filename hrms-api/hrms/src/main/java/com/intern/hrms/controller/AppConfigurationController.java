@@ -2,7 +2,7 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.entity.AppConfiguration;
-import com.intern.hrms.service.AppConfigurationService;
+import com.intern.hrms.service.general.AppConfigurationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

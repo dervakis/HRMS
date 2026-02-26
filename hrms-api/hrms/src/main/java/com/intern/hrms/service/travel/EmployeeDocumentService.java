@@ -1,18 +1,17 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.travel;
 
 import com.intern.hrms.dto.travel.request.EmployeeDocumentRequestDTO;
 import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.DocumentType;
 import com.intern.hrms.entity.travel.EmployeeDocument;
-import com.intern.hrms.repository.DocumentTypeRepository;
-import com.intern.hrms.repository.EmployeeDocumentRepository;
-import com.intern.hrms.repository.EmployeeRepository;
+import com.intern.hrms.repository.general.DocumentTypeRepository;
+import com.intern.hrms.repository.travel.EmployeeDocumentRepository;
+import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.utility.FileStorage;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

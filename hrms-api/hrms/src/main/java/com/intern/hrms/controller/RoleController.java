@@ -2,9 +2,8 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.entity.Role;
-import com.intern.hrms.service.RoleService;
+import com.intern.hrms.service.general.RoleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

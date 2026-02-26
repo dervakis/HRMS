@@ -1,19 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { LoginResponseType } from "../types/AuthType";
+import type { LoginResponseType } from "../types/CommonType";
 
 const userSlice = createSlice({
     name: 'user',
     initialState: {
         authToken: '',
         isAuthenticated: false,
-        // isAuthenticated:true,
         role: '',
-        // role: 'HR',
         isCollapsed: false, 
         fullName: '',
         email: '',
         userId: 0
-        // userId:1
     },
     reducers: {
         Authenticate : (state, action:PayloadAction<LoginResponseType>) => {

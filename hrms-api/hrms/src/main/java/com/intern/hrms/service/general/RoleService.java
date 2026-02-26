@@ -1,12 +1,8 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.general;
 
 import com.intern.hrms.entity.Role;
-import com.intern.hrms.repository.RoleRepository;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.intern.hrms.repository.general.RoleRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 

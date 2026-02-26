@@ -3,7 +3,7 @@ import { HatGlasses, Lock, Mail } from 'lucide-react'
 import React from 'react'
 import { useForm, type SubmitErrorHandler, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { ResetPasswordDetailType } from '../../types/AuthType';
+import type { ResetPasswordDetailType } from '../../types/CommonType';
 import toast from 'react-hot-toast';
 import { useSubmitNewPassword } from '../../query/EmployeeQuery';
 

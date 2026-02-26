@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useLogin, useResetPasswordRequest } from '../../query/EmployeeQuery';
-import type { LoginDetailType } from '../../types/AuthType';
+import type { LoginDetailType } from '../../types/CommonType';
 import type { AppDispatchType } from '../../redux-store/store';
 import { Authenticate } from '../../redux-store/UserSlice';
 

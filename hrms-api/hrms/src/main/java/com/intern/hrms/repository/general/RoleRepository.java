@@ -1,4 +1,4 @@
-package com.intern.hrms.repository;
+package com.intern.hrms.repository.general;
 
 import com.intern.hrms.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

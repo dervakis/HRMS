@@ -1,4 +1,4 @@
-package com.intern.hrms.repository;
+package com.intern.hrms.repository.travel;
 
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.EmployeeTravelExpense;

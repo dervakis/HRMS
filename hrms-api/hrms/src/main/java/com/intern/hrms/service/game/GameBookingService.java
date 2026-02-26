@@ -5,9 +5,12 @@ import com.intern.hrms.dto.game.response.GameBookingResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.game.*;
 import com.intern.hrms.enums.BookingStatusEnum;
-import com.intern.hrms.repository.EmployeeRepository;
+import com.intern.hrms.enums.NotificationTypeEnum;
+import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.game.*;
+import com.intern.hrms.service.general.NotificationService;
 import com.intern.hrms.utility.MailSend;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class GameBookingService {
 
     private final GameCycleRepository gameCycleRepository;
@@ -33,17 +37,7 @@ public class GameBookingService {
     private final ModelMapper modelMapper;
     private final MailSend mailSend;
     private final WaitingQueueRepository waitingQueueRepository;
-
-    public GameBookingService(GameCycleRepository gameCycleRepository, GameRepository gameRepository, GameBookingRepository gameBookingRepository, EmployeeRepository employeeRepository, EmployeeInterestRepository employeeInterestRepository, ModelMapper modelMapper, MailSend mailSend, WaitingQueueRepository waitingQueueRepository) {
-        this.gameCycleRepository = gameCycleRepository;
-        this.gameRepository = gameRepository;
-        this.gameBookingRepository = gameBookingRepository;
-        this.employeeRepository = employeeRepository;
-        this.employeeInterestRepository = employeeInterestRepository;
-        this.modelMapper = modelMapper;
-        this.mailSend = mailSend;
-        this.waitingQueueRepository = waitingQueueRepository;
-    }
+    private final NotificationService notificationService;
 
     private void validateSlotTime(Game game, LocalTime time){
         LocalTime start = game.getStartTime();
@@ -132,8 +126,14 @@ public class GameBookingService {
         booking =  gameBookingRepository.save(booking);
         if(booking.getBookingStatus() == BookingStatusEnum.Waiting)
             waitingQueueRepository.save(new WaitingQueue(booking));
+        else{
+            notificationService.notifyUsers(dto.getPlayers(),
+                    NotificationTypeEnum.GameBook,
+                    "Your Slot Booking Request for '"+game.getGameName()+"' has been received.");
+        }
         return booking;
     }
+
     public void allotFromWaiting(Game game, LocalDate date, LocalTime time, boolean fromCancel) {
         List<GameBooking> waitingBooking = gameBookingRepository.findByGameAndBookingDateAndBookingTimeAndBookingStatus(game,date,time,BookingStatusEnum.Waiting);
         if(waitingBooking.isEmpty()){
@@ -189,6 +189,10 @@ public class GameBookingService {
             }
             booking.setBookingStatus(BookingStatusEnum.Cancelled);
             gameBookingRepository.save(booking);
+
+            notificationService.notifyUsers(booking.getPlayers().stream().map(Employee::getEmployeeId).toList(),
+                    NotificationTypeEnum.GameBook,
+                    "Your Slot Cancellation Request for '"+booking.getGame().getGameName()+"' has been received.");
 
             allotFromWaiting(
                     booking.getGame(),

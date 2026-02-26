@@ -1,7 +1,7 @@
 package com.intern.hrms.security;
 
 import com.intern.hrms.entity.Employee;
-import com.intern.hrms.service.EmployeeService;
+import com.intern.hrms.service.general.EmployeeService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

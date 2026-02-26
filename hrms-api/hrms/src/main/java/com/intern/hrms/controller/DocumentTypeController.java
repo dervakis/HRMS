@@ -2,7 +2,7 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.entity.travel.DocumentType;
-import com.intern.hrms.service.DocumentTypeService;
+import com.intern.hrms.service.general.DocumentTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

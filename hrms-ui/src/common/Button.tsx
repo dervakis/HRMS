@@ -1,6 +1,10 @@
-import React from 'react'
-import type { ButtonType } from '../types/ButtonType'
-
+import React, { type ButtonHTMLAttributes, type ReactNode } from 'react'
+export interface ButtonType extends ButtonHTMLAttributes<HTMLButtonElement>{
+    children?: ReactNode,
+    varient?: string,
+    size?: string,
+    className?: string
+}
 function Button({ children, varient = 'green', size = 'md', className = '', ...props }: ButtonType) {
     const baseStyle = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
 

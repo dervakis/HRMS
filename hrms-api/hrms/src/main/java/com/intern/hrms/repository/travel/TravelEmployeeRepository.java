@@ -1,4 +1,4 @@
-package com.intern.hrms.repository;
+package com.intern.hrms.repository.travel;
 
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.TravelEmployee;
@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TravelEmployeeRepository extends JpaRepository<TravelEmployee, Integer> {
     TravelEmployee findByEmployeeAndTravelPlan(Employee employee, TravelPlan travelPlan);
+    TravelEmployee findByEmployee_EmployeeIdAndTravelPlan(Integer employeeId, TravelPlan travelPlan);
+
 }

@@ -1,4 +1,4 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.travel;
 
 import com.intern.hrms.dto.travel.request.TravelEmployeeRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelPlanRequestDTO;
@@ -7,12 +7,15 @@ import com.intern.hrms.dto.travel.response.TravelPlanResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.TravelEmployee;
 import com.intern.hrms.entity.travel.TravelPlan;
-import com.intern.hrms.repository.EmployeeRepository;
-import com.intern.hrms.repository.TravelEmployeeRepository;
-import com.intern.hrms.repository.TravelPlanRepository;
+import com.intern.hrms.enums.NotificationTypeEnum;
+import com.intern.hrms.repository.general.EmployeeRepository;
+import com.intern.hrms.repository.travel.TravelEmployeeRepository;
+import com.intern.hrms.repository.travel.TravelPlanRepository;
+import com.intern.hrms.service.general.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,12 +31,14 @@ public class TravelPlanService {
     private final ModelMapper modelMapper;
     private final TravelPlanRepository travelPlanRepository;
     private final TravelEmployeeRepository travelEmployeeRepository;
+    private final NotificationService notificationService;
 
-    public TravelPlanService(EmployeeRepository employeeRepository, ModelMapper modelMapper, TravelPlanRepository travelPlanRepository, TravelEmployeeRepository travelEmployeeRepository) {
+    public TravelPlanService(EmployeeRepository employeeRepository, ModelMapper modelMapper, TravelPlanRepository travelPlanRepository, TravelEmployeeRepository travelEmployeeRepository, NotificationService notificationService) {
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
         this.travelPlanRepository = travelPlanRepository;
         this.travelEmployeeRepository = travelEmployeeRepository;
+        this.notificationService = notificationService;
     }
 
     public TravelPlan createTravelPlan(TravelPlanRequestDTO travelPlanRequestDTO, String username){
@@ -42,7 +47,6 @@ public class TravelPlanService {
         modelMapper.map(travelPlanRequestDTO, travelPlan);
         travelPlan.setCreatedBy(creator);
         return travelPlanRepository.save(travelPlan);
-        //dto for response should
     }
 
     public TravelPlan updateTravelPlan(TravelPlanRequestDTO dto){
@@ -54,22 +58,26 @@ public class TravelPlanService {
         return travelPlan;
     }
     public void addTravelEmployee(TravelPlan travelPlan, List<Integer> employeeIds){
-        for(int i=0;i<employeeIds.size();i++){
-            Employee employee =  employeeRepository.findById(employeeIds.get(i)).orElseThrow(
-                    ()-> new RuntimeException("Can't Add invalid Id to travel plan")
+        for (Integer employeeId : employeeIds) {
+            Employee employee = employeeRepository.findById(employeeId).orElseThrow(
+                    () -> new RuntimeException("Can't Add invalid Id to travel plan")
             );
             travelEmployeeRepository.save(new TravelEmployee(travelPlan, employee));
-//            System.out.println(employeeIds.get(i));
+            notificationService.notifyUser(employeeId, NotificationTypeEnum.TravelPlan, "You are selected for travel plan : "+travelPlan.getTitle());
         }
     }
-    public void removeTravelEmployee(List<Integer> travelEmployeeIds){
+    public void removeTravelEmployee(TravelPlan travelPlan, List<Integer> employeeIds){
+        List<Integer> travelEmployeeIds = new ArrayList<>();
+        for (Integer employeeId : employeeIds) {
+            travelEmployeeIds.add(travelEmployeeRepository.findByEmployee_EmployeeIdAndTravelPlan(employeeId, travelPlan).getTravelEmployeeId());
+            notificationService.notifyUser(employeeId, NotificationTypeEnum.TravelPlan, "Your selection for travel plan : "+travelPlan.getTitle()+" , has been cancelled.");
+        }
         travelEmployeeRepository.deleteAllById(travelEmployeeIds);
-//        travelEmployeeIds.forEach(System.out::println);
     }
 
     public TravelPlan manageTravelEmployee(TravelEmployeeRequestDTO travelEmployeeRequestDTO){
         TravelPlan travelPlan = travelPlanRepository.findById(travelEmployeeRequestDTO.getTravelPlanId()).orElseThrow(
-                () -> new RuntimeException("No such Travel Plan found wiht Id : "+travelEmployeeRequestDTO.getTravelPlanId())
+                () -> new RuntimeException("No such Travel Plan found with Id : "+travelEmployeeRequestDTO.getTravelPlanId())
         );
         //let list not empty
         Set<Integer> newSet = new HashSet<>(travelEmployeeRequestDTO.getEmployeeIds());
@@ -83,10 +91,10 @@ public class TravelPlanService {
         Set<Integer> remove = new HashSet<>(oldSet);
         remove.removeAll(newSet); // removed employee
 
-        removeTravelEmployee(
+        removeTravelEmployee(travelPlan,
                 travelPlan.getTravelEmployees()
                 .stream().filter(travelEmployee -> remove.contains(travelEmployee.getEmployee().getEmployeeId()) )
-                        .map(TravelEmployee::getTravelEmployeeId)
+                        .map(travelEmployee -> travelEmployee.getEmployee().getEmployeeId())
                         .toList() // all id for  delete
         );
 
@@ -95,14 +103,11 @@ public class TravelPlanService {
     }
     public List<TravelPlanResponseDTO> getTravelPlans(){
         List<TravelPlan> travelPlans = travelPlanRepository.findAll();
-//        List<TravelPlanResponseDTO> result = modelMapper.map(travelPlans, new TypeToken<List<TravelPlanResponseDTO>>(){}.getType());
-//        result
         List<TravelPlanResponseDTO> result = travelPlans.stream().map(
                 travelPlan -> {
                     TravelPlanResponseDTO res = modelMapper.map(travelPlan, TravelPlanResponseDTO.class);
                     List<EmployeeResponseDTO> emp =  modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType());
                     res.setTravelEmployees(emp);
-//                    res.setEmployees(modelMapper.map(TravelPlan::getTravelEmployees,new TypeToken<List<EmployeeResponseDTO>>(){}.getType()));
                     return  res;
         }).toList();
         return  result;

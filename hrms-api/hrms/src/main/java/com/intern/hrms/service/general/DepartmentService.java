@@ -1,7 +1,7 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.general;
 
 import com.intern.hrms.entity.Department;
-import com.intern.hrms.repository.DepartmentRepository;
+import com.intern.hrms.repository.general.DepartmentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

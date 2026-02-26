@@ -1,4 +1,4 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.travel;
 
 import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentRequestDTO;
@@ -8,15 +8,18 @@ import com.intern.hrms.dto.travel.response.ProvidedTravelDocumetnResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.*;
 import com.intern.hrms.enums.DocumentStatusEnum;
-import com.intern.hrms.repository.*;
+import com.intern.hrms.enums.NotificationTypeEnum;
+import com.intern.hrms.repository.general.DocumentTypeRepository;
+import com.intern.hrms.repository.general.EmployeeRepository;
+import com.intern.hrms.repository.travel.*;
+import com.intern.hrms.service.general.NotificationService;
 import com.intern.hrms.utility.FileStorage;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +27,7 @@ import java.util.List;
  * EmployeeTravelDocument & Provided Travel Document both handled here
  */
 @Service
+@AllArgsConstructor
 public class TravelDocumentService {
 
     private final TravelPlanRepository travelPlanRepository;
@@ -35,28 +39,13 @@ public class TravelDocumentService {
     private final TravelEmployeeRepository travelEmployeeRepository;
     private final ProvidedTravelDocumentRepository providedTravelDocumentRepository;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
-    public TravelDocumentService(TravelPlanRepository travelPlanRepository, EmployeeTravelDocumentRepository employeeTravelDocumentRepository, DocumentTypeRepository documentTypeRepository, EmployeeRepository employeeRepository, EmployeeDocumentRepository employeeDocumentRepository, FileStorage fileStorage, TravelEmployeeRepository travelEmployeeRepository, ProvidedTravelDocumentRepository providedTravelDocumentRepository, ModelMapper modelMapper) {
-        this.travelPlanRepository = travelPlanRepository;
-        this.employeeTravelDocumentRepository = employeeTravelDocumentRepository;
-        this.documentTypeRepository = documentTypeRepository;
-        this.employeeRepository = employeeRepository;
-        this.employeeDocumentRepository = employeeDocumentRepository;
-        this.fileStorage = fileStorage;
-        this.travelEmployeeRepository = travelEmployeeRepository;
-        this.providedTravelDocumentRepository = providedTravelDocumentRepository;
-        this.modelMapper = modelMapper;
-    }
     public void createAllEmployeeTravelDocument(TravelDocumentRequestDTO travelDocumentRequestDTO){
         TravelPlan travelPlan = travelPlanRepository.findById(travelDocumentRequestDTO.getTravelPlanId()).orElseThrow(
                 ()-> new RuntimeException("No such Travel Plan Exist for document Request Id: "+travelDocumentRequestDTO.getTravelPlanId())
         );
         List<DocumentType> documentTypes = documentTypeRepository.findAllById(travelDocumentRequestDTO.getDocumentTypeIds());
-//        travelPlan.getTravelEmployees().forEach(
-//                travelEmployee -> {
-//                    createSingleEmployeeTravelDocument(travelEmployee, documentTypes);
-//                }
-//        );
         travelPlan.setDocumentTypes(documentTypes);
         travelPlanRepository.save(travelPlan);
     }
@@ -97,6 +86,9 @@ public class TravelDocumentService {
         employeeTravelDocument.setApprover(employeeRepository.getReferenceByEmail(username));
         employeeTravelDocument.setDocumentStatus(status);
         employeeTravelDocumentRepository.save(employeeTravelDocument);
+        notificationService.notifyUser(employeeTravelDocument.getTravelEmployee().getEmployee().getEmployeeId(),
+                NotificationTypeEnum.TravelDocument,
+                "Your Document for Travel Plan "+employeeTravelDocument.getTravelEmployee().getTravelPlan().getTitle()+" has been "+status.name());
     }
 
     public void submitProvidedDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, String username) throws IOException {

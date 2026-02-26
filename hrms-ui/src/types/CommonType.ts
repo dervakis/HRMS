@@ -41,3 +41,11 @@ export interface DepartmentType{
     departmentId:number
     departmentName:string
 }
+
+export interface NotificationType{
+    notificationId: number
+    notificationType: string
+    message: string 
+    createdAt: string
+}
+

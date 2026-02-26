@@ -1,7 +1,7 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.general;
 
 import com.intern.hrms.entity.travel.DocumentType;
-import com.intern.hrms.repository.DocumentTypeRepository;
+import com.intern.hrms.repository.general.DocumentTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

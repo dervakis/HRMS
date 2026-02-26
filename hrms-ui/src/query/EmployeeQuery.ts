@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getDepartments, getEmployeeDocuments, getEmployees, getOrgChartByEmployee, getRoles, login, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
+import { getDepartments, getEmployeeDocuments, getEmployees, getNotification, getOrgChartByEmployee, getRoles, login, markNotificationAsRead, resetPasswordRequest, submitNewPassword } from "../api/EmployeeApiCall"
 import { type ApiErrorType, type ApiResponseType } from "../types/ApiResponse"
-import { type LoginDetailType, type ResetPasswordDetailType } from "../types/AuthType"
 import { updateEmployeeDocument } from "../api/DocumentApiCall"
 
 export const useResetPasswordRequest = ()=>{
@@ -61,5 +60,18 @@ export const useGetDepartments = ()=>{
     return useQuery({
         queryKey: ['Departments'],
         queryFn: () => getDepartments()
+    })
+}
+
+export const useGetNotification = () =>{
+    return useQuery({
+        queryKey: ['Notification'],
+        queryFn: () => getNotification()
+    })
+}
+
+export const useMarkNotificationAsRead = () => {
+    return useMutation({
+        mutationFn: markNotificationAsRead
     })
 }

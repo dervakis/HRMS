@@ -9,13 +9,15 @@ import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.Role;
 import com.intern.hrms.entity.achivement.Comment;
 import com.intern.hrms.entity.achivement.Post;
-import com.intern.hrms.repository.AppConfigurationRepository;
-import com.intern.hrms.repository.DepartmentRepository;
-import com.intern.hrms.repository.EmployeeRepository;
-import com.intern.hrms.repository.RoleRepository;
+import com.intern.hrms.enums.NotificationTypeEnum;
+import com.intern.hrms.repository.general.AppConfigurationRepository;
+import com.intern.hrms.repository.general.DepartmentRepository;
+import com.intern.hrms.repository.general.EmployeeRepository;
+import com.intern.hrms.repository.general.RoleRepository;
 import com.intern.hrms.repository.achievement.PostRepository;
+import com.intern.hrms.service.general.NotificationService;
 import com.intern.hrms.utility.MailSend;
-import org.modelmapper.ModelMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
@@ -37,15 +40,7 @@ public class PostService {
     private final DepartmentRepository departmentRepository;
     private final MailSend mailSend;
     private final AppConfigurationRepository appConfigurationRepository;
-
-    public PostService(PostRepository postRepository, EmployeeRepository employeeRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, MailSend mailSend, AppConfigurationRepository appConfigurationRepository) {
-        this.postRepository = postRepository;
-        this.employeeRepository = employeeRepository;
-        this.roleRepository = roleRepository;
-        this.departmentRepository = departmentRepository;
-        this.mailSend = mailSend;
-        this.appConfigurationRepository = appConfigurationRepository;
-    }
+    private final NotificationService notificationService;
 
     /** Create post from (title, description, isPublic, targetRoles, targetDepartments) */
     public Post createPostFromForm(PostRequestDTO dto,
@@ -256,7 +251,6 @@ public class PostService {
         post.setRoles(null);
         post.setDepartments(null);
         post.setTags(type.equals("birthday") ? "birthday" : "anniversary");
-
         postRepository.save(post);
     }
 
@@ -269,5 +263,8 @@ public class PostService {
         }
         post.setIsActive(false);
         postRepository.save(post);
+        notificationService.notifyUser(post.getAuthor().getEmployeeId(),
+                NotificationTypeEnum.Warning,
+                "Your Post '"+post.getTitle()+"' has been Deleted By HR.");
     }
 }

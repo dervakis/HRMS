@@ -58,8 +58,11 @@ public class Employee {
     private List<JobReferral> jobReferrals;
 
     @OneToMany(mappedBy = "employee")
-    private List<EmployeeInterest> employeeInterests; // game in whihc emp intrested
+    private List<EmployeeInterest> employeeInterests;
 
     @ManyToMany(mappedBy = "players")
     private List<GameBooking> gameBookings;
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Notification> notifications;
 }

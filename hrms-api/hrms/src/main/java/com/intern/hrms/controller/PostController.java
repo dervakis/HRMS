@@ -8,7 +8,7 @@ import com.intern.hrms.dto.achievement.response.PostResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.achivement.Comment;
 import com.intern.hrms.entity.achivement.Post;
-import com.intern.hrms.service.EmployeeService;
+import com.intern.hrms.service.general.EmployeeService;
 import com.intern.hrms.service.post.CommentService;
 import com.intern.hrms.service.post.PostService;
 import jakarta.validation.Valid;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 

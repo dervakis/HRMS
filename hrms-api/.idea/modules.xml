@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.intern.hrms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.intern.hrms.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.intern.hrms.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.intern.hrms.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/hrms.iml" filepath="$PROJECT_DIR$/.idea/hrms.iml" />
     </modules>
   </component>

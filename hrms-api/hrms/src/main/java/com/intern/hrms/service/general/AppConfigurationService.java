@@ -1,7 +1,7 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.general;
 
 import com.intern.hrms.entity.AppConfiguration;
-import com.intern.hrms.repository.AppConfigurationRepository;
+import com.intern.hrms.repository.general.AppConfigurationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

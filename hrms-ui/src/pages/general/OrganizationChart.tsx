@@ -3,7 +3,7 @@ import { useGetEmployees, useGetOrgChartByEmployee } from '../../query/EmployeeQ
 import { useSelector } from 'react-redux';
 import type { RootStateType } from '../../redux-store/store';
 import { Button, Card, Dropdown, DropdownItem, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'flowbite-react';
-import type { EmployeeDetailType } from '../../types/AuthType';
+import type { EmployeeDetailType } from '../../types/CommonType';
 import { Tree, TreeNode } from 'react-organizational-chart'
 import type { TravelEmployeeType } from '../../types/TravelPlan';
 import InputField from '../../common/InputField';

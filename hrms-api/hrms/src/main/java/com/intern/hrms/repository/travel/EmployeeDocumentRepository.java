@@ -1,4 +1,4 @@
-package com.intern.hrms.repository;
+package com.intern.hrms.repository.travel;
 
 import com.intern.hrms.entity.travel.EmployeeDocument;
 import org.springframework.data.jpa.repository.JpaRepository;

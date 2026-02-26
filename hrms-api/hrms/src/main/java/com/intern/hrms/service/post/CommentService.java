@@ -4,10 +4,13 @@ package com.intern.hrms.service.post;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.achivement.Comment;
 import com.intern.hrms.entity.achivement.Post;
-import com.intern.hrms.repository.EmployeeRepository;
+import com.intern.hrms.enums.NotificationTypeEnum;
+import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.achievement.CommentRepository;
 import com.intern.hrms.repository.achievement.PostRepository;
+import com.intern.hrms.service.general.NotificationService;
 import com.intern.hrms.utility.MailSend;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,19 +18,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@AllArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final EmployeeRepository employeeRepository;
     private final MailSend mailSend;
-
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, EmployeeRepository employeeRepository, MailSend mailSend) {
-        this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
-        this.employeeRepository = employeeRepository;
-        this.mailSend = mailSend;
-    }
+    private final NotificationService notificationService;
 
     /** List active comments for a post */
     public List<Comment> listByPost(int postId) {
@@ -77,5 +75,8 @@ public class CommentService {
         }
         comment.setActive(false);
         commentRepository.save(comment);
+        notificationService.notifyUser(comment.getCommentBy().getEmployeeId(),
+                NotificationTypeEnum.Warning,
+                "Your comment on post '"+comment.getPost().getTitle()+"' has been Deleted By HR.");
     }
 }

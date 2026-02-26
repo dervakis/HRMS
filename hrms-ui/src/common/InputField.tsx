@@ -1,6 +1,9 @@
-import React, { forwardRef } from 'react'
-import type { InputFieldPropsType } from '../types/InputFieldPropsType'
-
+import React, { forwardRef, type InputHTMLAttributes } from 'react'
+export interface InputFieldPropsType extends InputHTMLAttributes<HTMLInputElement>{
+    label?: string,
+    error?: string,
+    className?: string
+}
 function InputField({label, error, className='', ...props}:InputFieldPropsType) {
   return (
     <div className='w-full'>

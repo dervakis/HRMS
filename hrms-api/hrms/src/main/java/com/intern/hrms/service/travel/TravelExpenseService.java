@@ -1,4 +1,4 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.travel;
 
 import com.intern.hrms.dto.travel.request.EmployeeTravelExpenseRequestDTO;
 import com.intern.hrms.dto.travel.response.EmployeeTravelExpenseResponseDTO;
@@ -7,9 +7,16 @@ import com.intern.hrms.entity.travel.EmployeeTravelExpense;
 import com.intern.hrms.entity.travel.TravelEmployee;
 import com.intern.hrms.entity.travel.TravelExpenseType;
 import com.intern.hrms.entity.travel.TravelPlan;
+import com.intern.hrms.enums.NotificationTypeEnum;
 import com.intern.hrms.enums.TravelExpenseStatusEnum;
-import com.intern.hrms.repository.*;
+import com.intern.hrms.repository.general.EmployeeRepository;
+import com.intern.hrms.repository.travel.EmployeeTravelExpenseRepository;
+import com.intern.hrms.repository.travel.TravelEmployeeRepository;
+import com.intern.hrms.repository.travel.TravelExpenseTypeRepository;
+import com.intern.hrms.repository.travel.TravelPlanRepository;
+import com.intern.hrms.service.general.NotificationService;
 import com.intern.hrms.utility.FileStorage;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -19,6 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TravelExpenseService {
 
     private final TravelExpenseTypeRepository travelExpenseTypeRepository;
@@ -28,16 +36,7 @@ public class TravelExpenseService {
     private final FileStorage fileStorage;
     private final EmployeeRepository employeeRepository;
     private final TravelPlanRepository travelPlanRepository;
-
-    public TravelExpenseService(TravelExpenseTypeRepository travelExpenseTypeRepository, ModelMapper modelMapper, EmployeeTravelExpenseRepository employeeTravelExpenseRepository, TravelEmployeeRepository travelEmployeeRepository, FileStorage fileStorage, EmployeeRepository employeeRepository, TravelPlanRepository travelPlanRepository) {
-        this.travelExpenseTypeRepository = travelExpenseTypeRepository;
-        this.modelMapper = modelMapper;
-        this.employeeTravelExpenseRepository = employeeTravelExpenseRepository;
-        this.travelEmployeeRepository = travelEmployeeRepository;
-        this.fileStorage = fileStorage;
-        this.employeeRepository = employeeRepository;
-        this.travelPlanRepository = travelPlanRepository;
-    }
+    private final NotificationService notificationService;
 
     public TravelExpenseType addExpenseType(String type, int maxAmount){
         travelExpenseTypeRepository.findByTravelExpenseTypeName(type).ifPresent(
@@ -77,7 +76,6 @@ public class TravelExpenseService {
 //        expense.setEmployeeTravelExpenseId(dto.getEmployeeTravelExpenseId());
         expense.setStatus(TravelExpenseStatusEnum.Draft);
 
-
         return employeeTravelExpenseRepository.save(expense);
 //        employeeTravelExpenseRepository.
 //        return expense;
@@ -91,7 +89,6 @@ public class TravelExpenseService {
             throw new RuntimeException("Proof is mandatory for submitting expense");
         expense.setStatus(TravelExpenseStatusEnum.Submitted);
         expense.setCreatedAt(LocalDate.now());
-
         employeeTravelExpenseRepository.save(expense);
     }
 
@@ -107,6 +104,9 @@ public class TravelExpenseService {
         expense.setUpdatedAt(LocalDate.now());
         expense.setApprover(approver);
         employeeTravelExpenseRepository.save(expense);
+        notificationService.notifyUser(expense.getTravelEmployee().getEmployee().getEmployeeId(),
+                NotificationTypeEnum.TravelExpense,
+                "Your Expense for Travel Plan "+expense.getTravelEmployee().getTravelPlan().getTitle()+" has been "+status.name());
     }
 
     public List<EmployeeTravelExpenseResponseDTO> getExpenseByEmployee(int employeeId){

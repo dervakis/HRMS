@@ -6,16 +6,14 @@ import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
 import com.intern.hrms.dto.general.response.EmployeeDetailResponseDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
-import com.intern.hrms.dto.job.response.JobResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
-import com.intern.hrms.service.EmployeeDocumentService;
-import com.intern.hrms.service.EmployeeService;
+import com.intern.hrms.service.travel.EmployeeDocumentService;
+import com.intern.hrms.service.general.EmployeeService;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.utility.MailSend;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController

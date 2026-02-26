@@ -25,6 +25,7 @@ import Configuration from './pages/general/Configuration'
 import Login from './pages/general/Login'
 import Profile from './pages/general/Profile'
 import Feed from './pages/achievement/Feed'
+import Home from './pages/general/Home'
 // import GameBooking from './pages/game/GameBooking'
 
 function App() {
@@ -43,7 +44,7 @@ function App() {
       element: <ProtectedRoute><MainLayout/></ProtectedRoute>,
       children: [
         {path:'/',
-          element: <><h1>Welcome to HRMS</h1></>
+          element: <ProtectedRoute><Home/></ProtectedRoute>
         },
         {
           path: '/manage-travel',

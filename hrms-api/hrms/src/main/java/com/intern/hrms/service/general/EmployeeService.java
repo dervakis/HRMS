@@ -1,4 +1,4 @@
-package com.intern.hrms.service;
+package com.intern.hrms.service.general;
 
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
@@ -8,23 +8,21 @@ import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.Game;
-import com.intern.hrms.repository.DepartmentRepository;
-import com.intern.hrms.repository.EmployeeRepository;
-import com.intern.hrms.repository.RoleRepository;
+import com.intern.hrms.repository.general.DepartmentRepository;
+import com.intern.hrms.repository.general.EmployeeRepository;
+import com.intern.hrms.repository.general.RoleRepository;
 import com.intern.hrms.repository.game.EmployeeInterestRepository;
 import com.intern.hrms.repository.game.GameRepository;
 import com.intern.hrms.security.JwtService;
 import com.intern.hrms.utility.RandomStringGenerator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Stack;
 
 @Service
 @Validated

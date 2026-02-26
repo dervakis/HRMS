@@ -1,7 +1,7 @@
 package com.intern.hrms.scheduler;
 
 import com.intern.hrms.entity.Employee;
-import com.intern.hrms.repository.EmployeeRepository;
+import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.service.post.PostService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
