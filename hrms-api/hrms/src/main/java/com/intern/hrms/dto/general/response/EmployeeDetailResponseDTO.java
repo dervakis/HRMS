@@ -15,6 +15,8 @@ public class EmployeeDetailResponseDTO {
     private LocalDate dateOfBirth;
     private LocalDate joiningDate;
     private Integer managerId;
+    private String managerFirstName;
+    private String managerLastName;
     private Integer departmentId;
     private String departmentName;
     private Integer roleId;

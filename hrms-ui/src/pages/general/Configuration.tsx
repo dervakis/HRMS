@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { useAddConfiguration, useDeleteConfiguration, useGetConfiguration } from '../../query/AppConfigurationQuery';
+import { useAddConfiguration, useDeleteConfiguration, useGetConfiguration, useUpdateConfigurationByKey } from '../../query/AppConfigurationQuery';
 import toast from 'react-hot-toast';
 import { Badge, Button, Card, Spinner, TextInput } from 'flowbite-react';
 import { Trash } from 'lucide-react';
 
 function Configuration() {
     const { data, isLoading, refetch } = useGetConfiguration("referral_to");
+    const { data: days, refetch: refetchDay } = useGetConfiguration("expense_deadline");
     const addMutation = useAddConfiguration();
     const deleteMutation = useDeleteConfiguration();
+    const updateMutation = useUpdateConfigurationByKey()
     const [email, setEmail] = useState("");
+    const [deadline, setDeadline] = useState(Number(days?.[0].configValue));
     const handleAdd = async () => {
         if (!email.trim()) {
             toast.error("Email is required");
@@ -43,7 +46,7 @@ function Configuration() {
         });
     };
     return (
-        <div>
+        <div className='space-y-2'>
             <Card>
                 <h2 className="text-xl font-semibold mb-4">Referral Email Configuration</h2>
                 <div className="space-y-2">
@@ -68,7 +71,26 @@ function Configuration() {
                     </Button>
                 </div>
             </Card>
-        </div>
+
+            <Card>
+                <div className='flex gap-4'>
+                    <h2 className="text-xl font-semibold mb-4">Expense Submition Deadline (days)</h2>•
+                    <TextInput type='number' className='w-25' value={deadline} onChange={(e) => setDeadline(Number(e.target.value))} />•
+                    <Button size='sm' onClick={() => updateMutation.mutateAsync({ configId: Number(days?.[0].appConfigurationId), value: deadline.toString() },
+                        {
+                            onSuccess: () => {
+                                toast.success("Value Updated Successfully");
+                                refetchDay();
+
+                            },
+                            onError: (err) => {
+                                toast.error(err?.message || "Failed to Update Days");
+                            }
+                        })}
+                    > Update</Button>
+                </div>
+            </Card >
+        </div >
     )
 }
 

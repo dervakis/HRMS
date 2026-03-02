@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addConfiguration, deleteConfiguration, getConfigurationByKey } from "../api/AppConfigurationApiCall";
+import { addConfiguration, deleteConfiguration, getConfigurationByKey, updateConfigurationByKey } from "../api/AppConfigurationApiCall";
 
 export const useGetConfiguration = (key: string) => {
     return useQuery({
@@ -11,6 +11,12 @@ export const useGetConfiguration = (key: string) => {
 export const useAddConfiguration = () => {
     return useMutation({
         mutationFn: addConfiguration,
+    });
+};
+
+export const useUpdateConfigurationByKey = () => {
+    return useMutation({
+        mutationFn: updateConfigurationByKey,
     });
 };
 

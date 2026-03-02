@@ -24,4 +24,15 @@ public class DepartmentService {
     public List<Department> getDepartment(){
         return departmentRepository.findAll();
     }
+
+    public Department updateDepartment(int id, String name) {
+        Department dept = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+        dept.setDepartmentName(name.toUpperCase());
+        return departmentRepository.save(dept);
+    }
+
+    public void deleteDepartment(int id) {
+        departmentRepository.deleteById(id);
+    }
 }

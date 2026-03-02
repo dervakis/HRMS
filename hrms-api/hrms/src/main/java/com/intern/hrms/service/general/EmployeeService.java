@@ -1,11 +1,14 @@
 package com.intern.hrms.service.general;
 
+import com.intern.hrms.commonResponse.PaginatedResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
 import com.intern.hrms.dto.general.response.EmployeeDetailResponseDTO;
 import com.intern.hrms.dto.general.response.LoginResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
+import com.intern.hrms.entity.Department;
 import com.intern.hrms.entity.Employee;
+import com.intern.hrms.entity.Role;
 import com.intern.hrms.entity.game.EmployeeInterest;
 import com.intern.hrms.entity.game.Game;
 import com.intern.hrms.repository.general.DepartmentRepository;
@@ -15,8 +18,12 @@ import com.intern.hrms.repository.game.EmployeeInterestRepository;
 import com.intern.hrms.repository.game.GameRepository;
 import com.intern.hrms.security.JwtService;
 import com.intern.hrms.utility.RandomStringGenerator;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +33,7 @@ import java.util.List;
 
 @Service
 @Validated
+@AllArgsConstructor
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final JwtService jwtService;
@@ -35,17 +43,6 @@ public class EmployeeService {
     private final RoleRepository roleRepository;
     private final GameRepository gameRepository;
     private final EmployeeInterestRepository employeeInterestRepository;
-
-    public EmployeeService(EmployeeRepository employeeRepository, JwtService jwtService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, DepartmentRepository departmentRepository, RoleRepository roleRepository, GameRepository gameRepository, EmployeeInterestRepository employeeInterestRepository) {
-        this.employeeRepository = employeeRepository;
-        this.jwtService = jwtService;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.departmentRepository = departmentRepository;
-        this.roleRepository = roleRepository;
-        this.gameRepository = gameRepository;
-        this.employeeInterestRepository = employeeInterestRepository;
-    }
 
     public Employee addEmployee( EmployeeRequestDTO employeeRequestDTO){
         employeeRepository.findByEmail(employeeRequestDTO.getEmail()).ifPresent(
@@ -60,11 +57,10 @@ public class EmployeeService {
 
         Employee newEmployee = new Employee();
         modelMapper.map(employeeRequestDTO, newEmployee);
+        newEmployee.setManager(employeeRepository.getReferenceById(employeeRequestDTO.getManagerId()));
         String randomPassword = RandomStringGenerator.generateString(10);
         newEmployee.setPassword(passwordEncoder.encode(randomPassword));
-//        if(employeeRequestDTO.getManagerId())
         return employeeRepository.save(newEmployee);
-//        return  newEmployee;
     }
     public List<EmployeeResponseDTO> getEmployees(){
         List<Employee> employees =  employeeRepository.findAll();
@@ -96,7 +92,6 @@ public class EmployeeService {
     public String requestForgetPassword(String email){
         Employee employee = getByEmail(email);
         return employee.getPassword();
-        //remaining to send mail with this token for varificaiton
     }
 
     public void forgetPassword(String email, ResetPasswordRequestDTO resetPasswordRequestDTO){
@@ -136,5 +131,52 @@ public class EmployeeService {
         Employee employee = employeeRepository.getReferenceByEmail(username);
         employeeInterestRepository.deleteByEmployee_EmployeeIdAndGame_GameId(employee.getEmployeeId(), gameId);
         return;
+    }
+
+    public PaginatedResponse<EmployeeDetailResponseDTO> getEmployees(Integer departmentId, Integer roleId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Employee> employeePage;
+        if (departmentId != null && roleId != null) {
+            throw new RuntimeException("Filter either by department OR role only.");
+        } else if (departmentId != null) {
+            employeePage = employeeRepository.findByDepartment_DepartmentId(departmentId, pageable);
+        } else if (roleId != null) {
+            employeePage = employeeRepository.findByRole_RoleId(roleId, pageable);
+        } else {
+            employeePage = employeeRepository.findAll(pageable);
+        }
+        List<EmployeeDetailResponseDTO> responses = employeePage.getContent().stream().map(employee -> modelMapper.map(employee,EmployeeDetailResponseDTO.class)).toList();
+
+        return new PaginatedResponse<>(
+                responses,
+                employeePage.getNumber(),
+                employeePage.getSize(),
+                employeePage.getTotalElements()
+        );
+    }
+
+    public void updateEmployee(int id, EmployeeRequestDTO dto) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        if(dto.getManagerId() != null){
+            Employee manager = employeeRepository.getReferenceById(dto.getManagerId());
+            employee.setManager(manager);
+        }
+        if(dto.getRoleId() != null){
+            Role role = roleRepository.getReferenceById(dto.getRoleId());
+            employee.setRole(role);
+        }
+        if(dto.getDepartmentId() != null){
+            Department department = departmentRepository.getReferenceById(dto.getDepartmentId());
+            employee.setDepartment(department);
+        }
+
+        employee.setFirstName(dto.getFirstName());
+        employee.setLastName(dto.getLastName());
+        employee.setDateOfBirth(dto.getDateOfBirth());
+        employee.setJoiningDate(dto.getJoiningDate());
+        employee.setEmail(dto.getEmail());
+        employeeRepository.save(employee);
     }
 }

@@ -1,6 +1,7 @@
 package com.intern.hrms.configuration;
 
 import com.intern.hrms.filter.AuthenticationFilter;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,14 +15,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @Configuration
+@AllArgsConstructor
 public class SecurityConfiguration implements WebMvcConfigurer {
     private final AuthenticationFilter authenticationFilter;
-    private final UserDetailsService userDetailsService;
-
-    public SecurityConfiguration(AuthenticationFilter authenticationFilter, UserDetailsService userDetailsService) {
-        this.authenticationFilter = authenticationFilter;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
@@ -32,7 +28,6 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/swagger-ui/**" , "/v3/api-docs/**", "/ws/**").permitAll()
-                                .requestMatchers("/api/role/**").permitAll()
                                 .requestMatchers("/api/employee/login/**", "/api/employee/forget-password/**").permitAll()
                                 .requestMatchers("/api/config/**").hasRole("HR")
                                 .anyRequest().authenticated()
@@ -50,5 +45,4 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-
 }

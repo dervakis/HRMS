@@ -22,6 +22,10 @@ export const getConfigurationByKey = async (key: string): Promise<AppConfigurati
     return res.data.data;
 };
 
+export const updateConfigurationByKey = async ({configId, value}:{configId: number, value: string}): Promise<void> => {
+    await Api.put(`/config/${configId}/${value}`);
+};
+
 export const deleteConfiguration = async (configId: number) : Promise<ApiResponseType<Object>> => {
     const res = await Api.delete(`/config/${configId}`);
     return res.data;

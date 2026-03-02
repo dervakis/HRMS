@@ -1,9 +1,9 @@
 export interface LoginDetailType {
-    email:string,
-    password:string
+    email: string,
+    password: string
 }
 
-export interface LoginResponseType{
+export interface LoginResponseType {
     authToken: string
     role: string
     fullName: string
@@ -11,20 +11,22 @@ export interface LoginResponseType{
     userId: number
 }
 
-export interface ResetPasswordDetailType{
-    email:string,
-    password:string,
-    confirmPassword:string
+export interface ResetPasswordDetailType {
+    email: string,
+    password: string,
+    confirmPassword: string
 }
 
-export interface EmployeeDetailType{
+export interface EmployeeDetailType {
     employeeId: number
-    firstName:string
+    firstName: string
     lastName: string
     email: string
     dateOfBirth: Date
     joiningDate: Date
     managerId: number
+    managerFirstName: string
+    managerLastName: string
     departmentId: number
     departmentName: string
     roleId: number
@@ -32,20 +34,32 @@ export interface EmployeeDetailType{
     childEmployee?: EmployeeDetailType[]
 }
 
-export interface RoleType{
-    roleId:number
-    roleName: string 
+export interface RoleType {
+    roleId: number
+    roleName: string
 }
 
-export interface DepartmentType{
-    departmentId:number
-    departmentName:string
+export interface DepartmentType {
+    departmentId: number
+    departmentName: string
 }
 
-export interface NotificationType{
+export interface NotificationType {
     notificationId: number
     notificationType: string
-    message: string 
+    message: string
     createdAt: string
+}
+
+export interface EmployeeRequestType {
+    firstName: string
+    lastName: string
+    email: string
+    password?: string
+    dateOfBirth: string
+    joiningDate: string
+    departmentId?: number
+    roleId?: number
+    managerId?: number
 }
 

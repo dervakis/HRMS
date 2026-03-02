@@ -21,11 +21,12 @@ import OrganizationChart from './pages/general/OrganizationChart'
 import GameBooking from './pages/game/GameBooking'
 import BookingHistory from './pages/game/BookingHistory'
 import TodayBooking from './pages/game/TodayBooking'
-import Configuration from './pages/general/Configuration'
+import EmployeeConfiguration from './pages/general/EmployeeConfiguration'
 import Login from './pages/general/Login'
 import Profile from './pages/general/Profile'
 import Feed from './pages/achievement/Feed'
 import Home from './pages/general/Home'
+import Configuration from './pages/general/Configuration'
 // import GameBooking from './pages/game/GameBooking'
 
 function App() {
@@ -104,7 +105,11 @@ function App() {
           element: <ProtectedRoute><TodayBooking/></ProtectedRoute>
         },
         {
-          path: '/configuration',
+          path: '/emp-configuration',
+          element: <ProtectedRoute><EmployeeConfiguration/></ProtectedRoute>
+        },
+        {
+          path: 'configuration',
           element: <ProtectedRoute><Configuration/></ProtectedRoute>
         },
         {

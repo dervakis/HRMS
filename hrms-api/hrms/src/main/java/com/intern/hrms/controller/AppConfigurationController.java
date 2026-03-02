@@ -40,4 +40,12 @@ public class AppConfigurationController {
                 new SuccessResponse<>("Deleted Successfully",null )
         );
     }
+
+    @PutMapping("/{configId}/{value}")
+    public ResponseEntity<SuccessResponse<Objects>> updateConfiguration(@PathVariable int configId, @PathVariable String value){
+        appConfigurationService.updateConfiguration(configId, value);
+        return ResponseEntity.ok(
+                new SuccessResponse<>("Updated Successfully",null )
+        );
+    }
 }

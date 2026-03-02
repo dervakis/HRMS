@@ -1,5 +1,6 @@
 package com.intern.hrms.controller;
 
+import com.intern.hrms.commonResponse.PaginatedResponse;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.general.request.EmployeeRequestDTO;
 import com.intern.hrms.dto.general.request.ResetPasswordRequestDTO;
@@ -69,7 +70,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}")
-    public ResponseEntity<Employee> getEmployeById(@PathVariable int employeeId){
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable int employeeId){
         logger.info("Employee Controller : fetching employee with id - "+employeeId);
         Employee e = employeeService.getById(employeeId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(e);
@@ -124,10 +125,29 @@ public class EmployeeController {
         );
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<PaginatedResponse<EmployeeDetailResponseDTO>> getEmployeesPages(
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(required = false) Integer roleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(employeeService.getEmployees(departmentId, roleId, page, size));
+    }
+
     @GetMapping
     public ResponseEntity<SuccessResponse<List<EmployeeResponseDTO>>> getEmployees(){
         return ResponseEntity.ok(
                 new SuccessResponse<>(null, employeeService.getEmployees())
         );
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<Void> update(
+            @PathVariable int id,
+            @RequestBody @Validated EmployeeRequestDTO request) {
+        employeeService.updateEmployee(id, request);
+        return ResponseEntity.noContent().build();
     }
 }

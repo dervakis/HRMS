@@ -41,4 +41,17 @@ public class DepartmentController {
     public SuccessResponse<List<Department>> getDepartments(){
         return new SuccessResponse<>(null, departmentService.getDepartment());
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<Department> update(@PathVariable int id, @RequestParam String name) {
+        return ResponseEntity.ok(departmentService.updateDepartment(id, name));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        departmentService.deleteDepartment(id);
+        return ResponseEntity.noContent().build();
+    }
 }
