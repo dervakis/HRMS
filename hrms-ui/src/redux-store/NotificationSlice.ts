@@ -16,8 +16,8 @@ const NotificationSlic = createSlice({
     initialState: initial,
     reducers: {
         InitNotification: (state, action: PayloadAction<NotificationType[]>) => {
-            if (action.payload) {
-                state.items = action.payload.reverse() || []
+            if (action.payload && action.payload.length > 0) {
+                state.items = action.payload.reverse()
                 state.count = action.payload.length
             }
         },

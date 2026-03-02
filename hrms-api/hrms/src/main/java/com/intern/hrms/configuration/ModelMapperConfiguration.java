@@ -26,12 +26,6 @@ class SkipPropertyMap extends PropertyMap<EmployeeTravelExpenseRequestDTO, Emplo
         skip(destination.getTravelEmployee());
     }
 }
-class ReferralListToCount extends AbstractConverter<List<JobReferral>, Integer> {
-    @Override
-    protected Integer convert(List<JobReferral> source) {
-        return source != null ? source.size() : 0;
-    }
-}
 
 @Configuration
 public class ModelMapperConfiguration {
@@ -39,7 +33,6 @@ public class ModelMapperConfiguration {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(new SkipPropertyMap());
-        modelMapper.addConverter(new ReferralListToCount());
         modelMapper.typeMap(TravelPlanRequestDTO.class, TravelPlan.class)
                 .addMappings(m -> m.skip(TravelPlan::setTravelPlanId));
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());

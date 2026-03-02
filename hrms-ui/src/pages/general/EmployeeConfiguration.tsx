@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import type { ApiErrorType } from "../../types/ApiResponse";
 
 const EmployeeConfiguration = () => {
-    const { data: allEmployees } = useGetEmployees();
+    const { data: allEmployees, refetch:refetchEmp } = useGetEmployees();
 
     const { data: departments, refetch: refetchDept } = useGetDepartments();
     const createDepartment = useCreateDepartment();
@@ -33,7 +33,7 @@ const EmployeeConfiguration = () => {
     // console.log(employeePage)
     const createEmployeeMutation = useCreateEmployee();
     const updateEmployeeMutation = useUpdateEmployee();
-    // const deleteEmployeeMutation = useDeleteEmployee();
+    const deleteEmployeeMutation = useDeleteEmployee();
 
     const [employeeEditId, setEmployeeEditId] = useState<number | null>(null);
     const [newEmployee, setNewEmployee] = useState<EmployeeRequestType>({
@@ -88,6 +88,7 @@ const EmployeeConfiguration = () => {
             managerId: undefined
         });
         refetchEmployees();
+        refetchEmp();
     };
 
     const totalPages = employeePage?.totalPages || 0;
@@ -433,12 +434,13 @@ const EmployeeConfiguration = () => {
                                                     await updateEmployeeMutation.mutateAsync({
                                                         employeeId: emp.employeeId,
                                                         data: newEmployee,
-                                                    },{
+                                                    }, {
                                                         onError: (error: unknown) => toast.error((error as ApiErrorType).details?.join(' , ')!)
                                                     });
                                                     setEmployeeEditId(null);
                                                     refetchEmployees();
                                                     resetNewEmployee();
+                                                    refetchEmp();
                                                 }}
                                             >
                                                 Save
@@ -472,7 +474,10 @@ const EmployeeConfiguration = () => {
                                                     managerId: emp.managerId,
                                                 });
                                             }}>Edit</button>
-                                            {/* <button className="bg-red-500 text-white px-2 py-1 rounded">Delete</button> */}
+                                            <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={async () =>{ await deleteEmployeeMutation.mutateAsync(emp.employeeId, {
+                                                onSuccess: () => {refetchEmployees(); refetchEmp()},
+                                                onError: (err) => toast.error(err.message)
+                                            })}}>Delete</button>
                                         </td>
                                     </>
                                 )}

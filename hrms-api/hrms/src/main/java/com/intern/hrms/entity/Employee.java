@@ -29,6 +29,7 @@ public class Employee {
     private String password;
     private LocalDate dateOfBirth;
     private LocalDate joiningDate;
+    private Boolean isDeleted=false;
 
     @ManyToOne
     @JoinColumn(name = "fk_manager_employee_id")

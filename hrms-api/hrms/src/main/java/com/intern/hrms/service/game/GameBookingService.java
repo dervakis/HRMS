@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -85,12 +86,17 @@ public class GameBookingService {
         allParticipants.add(bookedBy);
 
         List<String> emails = new ArrayList<>();
+
         for(Employee participant : allParticipants){
-            boolean alreadyBooked = gameBookingRepository.existsByBookingDateAndPlayersContainsAndBookingStatus(dto.getBookingDate(), participant, BookingStatusEnum.Booked);
-            emails.add(participant.getEmail());
+            boolean alreadyBooked = gameBookingRepository.existsByGameAndBookingDateAndPlayersContainsAndBookingStatus(game,dto.getBookingDate(), participant, BookingStatusEnum.Booked);
             if(alreadyBooked){
-                throw  new RuntimeException("Employee already booked for today, Name "+participant.getFirstName()+" "+participant.getLastName());
+                throw  new RuntimeException("Employee already booked for today for this game, Name "+participant.getFirstName()+" "+participant.getLastName());
             }
+            int overlapping = gameBookingRepository.existsOverlappingBooking(dto.getBookingDate(), dto.getBookingTime(), dto.getBookingTime().plusMinutes(game.getDurationInMinute()), participant.getEmployeeId());
+            if(overlapping > 0){
+                throw  new RuntimeException("Employee already have requested slot for other game on same time : "+participant.getFirstName()+" "+participant.getLastName());
+            }
+            emails.add(participant.getEmail());
         }
 
         boolean allZero = true;
@@ -166,6 +172,7 @@ public class GameBookingService {
                 ,null);
     }
 
+    @Transactional
     public void cancelBooking(int bookingId) {
         GameBooking booking = gameBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));

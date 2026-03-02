@@ -150,4 +150,11 @@ public class EmployeeController {
         employeeService.updateEmployee(id, request);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{employeeId}")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<Void> delete(@PathVariable int employeeId){
+        employeeService.deleteEmployee(employeeId);
+        return ResponseEntity.noContent().build();
+    }
 }

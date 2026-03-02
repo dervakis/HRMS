@@ -19,13 +19,19 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Employee getReferenceByEmail(String email);
 
-    @Query("SELECT e FROM Employee e WHERE MONTH(e.dateOfBirth) = :month AND DAY(e.dateOfBirth) = :day")
+    @Query("SELECT e FROM Employee e WHERE MONTH(e.dateOfBirth) = :month AND DAY(e.dateOfBirth) = :day and e.isDeleted = false")
     List<Employee> findByDateOfBirthMonthAndDay(int month, int day);
 
-    @Query("SELECT e FROM Employee e WHERE MONTH(e.joiningDate) = :month AND DAY(e.joiningDate) = :day")
+    @Query("SELECT e FROM Employee e WHERE MONTH(e.joiningDate) = :month AND DAY(e.joiningDate) = :day and e.isDeleted = false")
     List<Employee> findByJoiningDateMonthAndDay(int month, int day);
 
-    Page<Employee> findByDepartment_DepartmentId(int departmentId, Pageable pageable);
+    Page<Employee> findByDepartment_DepartmentIdAndIsDeletedFalse(int departmentId, Pageable pageable);
 
-    Page<Employee> findByRole_RoleId(int roleId, Pageable pageable);
+    Page<Employee> findByRole_RoleIdAndIsDeletedFalse(int roleId, Pageable pageable);
+
+    List<Employee> findAllByIsDeletedFalse();
+
+    Page<Employee> findAllByIsDeletedFalse(Pageable pageable);
+
+    Optional<Employee> findByEmailAndIsDeletedFalse(String email);
 }

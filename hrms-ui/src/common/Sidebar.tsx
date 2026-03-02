@@ -1,5 +1,5 @@
 import { Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems } from "flowbite-react";
-import { BookmarkCheck, Briefcase, BriefcaseBusiness, CalendarCheck, Files, FileText, Gamepad2, History, Home, IndianRupee, Landmark, MonitorCog, Network, Plane, Settings, Share2, ShieldCheck, Swords, Trophy, UserCog } from "lucide-react";
+import { MonitorCog, Settings, UserCog } from "lucide-react";
 import React from "react";
 import { useSelector } from "react-redux";
 import type { RootStateType } from "../redux-store/store";
@@ -26,6 +26,12 @@ const SidebarLink = ({ to, icon: Icon, label, role }: SidebarLinkProps) => {
   );
 };
 
+const SidebarIcon = (icon:string) => {
+  return (
+   <span className="text-2xl leading-none">{icon}</span>
+  );
+}
+
 function Sidebar2() {
   const user = useSelector((state: RootStateType) => state.user);
   return (
@@ -33,33 +39,33 @@ function Sidebar2() {
       <SidebarItems>
         <SidebarItemGroup>
 
-          <SidebarLink to="/" icon={Home} label="Home" />
-          <SidebarLink to="/documents" icon={FileText} label="My Documents" />
+          <SidebarLink to="/" icon={()=>SidebarIcon('🏠')} label="Home" />
+          <SidebarLink to="/documents" icon={()=>SidebarIcon('📑')} label="My Documents" />
 
-          <SidebarCollapse icon={Plane} label="Travels">
-            <SidebarLink to="/manage-travel" icon={Settings} label="Manage Travel" role="HR" />
-            <SidebarLink to="/manage-expense" icon={Landmark} label="Manage Expense" role="HR" />
-            <SidebarLink to="/verify-docuement" icon={ShieldCheck} label="Document Verification" role="HR" />
-            <SidebarLink to="/travel-document" icon={Files} label="My Travel Trips" />
-            <SidebarLink to="/travel-expense" icon={IndianRupee} label="My Expenses" />
+          <SidebarCollapse icon={()=>SidebarIcon('✈️')} label="Travels">
+            <SidebarLink to="/manage-travel" icon={()=>SidebarIcon('⚙️')} label="Manage Travel" role="HR" />
+            <SidebarLink to="/manage-expense" icon={()=>SidebarIcon('🏛️')} label="Manage Expense" role="HR" />
+            <SidebarLink to="/verify-docuement" icon={()=>SidebarIcon('🛡️')} label="Document Verify" role="HR" />
+            <SidebarLink to="/travel-document" icon={()=>SidebarIcon('🚞')} label="My Travel Trips" />
+            <SidebarLink to="/travel-expense" icon={()=>SidebarIcon('🪙')} label="My Expenses" />
           </SidebarCollapse>
 
-          <SidebarCollapse icon={BriefcaseBusiness} label="Jobs">
-            <SidebarLink to="/manage-job" icon={Settings} label="Manage Job" role="HR" />
-            <SidebarLink to="/manage-referral" icon={BookmarkCheck} label="Job Referrals" role="HR" />
-            <SidebarLink to="/open-job" icon={Briefcase} label="Open Job" />
-            <SidebarLink to="/refferal" icon={Share2} label="My Referrals" />
+          <SidebarCollapse icon={()=>SidebarIcon('💼')} label="Jobs">
+            <SidebarLink to="/manage-job" icon={()=>SidebarIcon('⚙️')} label="Manage Job" role="HR" />
+            <SidebarLink to="/manage-referral" icon={()=>SidebarIcon('🎟️')} label="Job Referrals" role="HR" />
+            <SidebarLink to="/open-job" icon={()=>SidebarIcon('📧')} label="Open Job" />
+            <SidebarLink to="/refferal" icon={()=>SidebarIcon('🏷️')} label="My Referrals" />
           </SidebarCollapse>
 
-          <SidebarLink to="/org-chart" icon={Network} label="My Organization" />
+          <SidebarLink to="/org-chart" icon={()=>SidebarIcon('🕸️')} label="My Organization" />
 
-          <SidebarCollapse icon={Gamepad2} label="Game">
-            <SidebarLink to="/manage-game" icon={Settings} label="Manage Game" role="HR" />
-            <SidebarLink to="/book-game" icon={CalendarCheck} label="Book GameSlot" />
-            <SidebarLink to="/booking-history" icon={History} label="History" />
-            <SidebarLink to="/today-booking" icon={Swords} label="Today's Clash" />
+          <SidebarCollapse icon={()=>SidebarIcon('🎯')} label="Game">
+            <SidebarLink to="/manage-game" icon={()=>SidebarIcon('⚙️')} label="Manage Game" role="HR" />
+            <SidebarLink to="/book-game" icon={()=>SidebarIcon('📆')} label="Book GameSlot" />
+            <SidebarLink to="/booking-history" icon={()=>SidebarIcon('🗃️')} label="History" />
+            <SidebarLink to="/today-booking" icon={()=>SidebarIcon('⚔️')} label="Today's Clash" />
           </SidebarCollapse>
-          <SidebarLink to="/achievement" icon={Trophy} label="Achievement" />
+          <SidebarLink to="/achievement" icon={()=>SidebarIcon('🏆')} label="Achievement" />
           {
             user.role === 'HR' &&
             <SidebarCollapse icon={Settings} label="Configuration">

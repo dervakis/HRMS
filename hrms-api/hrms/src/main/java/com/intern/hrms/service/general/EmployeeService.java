@@ -63,12 +63,12 @@ public class EmployeeService {
         return employeeRepository.save(newEmployee);
     }
     public List<EmployeeResponseDTO> getEmployees(){
-        List<Employee> employees =  employeeRepository.findAll();
+        List<Employee> employees =  employeeRepository.findAllByIsDeletedFalse();
         return modelMapper.map(employees, new TypeToken<List<EmployeeResponseDTO>>(){}.getType());
     }
 
     public Employee getByEmail(String email){
-        return employeeRepository.findByEmail(email).orElseThrow(
+        return employeeRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(
                 ()-> new UsernameNotFoundException("User not found with email : "+email)
         );
     }
@@ -139,11 +139,11 @@ public class EmployeeService {
         if (departmentId != null && roleId != null) {
             throw new RuntimeException("Filter either by department OR role only.");
         } else if (departmentId != null) {
-            employeePage = employeeRepository.findByDepartment_DepartmentId(departmentId, pageable);
+            employeePage = employeeRepository.findByDepartment_DepartmentIdAndIsDeletedFalse(departmentId, pageable);
         } else if (roleId != null) {
-            employeePage = employeeRepository.findByRole_RoleId(roleId, pageable);
+            employeePage = employeeRepository.findByRole_RoleIdAndIsDeletedFalse(roleId, pageable);
         } else {
-            employeePage = employeeRepository.findAll(pageable);
+            employeePage = employeeRepository.findAllByIsDeletedFalse(pageable);
         }
         List<EmployeeDetailResponseDTO> responses = employeePage.getContent().stream().map(employee -> modelMapper.map(employee,EmployeeDetailResponseDTO.class)).toList();
 
@@ -177,6 +177,12 @@ public class EmployeeService {
         employee.setDateOfBirth(dto.getDateOfBirth());
         employee.setJoiningDate(dto.getJoiningDate());
         employee.setEmail(dto.getEmail());
+        employeeRepository.save(employee);
+    }
+
+    public void deleteEmployee(int employeeId){
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow();
+        employee.setIsDeleted(true);
         employeeRepository.save(employee);
     }
 }

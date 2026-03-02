@@ -11,7 +11,7 @@ Api.interceptors.response.use(
             return Promise.reject(error.response.data)
         }
         // console.log(error.response.status)
-        if(error.response.status == 403){
+        if(error.response?.status == 403){
             localStorage.removeItem('authToken');
             window.location.href = '/login'
         }
