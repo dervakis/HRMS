@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatchType, RootStateType } from '../redux-store/store';
+import type { AppDispatchType, RootStateType } from '../redux-store/Store';
 import { MarkAsRead } from '../redux-store/NotificationSlice';
 import { useMarkNotificationAsRead } from '../query/EmployeeQuery';
 import { Card } from 'flowbite-react';
@@ -10,7 +10,6 @@ interface propType {
 }
 
 function NotificationList({ visible }: propType) {
-    if (!visible) return null;
     const dispatch = useDispatch<AppDispatchType>();
     const notifications = useSelector((state: RootStateType) => state.notification);
     const markAsReadMutation = useMarkNotificationAsRead();
@@ -18,6 +17,7 @@ function NotificationList({ visible }: propType) {
         dispatch(MarkAsRead(id));
         markAsReadMutation.mutate(id);
     };
+    if (!visible) return null;
     const getIcon = (status: string) => {
         switch (status) {
             case "TravelDocument":

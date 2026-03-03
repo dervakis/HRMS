@@ -1,4 +1,4 @@
-import { Card, Modal, ModalBody, ModalHeader, ModalFooter, Button, Select, Table, Badge, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Spinner, Label, FileInput } from "flowbite-react";
+import { Card, Modal, ModalBody, ModalHeader, ModalFooter, Button, Select, Badge, Spinner, Label, FileInput } from "flowbite-react";
 import React, { useEffect, useMemo, useState } from "react";
 import type { TravelEmployeeType, TravelPlanType } from "../../types/TravelPlan";
 import { useAddProvidedDocument, useGetProvidedDocument, useGetTravelPlan } from "../../query/TravelPlanQuery";
@@ -44,7 +44,8 @@ function DocumentVarification() {
                 toast.success(data.message);
                 reset();
                 setOpenAdd(undefined);
-            }
+            },
+            onError: (err) => toast.error(err.message)
         })
     }
     return (
@@ -61,24 +62,33 @@ function DocumentVarification() {
 
             {selectedPlan && (
                 <Card>
-                    <h5 className="text-md font-semibold mb-4">Employees in {selectedPlan.title}</h5>
-                    <Table>
-                        <TableHead>
-                            <TableHeadCell>Name</TableHeadCell>
-                            <TableHeadCell>Email</TableHeadCell>
-                            <TableHeadCell>Action</TableHeadCell>
-                        </TableHead>
-                        <TableBody>
-                            {selectedPlan.travelEmployees.map(emp =>
-                                <TableRow key={emp.employeeId}>
-                                    <TableCell>{emp.firstName} {emp.lastName}</TableCell>
-                                    <TableCell>{emp.email}</TableCell>
-                                    <TableCell><Button size="xs" onClick={() => openEmployeeModal(emp)}>Show Documents</Button></TableCell>
-                                    <TableCell><Button size='xs' onClick={() => setOpenAdd(emp.employeeId)}>Add Document</Button></TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                    <h5 className="text-md font-semibold">Employees in {selectedPlan.title}</h5>
+                    <div className="overflow-x-auto">
+
+                        <table className='w-full text-sm text-center'>
+                            <thead className='border-b'>
+                                <tr>
+                                    <th className="px-3 py-3">Name</th>
+                                    <th className="px-3 py-3">Email</th>
+                                    <th className="px-3 py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {selectedPlan.travelEmployees.map(emp =>
+                                    <tr key={emp.employeeId}>
+                                        <td className="px-4 py-2">{emp.firstName} {emp.lastName}</td>
+                                        <td className="px-4 py-2">{emp.email}</td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex gap-2 justify-center">
+                                                <Button size="xs" onClick={() => openEmployeeModal(emp)}>Show Documents</Button>
+                                                <Button size='xs' onClick={() => setOpenAdd(emp.employeeId)}>Add Document</Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </Card>
             )}
 
@@ -99,7 +109,7 @@ function DocumentVarification() {
                                             <p className="text-xs text-gray-500">Action Date: {new Date(doc.actionDate).toLocaleDateString()}</p>
                                             <p className="text-xs text-gray-500">Remark {doc.remark}</p>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col lg:flex-row gap-2">
                                             {doc.documentStatus === "Uploaded" && (
                                                 <>
                                                     <Button size="xs" color="green" onClick={() => verifyMutation.mutate({

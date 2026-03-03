@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useGetEmployees, useGetOrgChartByEmployee } from '../../query/EmployeeQuery'
 import { useSelector } from 'react-redux';
-import type { RootStateType } from '../../redux-store/store';
+import type { RootStateType } from '../../redux-store/Store';
 import { Button, Card, Dropdown, DropdownItem, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'flowbite-react';
 import type { EmployeeDetailType } from '../../types/CommonType';
 import { Tree, TreeNode } from 'react-organizational-chart'
@@ -26,7 +26,7 @@ function OrganizationChart() {
     const [query, setQuery] = useState('')
     // console.log(data)
     const makeTree = (emp: EmployeeDetailType) => (
-        <TreeNode label={<ChartNode employeeId={selectedEmployeeId} detail={emp} setSelectNode={setSelectNode} />}>
+        <TreeNode key={emp.employeeId} label={<ChartNode employeeId={selectedEmployeeId} detail={emp} setSelectNode={setSelectNode} />}>
             {emp.childEmployee && emp.childEmployee.map(makeTree)}
         </TreeNode>
     )

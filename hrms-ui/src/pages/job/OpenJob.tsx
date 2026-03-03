@@ -12,21 +12,13 @@ function OpenJob() {
     const [openModal, setOpenModal] = useState(false);
     const [selectedJob, setSelectedJob] = useState<JobType | null>(null);
     const { register, handleSubmit, reset } = useForm<JobReferralCreateType>();
-    const [url, setUrl] = useState<string>()
-    const { data: document, refetch } = useGetDocumentByUrl(url!);
+    // const [url, setUrl] = useState<string>()
+    const docMutation = useGetDocumentByUrl();
     const openReferralModal = (job: JobType) => {
         setSelectedJob(job);
         setOpenModal(true);
         reset();
     };
-    useEffect(() => {
-        if (document != undefined)
-            window.open(URL.createObjectURL(document!), '_blank')
-    }, [document])
-    useEffect(() => {
-        if (url != undefined)
-            refetch()
-    }, [url])
     const onSubmit: SubmitHandler<JobReferralCreateType> = (data) => {
         const formData = new FormData();
         formData.append("referee", data.referee);
@@ -51,7 +43,7 @@ function OpenJob() {
 
     return (
         <>
-            <div className='grid grid-cols-3 gap-6'>
+            <div className='grid md:grid-cols-3 gap-6'>
                 {openJobs?.map((job) => (
                     <Card key={job.jobId} className='shadow-md border border-gray-200'>
                         <div className="flex items-center gap-2">
@@ -71,7 +63,12 @@ function OpenJob() {
                                 Refer Candidate
                             </Button>
                             {job.jobDescriptionUrl && (
-                                <Button size="sm" color="gray" onClick={() => setUrl(job.jobDescriptionUrl)}>
+                                <Button size="sm" color="gray" onClick={() => docMutation.mutate(job.jobDescriptionUrl, {
+                                    onSuccess: (data) => {
+                                        const fileURL = URL.createObjectURL(data);
+                                        window.open(fileURL, '_blank')
+                                    }
+                                })}>
                                     View JD
                                 </Button>
                             )}
@@ -122,8 +119,8 @@ function OpenJob() {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color='green' onClick={()=> {
-                            jobShareMutation.mutate({jobId:selectedJob?.jobId!, email:email!}, {
+                        <Button color='green' onClick={() => {
+                            jobShareMutation.mutate({ jobId: selectedJob?.jobId!, email: email! }, {
                                 onSuccess: (res) => {
                                     toast.success(res.message);
                                     setOpenShare(false);
@@ -132,7 +129,7 @@ function OpenJob() {
                                 onError: (error) => toast.error(error.message)
                             })
                         }} disabled={jobShareMutation.isPending}>
-                            {jobShareMutation.isPending && <Spinner size='sm'/>}Share
+                            {jobShareMutation.isPending && <Spinner size='sm' />}Share
                         </Button>
                         <Button color="gray" onClick={() => setOpenShare(false)}>
                             Cancel

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAddConfiguration, useDeleteConfiguration, useGetConfiguration, useUpdateConfigurationByKey } from '../../query/AppConfigurationQuery';
 import toast from 'react-hot-toast';
 import { Badge, Button, Card, Spinner, TextInput } from 'flowbite-react';
@@ -11,7 +11,7 @@ function Configuration() {
     const deleteMutation = useDeleteConfiguration();
     const updateMutation = useUpdateConfigurationByKey()
     const [email, setEmail] = useState("");
-    const [deadline, setDeadline] = useState(Number(days?.[0].configValue));
+    const [deadline, setDeadline] = useState(0);
     const handleAdd = async () => {
         if (!email.trim()) {
             toast.error("Email is required");
@@ -45,13 +45,19 @@ function Configuration() {
             }
         });
     };
+
+    useEffect(() => {
+        if (days?.length) {
+            setDeadline(Number(days[0].configValue));
+        }
+    }, [days]);
     return (
         <div className='space-y-2'>
             <Card>
                 <h2 className="text-xl font-semibold mb-4">Referral Email Configuration</h2>
                 <div className="space-y-2">
                     {data?.map((config: any) => (
-                        <div key={config.id} className="flex justify-between items-center bg-gray-50 p-1 rounded-lg">
+                        <div key={config.appConfigurationId} className="flex justify-between items-center bg-gray-50 p-1 rounded-lg">
                             <Badge color="info">{config.configValue}</Badge>
                             <Button size="xs" color="red" onClick={() => handleDelete(config.appConfigurationId)} disabled={deleteMutation.isPending}>
                                 <Trash size={14} />
@@ -73,7 +79,7 @@ function Configuration() {
             </Card>
 
             <Card>
-                <div className='flex gap-4'>
+                <div className='flex items-center gap-4'>
                     <h2 className="text-xl font-semibold mb-4">Expense Submition Deadline (days)</h2>•
                     <TextInput type='number' className='w-25' value={deadline} onChange={(e) => setDeadline(Number(e.target.value))} />•
                     <Button size='sm' onClick={() => updateMutation.mutateAsync({ configId: Number(days?.[0].appConfigurationId), value: deadline.toString() },

@@ -1,14 +1,14 @@
-import { Plus, Eye, Pencil } from "lucide-react";
+import { Plus, Eye, Pencil, X, CheckCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useGetTravelPlanForExpense } from "../../query/TravelPlanQuery";
 import { useSelector } from "react-redux";
-import type { RootStateType } from "../../redux-store/store";
+import type { RootStateType } from "../../redux-store/Store";
 import { useCreateTravelExpense, useDeleteTravelExpense, useGetExpenseByEmployee, useGetExpenseType, useSubmitTravelExpense } from "../../query/ExpenseQuery";
 import type { TravelExpenseResponseType, TravelExpenseSubmitType } from "../../types/TravelPlan";
 import { useForm, type SubmitErrorHandler, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetDocumentByUrl } from "../../query/DocumentQuery";
-import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
+import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, TextInput } from "flowbite-react";
 
 function EmployeeTravelExpense() {
   const [openModal, setOpenModal] = useState<string>();
@@ -91,7 +91,7 @@ function EmployeeTravelExpense() {
                 {travel.title}
               </h5>
               <p className="text-sm text-green-700">
-                {travel.startTime} → {travel.endTime}
+                {new Date(travel.startTime).toLocaleDateString('en-GB', { hour: '2-digit', minute: '2-digit' })} → {new Date(travel.endTime).toLocaleDateString('en-GB', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
             <Badge color="success">Expense Window Open</Badge>
@@ -107,85 +107,89 @@ function EmployeeTravelExpense() {
       }
 
       <Card >
-        <Table>
-          <TableHead>
-            <TableHeadCell>Travel Plan</TableHeadCell>
-            <TableHeadCell>Detail</TableHeadCell>
-            <TableHeadCell>Date</TableHeadCell>
-            <TableHeadCell>Type</TableHeadCell>
-            <TableHeadCell>Amount</TableHeadCell>
-            <TableHeadCell>Status</TableHeadCell>
-            <TableHeadCell>Remark</TableHeadCell>
-            <TableHeadCell>Action</TableHeadCell>
-          </TableHead>
+        <div className="overflow-x-auto">
+          <table className='w-full text-sm text-center'>
+            <thead className='border-b'>
+              <tr>
+                <th className="px-3 py-3">Travel Plan</th>
+                <th className="px-3 py-3">Detail</th>
+                <th className="px-3 py-3">Date</th>
+                <th className="px-3 py-3">Type</th>
+                <th className="px-3 py-3">Amount</th>
+                <th className="px-3 py-3">Status</th>
+                <th className="px-3 py-3">Remark</th>
+                <th className="px-3 py-3">Action</th>
+              </tr>
+            </thead>
 
-          <TableBody>
-            {expenses?.map((expense) => (
-              <TableRow key={expense.employeeTravelExpenseId} className="bg-white">
-                <TableCell>
-                  {expense.travelEmployeeTravelPlanTitle}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {expense.expenseDetail}
-                </TableCell>
-                <TableCell>
-                  {new Date(expense.expenseDate).toLocaleDateString('en-GB')}
-                </TableCell>
-                <TableCell>
-                  {expense.travelExpenseType.travelExpenseTypeName}
-                </TableCell>
-                <TableCell>
-                  ₹{expense.amount}
-                </TableCell>
-                <TableCell>
-                  <Badge color={getStatusColor(expense.status)}>{expense.status}</Badge>
-                </TableCell>
-                <TableCell>
-                  {expense.remark ?? "—"}
-                </TableCell>
-                <TableCell className="flex justify-center">
-                  <div className="flex gap-2">
-                    {expense.status === "Draft" && (
-                      <>
-                        <Button size="xs" color="blue"
-                          onClick={() => {
-                            onEdit(expense)
+            <tbody>
+              {expenses?.map((expense) => (
+                <tr key={expense.employeeTravelExpenseId} className="bg-white">
+                  <td className="px-4 py-2">
+                    {expense.travelEmployeeTravelPlanTitle}
+                  </td>
+                  <td className="px-4 py-2">
+                    {expense.expenseDetail}
+                  </td>
+                  <td className="px-4 py-2">
+                    {new Date(expense.expenseDate).toLocaleDateString('en-GB')}
+                  </td>
+                  <td className="px-4 py-2">
+                    {expense.travelExpenseType.travelExpenseTypeName}
+                  </td>
+                  <td className="px-4 py-2">
+                    ₹{expense.amount}
+                  </td>
+                  <td className="px-4 py-2">
+                    <Badge color={getStatusColor(expense.status)}>{expense.status}</Badge>
+                  </td>
+                  <td className="px-4 py-2">
+                    {expense.remark ?? "—"}
+                  </td>
+                  <td className="flex justify-center">
+                    <div className="flex gap-2">
+                      {expense.status === "Draft" && (
+                        <>
+                          <Button size="xs" color='green' onClick={() => {
+                            submitExpenseMutation.mutate(expense.employeeTravelExpenseId, {
+                              onSuccess: (data) => { toast.success(data.message); expensesRefetch() },
+                              onError: (err) => toast.error(err.message)
+                            })
                           }}>
-                          <Pencil size={14} />
-                        </Button>
+                            {submitExpenseMutation.isPending && <Spinner size="sm" />}<CheckCircle size={14} /></Button>
 
-                        <Button size="xs" onClick={() => {
-                          submitExpenseMutation.mutate(expense.employeeTravelExpenseId, {
-                            onSuccess: (data) => { toast.success(data.message); expensesRefetch() },
-                            onError: (err) => toast.error(err.message)
-                          })
-                        }}>
-                          {submitExpenseMutation.isPending && <Spinner size="sm" />}Submit</Button>
-
-                          <Button size="xs" color='red' onClick={()=>deleteMutation.mutate(expense.employeeTravelExpenseId,{
-                            onSuccess: (data) => {toast.success(data.message); expensesRefetch()}
+                          <Button size="xs" color='red' onClick={() => deleteMutation.mutate(expense.employeeTravelExpenseId, {
+                            onSuccess: (data) => { toast.success(data.message); expensesRefetch() }
                           })}
-                          >Delete</Button>
-                      </>
-                    )}
-                    {
-                      expense.proofUrl &&
-                      <Button size="xs" color="gray"
-                        onClick={() => docMutation.mutate(expense.proofUrl, {
-                          onSuccess: (data) => {
-                            const fileURL = URL.createObjectURL(data);
-                            window.open(fileURL, '_blank')
-                          }
-                        })}>
-                        <Eye size={14} />
-                      </Button>
-                    }
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                          ><X size={14} /></Button>
+
+                          <Button size="xs" color="blue"
+                            onClick={() => {
+                              onEdit(expense)
+                            }}>
+                            <Pencil size={14} />
+                          </Button>
+                        </>
+                      )}
+                      {
+                        expense.proofUrl &&
+                        <Button size="xs" color="gray"
+                          onClick={() => docMutation.mutate(expense.proofUrl, {
+                            onSuccess: (data) => {
+                              const fileURL = URL.createObjectURL(data);
+                              window.open(fileURL, '_blank')
+                            }
+                          })}>
+                          <Eye size={14} />
+                        </Button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
 
       <Modal show={openModal === "create" || openModal === "edit"}>

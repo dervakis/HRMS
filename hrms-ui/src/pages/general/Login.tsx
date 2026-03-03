@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useLogin, useResetPasswordRequest } from '../../query/EmployeeQuery';
 import type { LoginDetailType } from '../../types/CommonType';
-import type { AppDispatchType } from '../../redux-store/store';
+import type { AppDispatchType } from '../../redux-store/Store';
 import { Authenticate } from '../../redux-store/UserSlice';
 
 function Login() {
@@ -55,7 +55,7 @@ function Login() {
     }
     return (
         <div className='min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center'>
-            <Card className='w-md'>
+            <Card className='md:w-md'>
                 <div className="text-center gap-4 justify-center">
                     <div className="inline-block p-2 bg-gradient-to-br from-blue-400 to-blue-800 rounded-full flex  shadow-lg">
                         <UserIcon className="size-15 text-white" />

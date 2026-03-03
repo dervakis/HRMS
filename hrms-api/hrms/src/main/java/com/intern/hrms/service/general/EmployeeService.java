@@ -48,16 +48,11 @@ public class EmployeeService {
         employeeRepository.findByEmail(employeeRequestDTO.getEmail()).ifPresent(
                 employee -> {throw  new RuntimeException("Account with given Email already exist : "+employee.getEmail());}
         );
-        departmentRepository.findById(employeeRequestDTO.getDepartmentId()).orElseThrow(
-                () -> new RuntimeException("No Department found with Id: "+employeeRequestDTO.getDepartmentId())
-        );
-        roleRepository.findById(employeeRequestDTO.getRoleId()).orElseThrow(
-                () -> new RuntimeException("No Role found with Id: "+employeeRequestDTO.getRoleId())
-        );
 
         Employee newEmployee = new Employee();
         modelMapper.map(employeeRequestDTO, newEmployee);
-        newEmployee.setManager(employeeRepository.getReferenceById(employeeRequestDTO.getManagerId()));
+        if(employeeRequestDTO.getManagerId() != null)
+            newEmployee.setManager(employeeRepository.getReferenceById(employeeRequestDTO.getManagerId()));
         String randomPassword = RandomStringGenerator.generateString(10);
         newEmployee.setPassword(passwordEncoder.encode(randomPassword));
         return employeeRepository.save(newEmployee);
@@ -129,8 +124,8 @@ public class EmployeeService {
     }
     public void removeEmployeeInterest(int gameId, String username){
         Employee employee = employeeRepository.getReferenceByEmail(username);
-        employeeInterestRepository.deleteByEmployee_EmployeeIdAndGame_GameId(employee.getEmployeeId(), gameId);
-        return;
+        EmployeeInterest interest = employeeInterestRepository.getEmployeeInterestByEmployee_EmployeeIdAndGame_GameId(employee.getEmployeeId(), gameId);
+        employeeInterestRepository.delete(interest);
     }
 
     public PaginatedResponse<EmployeeDetailResponseDTO> getEmployees(Integer departmentId, Integer roleId, int page, int size) {

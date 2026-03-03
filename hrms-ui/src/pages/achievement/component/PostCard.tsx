@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import type { Post } from "../../../types/AchievementType"
 import { useSelector } from "react-redux"
-import type { RootStateType } from "../../../redux-store/store"
+import type { RootStateType } from "../../../redux-store/Store"
 
 
 interface PostCardProps {
@@ -63,7 +63,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         {/* HEADER */}
         <div className="flex justify-between items-start">
           {/* LEFT */}
-          <div className="flex gap-3">
+          <div className="flex flex-row gap-3">
             {/* Avatar */}
             <div
               onClick={() => onAuthorClick(post.author.employeeId)}

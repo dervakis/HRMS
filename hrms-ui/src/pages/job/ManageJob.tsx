@@ -15,9 +15,8 @@ function ManageJob() {
     const { mutate: createMutate, isPending } = useCreateJob();
     const { mutate: updateMutate, isPending: isPending2 } = useUpdateJob();
     const { mutate: changeStatus } = useManageJobStatus();
-    const [url, setUrl] = useState<string>()
-    const { data: document, refetch } = useGetDocumentByUrl(url!);
-    console.log(allJobs)
+    const docMutation = useGetDocumentByUrl();
+    // console.log(allJobs)
 
     const openAddModal = () => {
         setSelectedJob(null);
@@ -35,14 +34,6 @@ function ManageJob() {
             location: job.location
         });
     };
-    useEffect(() => {
-        if (document != undefined)
-            window.open(URL.createObjectURL(document!), '_blank')
-    }, [document])
-    useEffect(() => {
-        if (url != undefined)
-            refetch()
-    }, [url])
     const onSubmit: SubmitHandler<JobCreateType> = (data) => {
         const formData = new FormData();
         formData.append("title", data.title);
@@ -96,7 +87,7 @@ function ManageJob() {
 
     return (
         <>
-            <div className='grid grid-cols-3 gap-6'>
+            <div className='grid md:grid-cols-3 gap-6'>
                 {allJobs?.map((job) => (
                     <Card key={job.jobId} className='shadow-md border border-gray-200'>
                         <div className="flex gap-2 items-center">
@@ -111,11 +102,13 @@ function ManageJob() {
                         </div>
 
                         <div className="flex gap-2 items-center">
-                            <Button size="sm" color={job.isOpen ? 'red' : 'green'} onClick={()=>handleJobStatus(job) }>{job.isOpen ? 'Close Job' : 'Open Job'}</Button>
-                            <Button hidden={job.jobDescriptionUrl == undefined} size="sm" color='blue' onClick={() => {
-                                setUrl(job.jobDescriptionUrl);
-                                // refetch();
-                            }}>
+                            <Button size="sm" color={job.isOpen ? 'red' : 'green'} onClick={() => handleJobStatus(job)}>{job.isOpen ? 'Close Job' : 'Open Job'}</Button>
+                            <Button hidden={job.jobDescriptionUrl == undefined} size="sm" color='blue' onClick={() => docMutation.mutate(job.jobDescriptionUrl, {
+                                onSuccess: (data) => {
+                                    const fileURL = URL.createObjectURL(data);
+                                    window.open(fileURL, '_blank')
+                                }
+                            })}>
                                 View JD</Button>
                             <Button size='sm' color='gray' onClick={() => openEditModal(job)}>Edit</Button>
                         </div>
@@ -139,7 +132,7 @@ function ManageJob() {
                         : "Add New Job"}
                 </ModalHeader>
                 <form onSubmit={handleSubmit(onSubmit, onError)}>
-                    <ModalBody className="space-y-4">
+                    <ModalBody className="space-y-1">
                         <div>
                             <Label>Title</Label>
                             <TextInput {...register("title", { required: true })} />

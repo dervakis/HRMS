@@ -127,7 +127,7 @@ function Feed() {
     }
 
     return (
-        <div className='h-full flex flex-col overflow-hidden -m-8 bg-background'>
+        <div className='h-full flex flex-col overflow-hidden -m-4 md:-m-8 bg-background'>
             <FeedHeader onCreatePost={onCreatePost} onToggleSidebar={() => setFilterOpen(!filterOpen)} />
             <div hidden={!filterOpen} className='p-3'>
                 <PostFilterBar onApply={(filter: PostFilters) => { setFilters(filter) }} />
@@ -140,7 +140,7 @@ function Feed() {
             />
 
             <div className="flex-1 overflow-hidden">
-                <div className="max-w-2xl mx-auto h-full p-4 overflow-y-auto space-y-4 px-2 hide-scrollbar">
+                <div className="max-w-2xl mx-auto h-full p-4 overflow-y-auto space-y-4 hide-scrollbar">
                     {isLoading ? (
                         <div className="flex justify-center py-16">
                             <Spinner size="xl" />

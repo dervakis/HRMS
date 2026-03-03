@@ -1,5 +1,5 @@
 import { Alert, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
-import { Palette, Plus, X } from 'lucide-react';
+import { FileText, Palette, Plus, SquarePen, Trash2, Users, X } from 'lucide-react';
 import React, { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useCreateTravelPlan, useGetTravelPlan, useManageTravelDocument, useManageTravelEmployee, useUpdateTravelPlan } from '../../query/TravelPlanQuery';
@@ -99,7 +99,7 @@ function ManageTravel() {
 
     return (
         <>
-            <div className='grid grid-cols-3 gap-6'>
+            <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
                 {
                     travelPlans?.map((plan) => (
                         <Card key={plan.travelPlanId} className='shadow-md border border-gray-200'>
@@ -112,11 +112,12 @@ function ManageTravel() {
                                 <p>End : {new Date(plan.endTime).toLocaleDateString('en-GB', { hour: 'numeric', minute: '2-digit', })}</p>
                                 <p>Created By : {plan.createdBy.email}</p>
                             </div>
-                            <div className='flex gap-3 mt-auto'>
-                                {new Date(plan.startTime) > new Date() &&(<>
-                                <Button size='xs' color='blue' onClick={() => openSelection(plan)}>Employee Selection</Button>
-                                <Button size='xs' color='blue' onClick={() => openDocument(plan)}>Document Required</Button>
-                                <Button size='xs' color='blue' onClick={() => openEdit(plan)}>Edit</Button>
+                            <div className='flex gap-3 justify-center mt-auto'>
+                                {new Date(plan.startTime) > new Date() && (<>
+                                    <Button size='xs' color='gray' onClick={() => openSelection(plan)}><Users/></Button>
+                                    <Button size='xs' color='gray' onClick={() => openDocument(plan)}><FileText/></Button>
+                                    <Button size='xs' color='blue' onClick={() => openEdit(plan)}><SquarePen/></Button>
+                                    <Button size='xs' color='red'><Trash2/></Button>
                                 </>)}
                             </div>
                         </Card>
@@ -168,7 +169,10 @@ function ManageTravel() {
                         </div>
                         {Object.keys(errors).length > 0 && <Alert color='failure'>{errors.title?.message || errors.description?.message || errors.startTime?.message || errors.endTime?.message}</Alert>}
 
-                        <div className="flex justify-end gap-2 pt-4">
+                        <ModalFooter>
+                            <Button type="submit">
+                                {openModal == 'edit' ? "Update" : "Create"}
+                            </Button>
                             <Button color="gray" onClick={() => {
                                 setOpenModal(undefined);
                                 reset({
@@ -181,16 +185,12 @@ function ManageTravel() {
                             }}>
                                 Cancel
                             </Button>
-
-                            <Button type="submit">
-                                {openModal == 'edit' ? "Update" : "Create"}
-                            </Button>
-                        </div>
+                        </ModalFooter>
                     </form>
                 </ModalBody>
             </Modal>
 
-            <Modal show={openModal == 'select'} size="lg">
+            <Modal show={openModal == 'select'}>
                 <ModalHeader>
                     Employee Selection - {selectedTravelPlan?.title}
                 </ModalHeader>

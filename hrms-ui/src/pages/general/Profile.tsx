@@ -2,7 +2,7 @@ import { Badge, Card, Select } from 'flowbite-react'
 import React from 'react'
 import { useAddInterest, useGetGames, useGetInterestedGame, useRemoveInterest } from '../../query/GameQuery'
 import { useSelector } from 'react-redux';
-import type { RootStateType } from '../../redux-store/store';
+import type { RootStateType } from '../../redux-store/Store';
 import { Check, CircleCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -21,16 +21,16 @@ function Profile() {
                     {interestedGame?.length! > 0 && interestedGame?.map(game =>
                         <Badge key={game.gameId} icon={CircleCheck}>
                             {game.gameName}
-                            {/* <button className="ml-2 text-red-500" onClick={() => {
+                            <button className="ml-2 text-red-500" onClick={() => {
                                 removeMutation.mutate(game.gameId, {
                                     onSuccess: (data) => {
                                         toast.success(data.message);
                                         refetch();
-                                        console.log(interestedGame)
+                                        // console.log(interestedGame)
                                     },
-                                    onError: (err) => console.log(err.message)
+                                    onError: (err) => console.log(err)
                                 })
-                            }}>✕</button> */}
+                            }}>✕</button>
                         </Badge>
                     )}
                 </div>

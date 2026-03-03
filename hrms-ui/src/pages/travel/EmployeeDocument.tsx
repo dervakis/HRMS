@@ -6,7 +6,7 @@ import { useAddDocument, useGetDocumentByUrl, useGetDocumentTypes } from '../../
 import type { DocumentSubmitType, EmployeeDocumentType } from '../../types/TravelPlan';
 import { useGetEmployeeDocuments, useUpdateEmployeeDocument } from '../../query/EmployeeQuery';
 import { useSelector } from 'react-redux';
-import type { RootStateType } from '../../redux-store/store';
+import type { RootStateType } from '../../redux-store/Store';
 import toast from 'react-hot-toast';
 
 function EmployeeDocument() {
@@ -18,7 +18,7 @@ function EmployeeDocument() {
     const updateMutation = useUpdateEmployeeDocument();
     const [openModal, setOpenModal] = useState<string>();
     const [selectedDocument, setSelectedDocument] = useState<EmployeeDocumentType | null>(null);
-    const { register, handleSubmit, reset } = useForm<DocumentSubmitType>();
+    const { register, handleSubmit, reset, watch } = useForm<DocumentSubmitType>();
 
 
     const openEditModal = (doc: EmployeeDocumentType) => {
@@ -78,7 +78,7 @@ function EmployeeDocument() {
 
     return (
         <>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {allEmployeeDocuments?.map((doc) => (
                     <Card
                         key={doc.employeeDocumentId}
@@ -145,7 +145,7 @@ function EmployeeDocument() {
                         <label>
                             <div className="border-2 border-dashed border-blue-300 p-6 rounded-lg text-center cursor-pointer hover:bg-blue-50 transition-all">
                                 <Upload className="mx-auto mb-3 text-blue-500" size={32} />
-                                <p className="text-sm text-gray-600">Click to upload document</p>
+                                <p className="text-sm text-gray-600"> { watch('fileList') ? watch('fileList').item(0)?.name :  'Click to upload document'}</p>
                                 <input type="file" hidden {...register("fileList")} className="mt-3"></input>
                             </div>
                         </label>

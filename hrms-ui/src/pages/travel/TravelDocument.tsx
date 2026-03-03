@@ -3,7 +3,7 @@ import { useGetEmployeeDocuments } from "../../query/EmployeeQuery";
 import { useGetDocumentByUrl, useGetTravelDocumentRequest, useReSubmitTravelDocument, useSubmitTravelDocument } from "../../query/DocumentQuery";
 import { useGetProvidedDocument, useGetTravelPlanByEmployee } from "../../query/TravelPlanQuery";
 import { useSelector } from "react-redux";
-import type { RootStateType } from "../../redux-store/store";
+import type { RootStateType } from "../../redux-store/Store";
 import toast from "react-hot-toast";
 import { Badge, Button, Card, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 
@@ -84,7 +84,7 @@ function TravelDocument() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {travelPlans.map((plan) => (
           <Card key={plan.travelPlanId} className="shadow-md border border-gray-200 cursor-pointer hover:shadow-lg transition-all"
             onClick={() => openRequestModal(plan.travelPlanId)}>
@@ -144,7 +144,7 @@ function TravelDocument() {
                         </p>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                       {status.documentUrl && <Button size="xs" color={'gray'} onClick={() => docMutation.mutate(status.documentUrl, {
                         onSuccess: (data) => {
                           const fileURL = URL.createObjectURL(data);

@@ -19,16 +19,21 @@ function ManageGames() {
   const onSubmit: SubmitHandler<GameCreateType> = (data) => {
     if(data.gameId == undefined){
       createMutation.mutate(data, {
-        onSuccess: (res) => toast.success(res.message),
+        onSuccess: (res) => {
+          toast.success(res.message);
+          refetchGame();
+        },
         onError: (err) => toast.error(err.message) 
       })
     }else{
       updateMutation.mutate(data, {
-        onSuccess: (res) => toast.success(res.message),
+        onSuccess: (res) => {
+          toast.success(res.message);
+          refetchGame();
+        },
         onError: (err) => toast.error(err.message) 
       })
     }
-    refetchGame();
     onClose();
   }
 

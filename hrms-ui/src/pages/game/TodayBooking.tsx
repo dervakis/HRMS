@@ -9,7 +9,7 @@ function TodayBooking() {
     const { data: bookings, isLoading, } = useGetTodayBookedForGame(selectedGameId!);
     const selectedGame = games?.find(g => g.gameId === selectedGameId);
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
             <SelectOption
                 title='Games in Zone'
                 value={selectedGameId!}
@@ -34,7 +34,7 @@ function TodayBooking() {
                 <p className="text-gray-500"> No bookings for today</p>
             )}
 
-            <div className='grid grid-cols-3 gap-6'>
+            <div className='grid md:grid-cols-3 gap-6'>
                 {bookings?.map(
                     (booking) => (
                         <Card key={booking.gameBookingId}>

@@ -20,7 +20,7 @@ function ManageJobReferral() {
                     {allJobs?.map(job => <option key={job.jobId} value={job.jobId}>{job.title}</option>)}
                 </Select>
             </Card>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
                         {referrals?.map((ref) => (
                             <Card key={ref.jobReferralId} className="shadow-md border border-gray-200">
                                 <h5>Referral Code : </h5><small>{ref.jobReferralId}</small>

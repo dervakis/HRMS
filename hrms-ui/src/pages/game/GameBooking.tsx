@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { useCancelBooking, useCreateGameBooking, useGetEmployeeBookingsInCycle, useGetGameCycle, useGetInterestedEmployee, useGetInterestedGame, } from '../../query/GameQuery'
 import { Card, Select, Badge, Button, Spinner, Modal, ModalHeader, ModalBody, Label, Alert, ModalFooter } from 'flowbite-react';
 import { useSelector } from 'react-redux';
-import type { RootStateType } from '../../redux-store/store';
+import type { RootStateType } from '../../redux-store/Store';
 import toast from 'react-hot-toast';
 import { Calendar, Clock, Recycle } from 'lucide-react';
 import type { GameBookingSubmitType, InterestedEmployeeType } from '../../types/Game';
@@ -139,18 +139,18 @@ function GameBooking() {
             {selectedGameId && (
                 <>
                     <Card className='mb-4'>
-                        <div className='flex gap-3 items-center'>
+                        <div className='flex flex-col md:flex-row gap-3 items-center'>
                             <h5 className='font-semibold text-xl'>Your Bookings for - </h5>
                             <Badge icon={Recycle} className='text-md'>Cycle#{gameCycle?.gameCycleId}</Badge>{' • '}
                             <Badge icon={Calendar} className='text-md'>{gameCycle?.startDate} - {gameCycle?.endDate}</Badge>{' • '}
                             <Badge icon={Clock} className='text-md'>Time : {selectedGame?.startTime} - {selectedGame?.endTime}</Badge>
-                            <Button className='ml-auto' onClick={() => setOpenModal(true)}>Book Your Slot</Button>
+                            <Button className='md:ml-auto' onClick={() => setOpenModal(true)}>Book Your Slot</Button>
                         </div>
                     </Card>
                     {bookingLoading ? <Spinner size='lg' /> : bookings?.length == 0 ? (
                         <p className='text-gray-500'>No bookings found</p>
                     ) : (
-                        <div className='grid grid-cols-3 gap-6'>
+                        <div className='grid md:grid-cols-3 gap-6'>
                             {bookings?.map(
                                 (booking) => (
                                     <Card key={booking.gameBookingId}>

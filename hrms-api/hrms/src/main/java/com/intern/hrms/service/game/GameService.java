@@ -64,11 +64,12 @@ public class GameService {
     }
 
     public Game updateGame(GameRequestDTO dto){
-//        if(dto.getStart().isAfter(dto.getEnd())){
-//            throw new IllegalArgumentException("Starting time must be before End time");
-//        }
         Game game = gameRepository.findById(dto.getGameId()).orElseThrow();
-        modelMapper.map(dto, game);
+        game.setGameName(dto.getGameName());
+        game.setStartTime(dto.getStartingTime());
+        game.setEndTime(dto.getEndingTime());
+        game.setMaxPlayer(dto.getMaxPlayer());
+        game.setDurationInMinute(dto.getDurationInMinute());
         return gameRepository.save(game);
     }
 

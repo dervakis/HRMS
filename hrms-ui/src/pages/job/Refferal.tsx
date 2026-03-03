@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import type { RootStateType } from '../../redux-store/store';
+import type { RootStateType } from '../../redux-store/Store';
 import { useGetJobReferralByEmployee } from '../../query/JobQuery';
 import { Card } from 'flowbite-react';
 
@@ -9,7 +9,7 @@ function Refferal() {
     const { data: myReferrals } = useGetJobReferralByEmployee(user.userId);
 
     return (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
             {myReferrals?.map((ref) => (
                 <Card key={ref.jobReferralId} className="shadow-md border border-gray-200">
                     <h5>Referral Code : </h5><small>{ref.jobReferralId}</small>

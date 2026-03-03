@@ -4,7 +4,7 @@ import { Api } from "./AxiosBase"
 
 export const getTravelPlans = async () : Promise<TravelPlanType[]> => {
     const response = await Api.get(`/travel-plan`);
-    console.log('api is called');
+    // console.log('api is called');
     return response.data.data;
 }
 export const getTravelPlansByEmployee = async (userId:number) : Promise<TravelPlanType[]> => {

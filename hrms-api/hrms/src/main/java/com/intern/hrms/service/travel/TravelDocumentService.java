@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 /**
  * This service for All travel related document request & varification
@@ -101,7 +103,7 @@ public class TravelDocumentService {
         TravelPlan plan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
         TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, plan);
         Employee provider = employeeRepository.getReferenceByEmail(username);
-        String url = fileStorage.uploadFile("provided-documents/",employee.getEmployeeId()+"_"+ LocalDateTime.now().toString(), dto.getFile());
+        String url = fileStorage.uploadFile("provided-documents/",employee.getEmployeeId()+"_"+ UUID.randomUUID(), dto.getFile());
         ProvidedTravelDocument providedTravelDocument = new ProvidedTravelDocument(
                 url,
                 type,
