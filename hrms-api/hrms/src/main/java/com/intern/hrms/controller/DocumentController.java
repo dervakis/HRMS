@@ -96,10 +96,11 @@ public class DocumentController {
     }
 
     @GetMapping("/url/")
-    public ResponseEntity<Resource> getDocumentByUrl(@RequestParam String url) throws IOException{
-        Resource response = employeeDocumentService.getDocumentByUrl(url);
-        String type = Files.probeContentType(response.getFile().toPath());
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(type)).body(response);
+    public ResponseEntity<String> getDocumentByUrl(@RequestParam String url) throws IOException{
+//        Resource response = employeeDocumentService.getDocumentByUrl(url);
+//        String type = Files.probeContentType(response.getFile().toPath());
+//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(type)).body(response);
+        return ResponseEntity.ok(employeeDocumentService.getDocumentByUrl(url));
     }
 
     @PutMapping("/{documentId}")

@@ -64,9 +64,8 @@ function OpenJob() {
                             </Button>
                             {job.jobDescriptionUrl && (
                                 <Button size="sm" color="gray" onClick={() => docMutation.mutate(job.jobDescriptionUrl, {
-                                    onSuccess: (data) => {
-                                        const fileURL = URL.createObjectURL(data);
-                                        window.open(fileURL, '_blank')
+                                    onSuccess: (url) => {
+                                        window.open(url, '_blank')
                                     }
                                 })}>
                                     View JD

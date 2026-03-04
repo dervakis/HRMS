@@ -103,7 +103,7 @@ public class TravelDocumentService {
         TravelPlan plan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
         TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, plan);
         Employee provider = employeeRepository.getReferenceByEmail(username);
-        String url = fileStorage.uploadFile("provided-documents/",employee.getEmployeeId()+"_"+ UUID.randomUUID(), dto.getFile());
+        String url = fileStorage.uploadFileS3("provided-documents/",employee.getEmployeeId()+"_"+ UUID.randomUUID(), dto.getFile());
         ProvidedTravelDocument providedTravelDocument = new ProvidedTravelDocument(
                 url,
                 type,

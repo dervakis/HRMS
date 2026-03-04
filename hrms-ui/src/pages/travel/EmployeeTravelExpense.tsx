@@ -175,9 +175,8 @@ function EmployeeTravelExpense() {
                         expense.proofUrl &&
                         <Button size="xs" color="gray"
                           onClick={() => docMutation.mutate(expense.proofUrl, {
-                            onSuccess: (data) => {
-                              const fileURL = URL.createObjectURL(data);
-                              window.open(fileURL, '_blank')
+                            onSuccess: (url) => {
+                              window.open(url, '_blank')
                             }
                           })}>
                           <Eye size={14} />

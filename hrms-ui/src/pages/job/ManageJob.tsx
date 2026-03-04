@@ -105,9 +105,8 @@ function ManageJob() {
                         <div className="flex gap-2 justify-center">
                             <Button size="sm" color={job.isOpen ? 'red' : 'green'} onClick={() => handleJobStatus(job)}>{job.isOpen ? 'Close Job' : 'Open Job'}</Button>
                             <Button hidden={job.jobDescriptionUrl == undefined} size="sm" color='blue' onClick={() => docMutation.mutate(job.jobDescriptionUrl, {
-                                onSuccess: (data) => {
-                                    const fileURL = URL.createObjectURL(data);
-                                    window.open(fileURL, '_blank')
+                                onSuccess: (url) => {
+                                    window.open(url, '_blank')
                                 }
                             })}>
                                 View JD</Button>

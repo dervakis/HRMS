@@ -125,9 +125,8 @@ function DocumentVarification() {
                                                     )}>Approve</Button>
                                                     <Button size="xs" color="red" onClick={() => setOpenReupload(doc.employeeTravelDocumentId)}>Reupload</Button>
                                                     <Button size="xs" color="blue" onClick={() => docMutation.mutate(doc.employeeDocumentUrl, {
-                                                        onSuccess: (data) => {
-                                                            const fileURL = URL.createObjectURL(data);
-                                                            window.open(fileURL, '_blank')
+                                                        onSuccess: (url) => {
+                                                            window.open(url, '_blank')
                                                         }
                                                     })}>View</Button>
                                                 </>
@@ -163,9 +162,8 @@ function DocumentVarification() {
                                         </p>
                                     </div>
                                     <Button size="xs" color="blue" onClick={() => docMutation.mutate(doc.documentUrl, {
-                                        onSuccess: (data) => {
-                                            const fileURL = URL.createObjectURL(data);
-                                            window.open(fileURL, '_blank')
+                                        onSuccess: (url) => {
+                                            window.open(url, '_blank')
                                         }
                                     })}>
                                         View

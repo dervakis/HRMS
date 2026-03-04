@@ -17,7 +17,7 @@ function Navbar() {
   return (
     <NavbarComponent fluid rounded className='bg-white shadow-md border-b-2 border-blue-500'>
       <div className='flex justify-center items-center gap-3'>
-        <Button color='blue' size='sm'><Menu className='size-5' onClick={() => dispatch(toggleSidebar())} /></Button>
+        <Button color='blue' size='sm' onClick={() => dispatch(toggleSidebar())}><Menu className='size-5' /></Button>
         <span className='self-center whitespace-nowrap text-xl font-semibold'>HRMS</span>
       </div>
       <div className='flex items-center gap-4'>

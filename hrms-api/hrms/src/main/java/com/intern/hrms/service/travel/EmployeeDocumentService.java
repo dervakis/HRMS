@@ -37,23 +37,23 @@ public class EmployeeDocumentService {
         DocumentType documentType = documentTypeRepository.findById(dto.getDocumentTypeId()).orElseThrow(
                 ()-> new RuntimeException("No such document type found with id: "+dto.getDocumentTypeId())
         );
-        String documentUrl = fileStorage.uploadFile("documents/"+employee.getEmployeeId()+"/", documentType.getDocumentTypeName(), dto.getFile());
+        String documentUrl = fileStorage.uploadFileS3("documents/"+employee.getEmployeeId()+"/", documentType.getDocumentTypeName(), dto.getFile());
         EmployeeDocument document = new EmployeeDocument(documentUrl, LocalDate.now(), documentType, employee);
         return employeeDocumentRepository.save(document);
     }
 
-    public Resource getDocumentByUrl(String url){
+    public String getDocumentByUrl(String url){
         if(url == null){
             throw new RuntimeException("Requesting resource with null url");
         }
-        return fileStorage.getDocument(url);
+        return fileStorage.getDocumentS3(url);
     }
 
     public void updateEmployeeDocument(int employeeDocumentId, MultipartFile file){
         EmployeeDocument employeeDocument= employeeDocumentRepository.findById(employeeDocumentId).orElseThrow(
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
         );
-        String newUrl = fileStorage.updateFile(employeeDocument.getDocumentUrl(), file);
+        String newUrl = fileStorage.updateFileS3(employeeDocument.getDocumentUrl(), file);
         employeeDocument.setDocumentUrl(newUrl);
         employeeDocument.setUploadedAt(LocalDate.now());
         employeeDocumentRepository.save(employeeDocument);

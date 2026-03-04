@@ -146,9 +146,8 @@ function TravelDocument() {
                     </div>
                     <div className="flex flex-col md:flex-row gap-2">
                       {status.documentUrl && <Button size="xs" color={'gray'} onClick={() => docMutation.mutate(status.documentUrl, {
-                        onSuccess: (data) => {
-                          const fileURL = URL.createObjectURL(data);
-                          window.open(fileURL, '_blank')
+                        onSuccess: (url) => {
+                          window.open(url, '_blank')
                         }
                       })}>View</Button>}
                       {!status.employeeHasDocument && (
@@ -196,9 +195,8 @@ function TravelDocument() {
                       </p>
                     </div>
                     <Button size="xs" color="blue" onClick={() => docMutation.mutate(doc.documentUrl, {
-                      onSuccess: (data) => {
-                        const fileURL = URL.createObjectURL(data);
-                        window.open(fileURL, '_blank')
+                      onSuccess: (url) => {
+                        window.open(url, '_blank')
                       }
                     })}>
                       View

@@ -12,10 +12,9 @@ export const addDocument = async (document:FormData) : Promise<ApiResponseType<O
     return response.data;
 }
 
-export const getDocumentByUrl = async(url: string) : Promise<Blob> =>{
-    const response = await Api.get(`/document/url/`, {responseType : 'blob',
-        params : {url:url}
-    });
+export const getDocumentByUrl = async(url: string) : Promise<string> =>{
+    const response = await Api.get(`/document/url/`, {params : {url:url}});
+    console.log(response.data)
     return response.data;
 }
 

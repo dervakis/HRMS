@@ -73,7 +73,7 @@ public class TravelExpenseService {
         }
         if(dto.getFile() != null){
             expense = employeeTravelExpenseRepository.save(expense);
-            String url = fileStorage.uploadFile("expense-bills/",expense.getEmployeeTravelExpenseId()+"_"+expenseType.getTravelExpenseTypeName(), dto.getFile());
+            String url = fileStorage.uploadFileS3("expense-bills/",expense.getEmployeeTravelExpenseId()+"_"+expenseType.getTravelExpenseTypeName(), dto.getFile());
             expense.setProofUrl(url);
         }
 

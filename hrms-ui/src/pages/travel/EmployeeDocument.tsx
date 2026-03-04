@@ -91,9 +91,8 @@ function EmployeeDocument() {
                             <div className='flex ml-auto gap-3'>
                                 <Eye onClick={() => docMutation.mutate(doc.documentUrl,
                                     {
-                                        onSuccess: (data) => {
-                                            const fileURL = URL.createObjectURL(data);
-                                            window.open(fileURL, "_blank");
+                                        onSuccess: (url) => {
+                                            window.open(url, "_blank");
                                         }
                                     }
                                 )} size={20} />
