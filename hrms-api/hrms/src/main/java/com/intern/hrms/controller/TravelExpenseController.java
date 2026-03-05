@@ -25,8 +25,8 @@ public class TravelExpenseController {
         this.travelExpenseService = travelExpenseService;
     }
 
-    @PostMapping("/type")
-    public ResponseEntity<SuccessResponse<TravelExpenseType>> addExpenseType(@RequestParam String name, @RequestParam Integer maxAmount){
+    @PostMapping("/type/{name}/{maxAmount}")
+    public ResponseEntity<SuccessResponse<TravelExpenseType>> addExpenseType(@PathVariable String name, @PathVariable Integer maxAmount){
         return ResponseEntity.ok(
                 new SuccessResponse<>("Travel Expense Created Successfully", travelExpenseService.addExpenseType(name, maxAmount))
         );

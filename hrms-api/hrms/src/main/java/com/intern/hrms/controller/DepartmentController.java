@@ -29,11 +29,11 @@ public class DepartmentController {
     @PostMapping("/{departmentName}")
     @PreAuthorize("hasRole('HR')")
     public ResponseEntity<SuccessResponse<Department>> addDepartment(@NotBlank(message = "provide appropriate department name")
-                                                                        @Size(max = 20, message = "size of department name must be <20")
+                                                                        @Size(max = 25, message = "size of department name must be <25")
                                                                         @PathVariable String departmentName){
         Department department = departmentService.createDepartment(departmentName);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new SuccessResponse<Department>("Department Created Successfully",department)
+                new SuccessResponse<>("Department Created Successfully",department)
         );
     }
 

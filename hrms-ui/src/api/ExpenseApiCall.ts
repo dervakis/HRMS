@@ -17,6 +17,11 @@ export const getExpenseType = async(): Promise<TravelExpenseType[]> => {
     return response.data.data;
 }
 
+export const addExpeneType = async({name, maxAmount}:{name:string, maxAmount:number}): Promise<ApiResponseType<Object>> => {
+    const response = await Api.post(`/expense/type/${name}/${maxAmount}`);
+    return response.data;
+}
+
 export const createTravelExpense = async(form: FormData): Promise<ApiResponseType<Object>> => {
     const response = await Api.post(`/expense`, form, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;

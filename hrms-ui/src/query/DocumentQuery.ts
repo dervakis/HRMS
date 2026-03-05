@@ -1,11 +1,17 @@
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
-import { addDocument, getDocumentByUrl, getDocumetTypes, getTravelDocumentRequest, reSubmitTravelDocument, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
+import { addDocument, addDocumentTypes, getDocumentByUrl, getDocumetTypes, getTravelDocumentRequest, reSubmitTravelDocument, submitTravelDocument, verifyTravelDocument } from "../api/DocumentApiCall";
 
 export const useGetDocumentTypes = (isProvided:boolean)=>{
     return useQuery({
-        queryKey: ['DocumentTypes'],
+        queryKey: ['DocumentTypes', isProvided],
         queryFn: () => getDocumetTypes(isProvided),
         staleTime: Infinity
+    });
+}
+
+export const useAddDocumentTypes = () => {
+    return useMutation({
+        mutationFn: addDocumentTypes
     });
 }
 

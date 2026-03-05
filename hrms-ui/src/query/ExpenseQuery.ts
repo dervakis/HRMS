@@ -1,5 +1,5 @@
 import { skipToken, useMutation, useQuery } from "@tanstack/react-query"
-import { createTravelExpense, deleteTravelExpense, getExpenseByEmployee, getExpenseByTravelPlan, getExpenseType, submitTravelExpense, verifyTravelExpense } from "../api/ExpenseApiCall"
+import { addExpeneType, createTravelExpense, deleteTravelExpense, getExpenseByEmployee, getExpenseByTravelPlan, getExpenseType, submitTravelExpense, verifyTravelExpense } from "../api/ExpenseApiCall"
 
 export const useGetExpenseByEmployee = (userId:number) => {
     return useQuery({
@@ -19,7 +19,13 @@ export const useGetExpenseType = () => {
     return useQuery({
         queryKey: ['ExpenseType'],
         queryFn: getExpenseType
-    })
+    });
+}
+
+export const useAddExpenseType = () => {
+    return useMutation({
+        mutationFn: addExpeneType
+    });
 }
 
 export const useCreateTravelExpense = () => {

@@ -7,6 +7,11 @@ export const getDocumetTypes = async (isProvided:boolean): Promise<DocumentType[
     return response.data.data;
 }
 
+export const addDocumentTypes = async ({name, isProvided}:{name:string, isProvided:boolean}): Promise<ApiResponseType<Object>> => {
+    const response = await Api.post(`/document-type/${name}/${isProvided}`);
+    return response.data;
+}
+
 export const addDocument = async (document:FormData) : Promise<ApiResponseType<Object>> => {
     const response = await Api.post('/document', document, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;

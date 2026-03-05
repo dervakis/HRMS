@@ -35,7 +35,7 @@ public class RoleController {
     @PreAuthorize("hasRole('HR')")
     public Role addRole(@Validated @NotBlank(message = "role name can`t be blank")
                             @NotNull(message = "role name can`t be null")
-                            @Size(max = 15, message = "role name must be < 15 char")
+                            @Size(max = 25, message = "role name must be < 25 char")
             @PathVariable String roleName){
         return roleService.createRole(roleName);
     }
