@@ -13,6 +13,7 @@ import com.intern.hrms.enums.ReferralStatusEnum;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.validation.Create;
 import com.intern.hrms.validation.Update;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,14 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse<Object>> createJob(@Validated(Create.class) JobRequestDTO dto, Principal principal){
         jobService.createJob(dto, principal.getName());
         return ResponseEntity.ok(
                 new SuccessResponse<>("Job Created Successfully", null)
         );
     }
-    @PatchMapping
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<SuccessResponse<Object>> updateJob(@Validated(Update.class) JobRequestDTO dto){
         jobService.updateJob(dto);
         return ResponseEntity.ok(
@@ -62,7 +63,7 @@ public class JobController {
         );
     }
 
-    @PostMapping("/referral")
+    @PostMapping(value = "/referral",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse<Object>> sendJobReferral(JobReferralRequestDTO dto, Principal principal){
         jobService.sendJobReferral(dto, principal.getName());
         return ResponseEntity.ok(

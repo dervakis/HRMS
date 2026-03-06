@@ -13,17 +13,14 @@ import com.intern.hrms.repository.general.DocumentTypeRepository;
 import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.travel.*;
 import com.intern.hrms.service.general.NotificationService;
-import com.intern.hrms.utility.FileStorage;
+import com.intern.hrms.utility.IFileStorageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 /**
  * This service for All travel related document request & varification
@@ -38,7 +35,7 @@ public class TravelDocumentService {
     private final DocumentTypeRepository documentTypeRepository;
     private final EmployeeRepository employeeRepository;
     private final EmployeeDocumentRepository employeeDocumentRepository;
-    private final FileStorage fileStorage;
+    private final IFileStorageService fileStorageService;
     private final TravelEmployeeRepository travelEmployeeRepository;
     private final ProvidedTravelDocumentRepository providedTravelDocumentRepository;
     private final ModelMapper modelMapper;
@@ -103,7 +100,7 @@ public class TravelDocumentService {
         TravelPlan plan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
         TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, plan);
         Employee provider = employeeRepository.getReferenceByEmail(username);
-        String url = fileStorage.uploadFileS3("provided-documents/",employee.getEmployeeId()+"_"+ UUID.randomUUID(), dto.getFile());
+        String url = fileStorageService.uploadFile("provided-documents/",employee.getEmployeeId()+"_"+ UUID.randomUUID(), dto.getFile());
         ProvidedTravelDocument providedTravelDocument = new ProvidedTravelDocument(
                 url,
                 type,

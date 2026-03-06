@@ -7,6 +7,7 @@ import com.intern.hrms.entity.travel.TravelExpenseType;
 import com.intern.hrms.enums.TravelExpenseStatusEnum;
 import com.intern.hrms.service.travel.TravelExpenseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +58,7 @@ public class TravelExpenseController {
         );
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse<EmployeeTravelExpense>> addTravelExpense(EmployeeTravelExpenseRequestDTO dto){
         travelExpenseService.draftEmployeeExpense(dto);
         return ResponseEntity.ok(

@@ -15,13 +15,12 @@ import com.intern.hrms.repository.travel.TravelEmployeeRepository;
 import com.intern.hrms.repository.travel.TravelExpenseTypeRepository;
 import com.intern.hrms.repository.travel.TravelPlanRepository;
 import com.intern.hrms.service.general.NotificationService;
-import com.intern.hrms.utility.FileStorage;
+import com.intern.hrms.utility.IFileStorageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class TravelExpenseService {
     private final ModelMapper modelMapper;
     private final EmployeeTravelExpenseRepository employeeTravelExpenseRepository;
     private final TravelEmployeeRepository travelEmployeeRepository;
-    private final FileStorage fileStorage;
+    private final IFileStorageService fileStorageService;
     private final EmployeeRepository employeeRepository;
     private final TravelPlanRepository travelPlanRepository;
     private final NotificationService notificationService;
@@ -73,7 +72,7 @@ public class TravelExpenseService {
         }
         if(dto.getFile() != null){
             expense = employeeTravelExpenseRepository.save(expense);
-            String url = fileStorage.uploadFileS3("expense-bills/",expense.getEmployeeTravelExpenseId()+"_"+expenseType.getTravelExpenseTypeName(), dto.getFile());
+            String url = fileStorageService.uploadFile("expense-bills/",expense.getEmployeeTravelExpenseId()+"_"+expenseType.getTravelExpenseTypeName(), dto.getFile());
             expense.setProofUrl(url);
         }
 

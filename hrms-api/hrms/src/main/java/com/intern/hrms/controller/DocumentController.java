@@ -37,17 +37,17 @@ public class DocumentController {
         this.travelDocumentService = travelDocumentService;
     }
 
-    @PostMapping("/provided")
+    @PostMapping(value = "/provided", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<Object>> addProvidedTravelDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, Principal principal) throws IOException{
+    public ResponseEntity<SuccessResponse<Object>> addProvidedTravelDocument(ProvidedTravelDocumentRequestDTO providedTravelDocumentRequestDTO, Principal principal){
         travelDocumentService.submitProvidedDocument(providedTravelDocumentRequestDTO, principal.getName());
         return ResponseEntity.ok(
                 new SuccessResponse<>("Document Provided to Employee for Travel", null)
         );
     }
 
-    @PostMapping()
-    public ResponseEntity<SuccessResponse<EmployeeDocument>> addDocument(@Validated EmployeeDocumentRequestDTO employeeDocumentRequestDTO) throws IOException {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse<EmployeeDocument>> addDocument(@Validated EmployeeDocumentRequestDTO employeeDocumentRequestDTO)  {
         EmployeeDocument document = employeeDocumentService.addEmployeeDocument(employeeDocumentRequestDTO);
         return ResponseEntity.ok(
                 new SuccessResponse<>("Document Uploaded Successfully", null)
@@ -103,7 +103,7 @@ public class DocumentController {
         return ResponseEntity.ok(employeeDocumentService.getDocumentByUrl(url));
     }
 
-    @PutMapping("/{documentId}")
+    @PutMapping(value = "/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse<Object>> updateEmployeeDocument(@PathVariable int documentId, MultipartFile file){
         employeeDocumentService.updateEmployeeDocument(documentId, file);
         return  ResponseEntity.ok(

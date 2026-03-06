@@ -42,7 +42,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         logger.info("Authentication Filter : Request Arrived "+path);
 
         //remainging bypass logick here
-        if(path.startsWith("/api/employee/login") || path.startsWith("/ws" ) || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/api/employee/forget-password/")){
+        if(path.startsWith("/api/employee/login") || path.startsWith("/ws" ) || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/api/employee/forget-password/") || path.startsWith("/files")){
             logger.info("Authentication Filter : Bypassing Authentication for Path " + path);
             filterChain.doFilter(request, response);
             return;

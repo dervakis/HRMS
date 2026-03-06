@@ -15,14 +15,13 @@ import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
 import com.intern.hrms.repository.job.JobSharingRepository;
-import com.intern.hrms.utility.FileStorage;
+import com.intern.hrms.utility.IFileStorageService;
 import com.intern.hrms.utility.MailSend;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +31,7 @@ import java.util.UUID;
 public class JobService {
 
     private final ModelMapper modelMapper;
-    private final FileStorage fileStorage;
+    private final IFileStorageService fileStorageService;
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
     private final JobReferralRepository jobReferralRepository;
@@ -47,7 +46,7 @@ public class JobService {
         newJob.setCreatedBy(creator);
         newJob =  jobRepository.save(newJob);
          if(dto.getJobDescription() != null && !dto.getJobDescription().isEmpty()){
-                String url = fileStorage.uploadFileS3("job-description/","JD_"+newJob.getJobId(),dto.getJobDescription());
+                String url = fileStorageService.uploadFile("job-description/","JD_"+newJob.getJobId(),dto.getJobDescription());
                 newJob.setJobDescriptionUrl(url);
                 jobRepository.save(newJob);
             }
@@ -58,10 +57,10 @@ public class JobService {
         modelMapper.map(dto, job);
         if(dto.getJobDescription() != null) {
                 if (!dto.getJobDescription().isEmpty()) {
-                    String url = fileStorage.uploadFileS3("job-description/", "JD_" + job.getJobId(), dto.getJobDescription());
+                    String url = fileStorageService.uploadFile("job-description/", "JD_" + job.getJobId(), dto.getJobDescription());
                     job.setJobDescriptionUrl(url);
                 } else {
-                    fileStorage.updateFileS3(job.getJobDescriptionUrl(), dto.getJobDescription());
+                    fileStorageService.updateFile(job.getJobDescriptionUrl(), dto.getJobDescription());
                 }
         }
         jobRepository.save(job);
@@ -93,7 +92,7 @@ public class JobService {
         jobReferral.setJobReferralId(UUID.randomUUID());
         if(dto.getResumeFile() == null || dto.getResumeFile().isEmpty())
             throw new RuntimeException("Resume file not attached with referral");
-        String url = fileStorage.uploadFileS3("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
+        String url = fileStorageService.uploadFile("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
         jobReferral.setResumeUrl(url);
         jobReferral.setReferralStatus(ReferralStatusEnum.New);
         jobReferralRepository.save(jobReferral);

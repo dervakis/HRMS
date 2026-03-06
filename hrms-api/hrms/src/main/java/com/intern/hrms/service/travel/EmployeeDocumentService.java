@@ -8,15 +8,13 @@ import com.intern.hrms.entity.travel.EmployeeDocument;
 import com.intern.hrms.repository.general.DocumentTypeRepository;
 import com.intern.hrms.repository.travel.EmployeeDocumentRepository;
 import com.intern.hrms.repository.general.EmployeeRepository;
-import com.intern.hrms.utility.FileStorage;
+import com.intern.hrms.utility.IFileStorageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class EmployeeDocumentService {
     private final EmployeeRepository employeeRepository;
     private final DocumentTypeRepository documentTypeRepository;
     private final EmployeeDocumentRepository employeeDocumentRepository;
-    private final FileStorage fileStorage;
+    private final IFileStorageService fileStorageService;
     private final ModelMapper modelMapper;
 
     public EmployeeDocument addEmployeeDocument(EmployeeDocumentRequestDTO dto){
@@ -37,7 +35,7 @@ public class EmployeeDocumentService {
         DocumentType documentType = documentTypeRepository.findById(dto.getDocumentTypeId()).orElseThrow(
                 ()-> new RuntimeException("No such document type found with id: "+dto.getDocumentTypeId())
         );
-        String documentUrl = fileStorage.uploadFileS3("documents/"+employee.getEmployeeId()+"/", documentType.getDocumentTypeName(), dto.getFile());
+        String documentUrl = fileStorageService.uploadFile("documents/"+employee.getEmployeeId()+"/", documentType.getDocumentTypeName(), dto.getFile());
         EmployeeDocument document = new EmployeeDocument(documentUrl, LocalDate.now(), documentType, employee);
         return employeeDocumentRepository.save(document);
     }
@@ -46,14 +44,14 @@ public class EmployeeDocumentService {
         if(url == null){
             throw new RuntimeException("Requesting resource with null url");
         }
-        return fileStorage.getDocumentS3(url);
+        return fileStorageService.getDocument(url);
     }
 
     public void updateEmployeeDocument(int employeeDocumentId, MultipartFile file){
         EmployeeDocument employeeDocument= employeeDocumentRepository.findById(employeeDocumentId).orElseThrow(
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
         );
-        String newUrl = fileStorage.updateFileS3(employeeDocument.getDocumentUrl(), file);
+        String newUrl = fileStorageService.updateFile(employeeDocument.getDocumentUrl(), file);
         employeeDocument.setDocumentUrl(newUrl);
         employeeDocument.setUploadedAt(LocalDate.now());
         employeeDocumentRepository.save(employeeDocument);

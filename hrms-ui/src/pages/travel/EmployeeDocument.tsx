@@ -151,7 +151,7 @@ function EmployeeDocument() {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button type="submit">Save</Button>
+                        <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>{(addMutation.isPending || updateMutation.isPending) &&<Spinner size='sm'/>}Save</Button>
                         <Button color="gray" onClick={() => setOpenModal(undefined)}>
                             Cancel
                         </Button>

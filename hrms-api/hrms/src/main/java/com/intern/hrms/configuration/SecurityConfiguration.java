@@ -28,6 +28,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/swagger-ui/**" , "/v3/api-docs/**", "/ws/**").permitAll()
+                                .requestMatchers("/files/**").permitAll()
                                 .requestMatchers("/api/employee/login/**", "/api/employee/forget-password/**").permitAll()
                                 .requestMatchers("/api/config/**").hasRole("HR")
                                 .anyRequest().authenticated()
