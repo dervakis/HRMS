@@ -84,9 +84,9 @@ public class JobController {
                 new SuccessResponse<>(null,jobService.getOpenJobs())
         );
     }
-    @PostMapping("/share/{jobId}/{email}")
-    public ResponseEntity<SuccessResponse<Object>> shareJob(@PathVariable int jobId, @PathVariable String email,Principal principal){
-        jobService.shareJob(jobId, email, principal.getName());
+    @PostMapping("/share/{jobId}")
+    public ResponseEntity<SuccessResponse<Object>> shareJob(@PathVariable int jobId, @RequestBody List<String> emails,Principal principal){
+        jobService.shareJob(jobId, emails, principal.getName());
         return ResponseEntity.ok(
                 new SuccessResponse<>("Job Shared Successfully", null)
         );

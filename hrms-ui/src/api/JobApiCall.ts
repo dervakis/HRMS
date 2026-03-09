@@ -42,8 +42,8 @@ export const manageJobStatus = async({jobId, isOpen}:{jobId:number, isOpen:boole
     return response.data;
 }
 
-export const shareJob = async({jobId, email}: {jobId:number, email:string}): Promise<ApiResponseType<Object>> => {
-    const response = await Api.post(`/job/share/${jobId}/${email}`);
+export const shareJob = async({jobId, emails}: {jobId:number, emails:string[]}): Promise<ApiResponseType<Object>> => {
+    const response = await Api.post(`/job/share/${jobId}`, emails);
     return response.data;
 }
 

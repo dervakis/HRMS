@@ -8,7 +8,7 @@ import { useGetDocumentByUrl } from '../../query/DocumentQuery';
 import Loader from '../../common/Loader';
 
 function OpenJob() {
-    const { data: openJobs,isLoading } = useGetOpenJobs();
+    const { data: openJobs, isLoading } = useGetOpenJobs();
     const { mutate: createReferral, isPending } = useCreateJobReferral();
     const [openModal, setOpenModal] = useState(false);
     const [selectedJob, setSelectedJob] = useState<JobType | null>(null);
@@ -37,9 +37,28 @@ function OpenJob() {
             }
         });
     };
+
+    const handleAdd = () => {
+        if (!email.trim()) {
+            toast.error("Email is required");
+            return;
+        }
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regex.test(email)) {
+            toast.error("Please enter a valid email address");
+            return;
+        }
+        if(emails.indexOf(email) > -1){
+            toast.error("Email Already Exist")
+            return;
+        }
+        setEmails([...emails, email]);
+        setEmail("");
+    }
     const jobShareMutation = useShareJob();
     const [openShare, setOpenShare] = useState(false);
-    const [email, setEmail] = useState<string>();
+    const [emails, setEmails] = useState<string[]>([]);
+    const [email, setEmail] = useState<string>("");
 
     return (
         <>
@@ -98,7 +117,7 @@ function OpenJob() {
                         </ModalBody>
                         <ModalFooter>
                             <Button type="submit" disabled={isPending}>
-                                {isPending && <Spinner size='sm'/>}Submit Referral
+                                {isPending && <Spinner size='sm' />}Submit Referral
                             </Button>
                             <Button color="gray" onClick={() => setOpenModal(false)}>
                                 Cancel
@@ -112,22 +131,36 @@ function OpenJob() {
                         Share Job Opening Detail
                     </ModalHeader>
                     <ModalBody>
-                        <div>
-                            <Label>Share to Email</Label>
-                            <TextInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Label>Share to Email : </Label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {emails.length > 0 && emails.map(e =>
+                                <div key={e} className="flex items-center bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                    {e}
+                                    <button className="ml-2 hover:text-red-500"
+                                        onClick={() => {
+                                            setEmails(emails.filter(single => single != e));
+                                        }}
+                                    >✕</button>
+                                </div>
+                            )}
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <TextInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} className='flex-1' />
+                            <Button onClick={handleAdd}>Add</Button>
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color='green' onClick={() => {
-                            jobShareMutation.mutate({ jobId: selectedJob?.jobId!, email: email! }, {
+                        <Button color='green'  onClick={() => {
+                            jobShareMutation.mutate({ jobId: selectedJob?.jobId!, emails: emails }, {
                                 onSuccess: (res) => {
                                     toast.success(res.message);
                                     setOpenShare(false);
                                     setEmail('');
+                                    setEmails([]);
                                 },
                                 onError: (error) => toast.error(error.message)
                             })
-                        }} disabled={jobShareMutation.isPending}>
+                        }} disabled={jobShareMutation.isPending || emails.length < 1}>
                             {jobShareMutation.isPending && <Spinner size='sm' />}Share
                         </Button>
                         <Button color="gray" onClick={() => setOpenShare(false)}>
@@ -136,7 +169,7 @@ function OpenJob() {
                     </ModalFooter>
                 </Modal>
             </div>
-            { (isLoading || docMutation.isPending) && <Loader/>}
+            {(isLoading || docMutation.isPending) && <Loader />}
         </>
     )
 }

@@ -10,11 +10,14 @@ import com.intern.hrms.dto.job.response.JobReferralResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeDocumentResponse;
 import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.entity.Employee;
+import com.intern.hrms.service.general.ActivityLogService;
 import com.intern.hrms.service.travel.EmployeeDocumentService;
 import com.intern.hrms.service.general.EmployeeService;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.utility.MailSend;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,18 +37,25 @@ public class EmployeeController {
     private final MailSend mailSend;
     private final EmployeeDocumentService employeeDocumentService;
     private final JobService jobService;
+    private final ActivityLogService activityLogService;
 
-    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService, JobService jobService) {
+    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService, JobService jobService, ActivityLogService activityLogService) {
         this.employeeService = employeeService;
         this.mailSend = mailSend;
         this.employeeDocumentService = employeeDocumentService;
         this.jobService = jobService;
+        this.activityLogService = activityLogService;
     }
 
     @GetMapping("/login")
-    public ResponseEntity<SuccessResponse<LoginResponseDTO>> login(@RequestParam String email, @RequestParam String password){
+    public ResponseEntity<SuccessResponse<LoginResponseDTO>> login(@RequestParam String email,
+                                                                   @RequestParam String password,
+                                                                   HttpServletRequest request,
+                                                                   @RequestHeader("User-Agent") String agent){
+        LoginResponseDTO dto = employeeService.login(email, password);
+        activityLogService.addLog(request, dto.getEmail(),agent,"LOGGED_IN" );
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                new SuccessResponse<>("Login successfully", employeeService.login(email, password))
+                new SuccessResponse<>("Login successfully", dto)
         );
     }
     @GetMapping("/documents/{employeeId}")

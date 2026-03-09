@@ -23,7 +23,9 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -106,13 +108,16 @@ public class JobService {
         );
         return jobReferral;
     }
-    public void shareJob(int jobId, String email, String username){
+    public void shareJob(int jobId, List<String> emails, String username){
         Job job = jobRepository.findById(jobId).orElseThrow();
         Employee employee = employeeRepository.getReferenceByEmail(username);
-        JobSharing jobSharing = new JobSharing(email, job,employee);
-        jobSharingRepository.save(jobSharing);
+        Set<JobSharing> sharings = new HashSet<>();
+        for(String email : emails){
+            sharings.add(new JobSharing(email, job, employee));
+        }
+        jobSharingRepository.saveAll(sharings);
         try{
-        mailSend.sendMail(List.of(email), null, "Job Open for - "+job.getTitle(),
+        mailSend.sendMail(emails, null, "Job Open for - "+job.getTitle(),
                 "Hello,\nJob Opening on Roima for position - "+job.getTitle()+
                 "\nPlease refer attached Job description for more details"+
                 "\nShared By :"+employee.getFirstName()+" "+employee.getLastName(),
