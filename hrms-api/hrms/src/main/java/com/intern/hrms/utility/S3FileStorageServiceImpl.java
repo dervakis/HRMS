@@ -16,7 +16,7 @@ import java.time.Duration;
 public class S3FileStorageServiceImpl implements IFileStorageService{
     @Value("${aws.bucket}")
     private String bucket;
-    @Value("${aws.urlExpiry}")
+    @Value("${aws.url-expiry}")
     private int urlExpiry;
 
     private final S3Client s3Client;

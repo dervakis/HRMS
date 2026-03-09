@@ -36,6 +36,9 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15")
 	implementation("software.amazon.awssdk:s3:2.29.0")
 	implementation("com.cloudinary:cloudinary-http5:2.0.0")
+	implementation("com.azure:azure-storage-blob:12.25.0")
+	implementation("com.azure:azure-identity:1.11.1")
+
 
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")

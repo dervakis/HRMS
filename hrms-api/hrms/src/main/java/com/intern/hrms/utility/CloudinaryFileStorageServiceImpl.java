@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@Service
 public class CloudinaryFileStorageServiceImpl implements IFileStorageService {
     private final Cloudinary cloudinary;
 

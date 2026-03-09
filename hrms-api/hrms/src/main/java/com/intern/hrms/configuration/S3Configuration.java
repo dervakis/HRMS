@@ -11,9 +11,9 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
 public class S3Configuration {
-    @Value("${aws.accessKey}")
+    @Value("${aws.access-key}")
     private String accessKey;
-    @Value("${aws.secretKey}")
+    @Value("${aws.secret-key}")
     private String secretKey;
     @Value("${aws.region}")
     private String region;
