@@ -2,6 +2,7 @@ package com.intern.hrms.configuration;
 
 import com.intern.hrms.filter.AuthenticationFilter;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,9 +16,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @Configuration
-@AllArgsConstructor
 public class SecurityConfiguration implements WebMvcConfigurer {
     private final AuthenticationFilter authenticationFilter;
+    @Value("${frontend.url}")
+    private String frontedUrl;
+
+    public SecurityConfiguration(AuthenticationFilter authenticationFilter) {
+        this.authenticationFilter = authenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
@@ -41,7 +47,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins(frontedUrl)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true);

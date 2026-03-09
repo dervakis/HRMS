@@ -19,7 +19,8 @@ import org.springframework.context.annotation.Configuration;
           @SecurityRequirement(name = "bearerAuth")
         },
         servers = {
-                @Server(url = "http://localhost:8080/", description = "LocalHost")
+                @Server(url = "http://localhost:8080/", description = "LocalHost"),
+                @Server(url = "https://gregarious-emotion-production.up.railway.app/")
         }
 )
 @SecurityScheme(
