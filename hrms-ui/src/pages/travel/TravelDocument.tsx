@@ -5,16 +5,16 @@ import { useGetProvidedDocument, useGetTravelPlanByEmployee } from "../../query/
 import { useSelector } from "react-redux";
 import type { RootStateType } from "../../redux-store/Store";
 import toast from "react-hot-toast";
-import { Badge, Button, Card, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from "flowbite-react";
+import { Badge, Button, Card, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import Loader from "../../common/Loader";
 
 function TravelDocument() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedTravelId, setSelectedTravelId] = useState<number>();
   const user = useSelector((state: RootStateType) => state.user);
-  const { data: travelPlans = [], isLoading:tpLoading } = useGetTravelPlanByEmployee(user.userId);
-  const { data: employeeDocs = [], isLoading:edLoading } = useGetEmployeeDocuments(user.userId);
-  const { data: travelRequests = [], refetch, isLoading:trLoading } = useGetTravelDocumentRequest(user.userId);
+  const { data: travelPlans = [], isLoading: tpLoading } = useGetTravelPlanByEmployee(user.userId);
+  const { data: employeeDocs = [], isLoading: edLoading } = useGetEmployeeDocuments(user.userId);
+  const { data: travelRequests = [], refetch, isLoading: trLoading } = useGetTravelDocumentRequest(selectedTravelId!, user.userId);
   const submitMutation = useSubmitTravelDocument();
   const reSubmitMutation = useReSubmitTravelDocument();
   const docMutation = useGetDocumentByUrl();
@@ -38,7 +38,7 @@ function TravelDocument() {
       documentTypeId,
     }, {
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
         setOpenModal(false);
         toast.success(data.message);
         refetch();
@@ -89,7 +89,8 @@ function TravelDocument() {
         {travelPlans.map((plan) => (
           <Card key={plan.travelPlanId} className="shadow-md border border-gray-200 cursor-pointer hover:shadow-lg transition-all"
             onClick={() => openRequestModal(plan.travelPlanId)}>
-            <h5 className="text-lg font-semibold text-gray-800">{plan.title}</h5>
+            <h5 className="text-lg text-center font-semibold text-gray-800">{plan.title}</h5>
+            <p className='text-gray-700 text-center text-sm'>{plan.description}</p>
             <div className="text-sm text-gray-600 mb-3">
               <p>Start:{" "}{new Date(plan.startTime).toLocaleDateString("en-GB")}</p>
               <p>End:{" "}{new Date(plan.endTime).toLocaleDateString("en-GB")}</p>
@@ -159,21 +160,21 @@ function TravelDocument() {
                       {status.employeeHasDocument &&
                         status.documentStatus ===
                         "Pending Submition" && (
-                          <Button size="xs" disabled={submitMutation.isPending} onClick={() => handleSubmitRequest(selectedTravel.travelPlanId, doc.documentTypeId)}>
-                           {submitMutation.isPending && <Spinner size="sm"/>} Submit
+                          <Button size="xs" onClick={() => handleSubmitRequest(selectedTravel.travelPlanId, doc.documentTypeId)}>
+                            Submit
                           </Button>
                         )}
                       {status.employeeHasDocument &&
                         status.documentStatus ===
                         "Reupload" && (
-                          <Button size="xs" disabled={reSubmitMutation.isPending} onClick={() => {
+                          <Button size="xs" onClick={() => {
                             reSubmitMutation.mutate(status.employeeTravelDocumentId!, {
                               onSuccess: () => {
                                 toast.success("Document request re-submitted successfully");
                                 refetch();
                               }
                             })
-                          }}>{reSubmitMutation.isPending && <Spinner size="sm"/>}Reupload</Button>
+                          }}>Reupload</Button>
                         )}
                     </div>
                   </div>
@@ -214,7 +215,7 @@ function TravelDocument() {
           </Button>
         </ModalFooter>
       </Modal>
-      {(tpLoading || edLoading || trLoading || docMutation.isPending) &&<Loader/>}
+      {(tpLoading || edLoading || trLoading || docMutation.isPending || reSubmitMutation.isPending || submitMutation.isPending) && <Loader />}
     </>
   );
 }

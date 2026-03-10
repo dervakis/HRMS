@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import Loader from '../../common/Loader';
 
 function EmployeeDocument() {
-    const { data: alldocumentTypes } = useGetDocumentTypes(false);
+    const { data: alldocumentTypes, isLoading:typeLoading } = useGetDocumentTypes(false);
     const user = useSelector((state: RootStateType) => state.user);
     const { data: allEmployeeDocuments, refetch, isLoading:docLoading } = useGetEmployeeDocuments(user.userId);
     const addMutation = useAddDocument();
@@ -160,7 +160,7 @@ function EmployeeDocument() {
                 </form>
             </Modal>
 
-            {(docLoading || docMutation.isPending ) &&<Loader/>}
+            {(docLoading || typeLoading || docMutation.isPending ) &&<Loader/>}
         </>
     )
 }

@@ -17,10 +17,10 @@ function GameBooking() {
     const { data: allInterestedGames, isLoading:igLoading } = useGetInterestedGame(user.userId);
     const [selectedGameId, setSelectedGameId] = useState<number>();
     const { data: gameCycle, isLoading:gcLoading } = useGetGameCycle(selectedGameId!);
-    const { data: bookings, isLoading: bookingLoading, refetch } = useGetEmployeeBookingsInCycle(selectedGameId!, user.userId);
+    const { data: bookings, isFetching: bookingLoading, refetch } = useGetEmployeeBookingsInCycle(selectedGameId!, user.userId);
     const cancelMutation = useCancelBooking()
     const selectedGame = allInterestedGames?.find((game) => game.gameId == selectedGameId);
-    const { data: interestedEmployees, isLoading:empLoading } = useGetInterestedEmployee(selectedGameId!);
+    const { data: interestedEmployees, isLoading:empLoading, refetch:ieRefetch } = useGetInterestedEmployee(selectedGameId!);
     const [openModal, setOpenModal] = useState<boolean>();
     const createBookingMutation = useCreateGameBooking();
     const [selectedPlayers, setSelectedPlayers] = useState<InterestedEmployeeType[]>([]);
@@ -93,6 +93,7 @@ function GameBooking() {
                     toast.success(res.message);
                     onCloseCreate();
                     refetch();
+                    ieRefetch();
                 },
                 onError: (err) => {
                     toast.error(err.message);
@@ -107,6 +108,7 @@ function GameBooking() {
             onSuccess: (res) => {
                 toast.success(res.message)
                 refetch()
+                ieRefetch();
             },
             onError: (err) => {
                 toast.error(err.message)
@@ -164,7 +166,7 @@ function GameBooking() {
                             <Button className='md:ml-auto' onClick={() => setOpenModal(true)}>Book Your Slot</Button>
                         </div>
                     </Card>
-                    {bookingLoading ? <Spinner size='lg' /> : bookings?.length == 0 ? (
+                    {bookingLoading ? <div className='flex items-center justify-center'><Spinner/></div> : bookings?.length == 0 ? (
                         <p className='text-gray-500'>No bookings found</p>
                     ) : (
                         <div className='grid md:grid-cols-3 gap-6'>
@@ -206,7 +208,7 @@ function GameBooking() {
                                             </div>
                                         </div>
                                         {(booking.bookingStatus != 'Cancelled' && (new Date(`${booking.bookingDate}T${booking.bookingTime}`) > new Date())) && booking.bookedBy.employeeId == user.userId && (
-                                            <Button color="red" size="xs" onClick={() => handleCancel(booking.gameBookingId)} disabled={cancelMutation.isPending}>{cancelMutation.isPending && <Spinner size='sm'/>}Cancel</Button>
+                                            <Button color="red" size="xs" onClick={() => handleCancel(booking.gameBookingId)} >Cancel</Button>
                                         )}
                                     </Card>
                                 )
@@ -291,7 +293,7 @@ function GameBooking() {
                     </ModalFooter>
                 </form>
             </Modal>
-            {(igLoading || gcLoading || empLoading) && <Loader/>}
+            {(igLoading || gcLoading || empLoading || cancelMutation.isPending) && <Loader/>}
         </>
     )
 }

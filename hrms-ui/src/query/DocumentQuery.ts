@@ -27,10 +27,10 @@ export const useGetDocumentByUrl = () => {
     })
 }
 
-export const useGetTravelDocumentRequest = (userId:number) => {
+export const useGetTravelDocumentRequest = (planId:number,userId:number) => {
     return useQuery({
-        queryKey: ['travelDocument', userId],
-        queryFn: userId ? () => getTravelDocumentRequest(userId) : skipToken,
+        queryKey: ['travelDocument',planId, userId],
+        queryFn: (userId && planId) ? () => getTravelDocumentRequest({planId,userId}) : skipToken,
     });
 }
 export const useSubmitTravelDocument = () => {

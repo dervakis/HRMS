@@ -71,7 +71,7 @@ function ManageJobReferral() {
                     </Card>
                 ))}
             </div>
-            {(allJobs || jobLoading || refLoading || statusMutation.isPending) && <Loader/>}
+            {(jobLoading || refLoading || statusMutation.isPending) && <Loader/>}
         </>
     )
 }

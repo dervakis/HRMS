@@ -2,10 +2,12 @@ package com.intern.hrms.utility;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+
 
 public class LocalFileStorageServiceImpl implements IFileStorageService{
     @Value("${storage.path}")

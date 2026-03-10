@@ -8,7 +8,7 @@ import type { TravelExpenseResponseType, TravelExpenseSubmitType } from "../../t
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetDocumentByUrl } from "../../query/DocumentQuery";
-import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner, TextInput } from "flowbite-react";
+import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, TextInput } from "flowbite-react";
 import Loader from "../../common/Loader";
 
 function EmployeeTravelExpense() {
@@ -67,7 +67,7 @@ function EmployeeTravelExpense() {
         toast.success(data.message);
         resetForm();
       },
-      onError: (err) => console.log(err)
+      onError: (err) => toast.error(err.message)
     })
   };
   const onEdit = (expense: TravelExpenseResponseType) => {
@@ -157,7 +157,7 @@ function EmployeeTravelExpense() {
                               onError: (err) => toast.error(err.message)
                             })
                           }}>
-                            {submitExpenseMutation.isPending && <Spinner size="sm" />}<CheckCircle size={14} /></Button>
+                            <CheckCircle size={14} /></Button>
 
                           <Button size="xs" color='red' onClick={() => deleteMutation.mutate(expense.employeeTravelExpenseId, {
                             onSuccess: (data) => { toast.success(data.message); expensesRefetch() }
@@ -224,6 +224,8 @@ function EmployeeTravelExpense() {
                     if (!value)
                       return "Expense date is mandatory";
                     const travelPlan = openTravel?.find((obj) => obj.travelPlanId == watch('TravelPlanId'));
+                    if(new Date(value) > new Date())
+                      return "Can not predict Future expense."
                     if (new Date(value) < new Date(travelPlan?.startTime!) || new Date(value) > new Date(travelPlan?.endTime!))
                       return "Expense date out of travel plan range."
                     return true;
@@ -274,7 +276,7 @@ function EmployeeTravelExpense() {
           </ModalFooter>
         </form>
       </Modal>
-      {(otLoading || etLoading || createExpenseMutation.isPending || docMutation.isPending || deleteMutation.isPending) && <Loader />}
+      {(otLoading || etLoading || createExpenseMutation.isPending || docMutation.isPending || deleteMutation.isPending || submitExpenseMutation.isPending) && <Loader />}
     </>
   );
 }

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SelectOption from "../../common/SelectOption";
 import ConfirmModal from "../achievement/component/ConfirmModal";
+import Loader from "../../common/Loader";
 
 function DocumentVarification() {
     const [selectedPlanId, setSelectedPlanId] = useState<number>();
@@ -14,7 +15,7 @@ function DocumentVarification() {
     const [openModal, setOpenModal] = useState(false);
     const [openReupload, setOpenReupload] = useState<number | null>(null);
     const { data: travelPlans = [], isLoading: tpLoading } = useGetTravelPlan();
-    const { data: travelDocumentRequests = [], isFetching, refetch: refetchRequest } = useGetTravelDocumentRequest(selectedEmployee?.employeeId!);
+    const { data: travelDocumentRequests = [], isFetching, refetch: refetchRequest } = useGetTravelDocumentRequest(selectedPlanId!,selectedEmployee?.employeeId!);
     const verifyMutation = useVerifyTravelDocument();
     const docMutation = useGetDocumentByUrl();
 
@@ -100,7 +101,7 @@ function DocumentVarification() {
                 <ModalHeader>Document Verification - {selectedEmployee?.firstName} {selectedEmployee?.lastName}</ModalHeader>
                 <ModalBody>
                     <div className="grid gap-4">
-                        {isFetching ? <Spinner /> :
+                        {isFetching ? <div className='flex items-center justify-center'><Spinner /></div> :
                             travelDocumentRequests.map(doc =>
                                 <Card key={doc.employeeTravelDocumentId} className="border border-gray-200 shadow-sm">
                                     <div className="flex justify-between items-center">
@@ -116,7 +117,7 @@ function DocumentVarification() {
                                         <div className="flex flex-col lg:flex-row gap-2">
                                             {doc.documentStatus === "Uploaded" && (
                                                 <>
-                                                    <Button size="xs" color="green" disabled={verifyMutation.isPending} onClick={() => verifyMutation.mutate({
+                                                    <Button size="xs" color="green" onClick={() => verifyMutation.mutate({
                                                         docRequestId: doc.employeeTravelDocumentId, status: "Verified", remark: null
                                                     },
                                                         {
@@ -126,13 +127,13 @@ function DocumentVarification() {
                                                                 refetchRequest();
                                                             }
                                                         }
-                                                    )}>{verifyMutation.isPending && <Spinner size="sm"/> }Approve</Button>
+                                                    )}>Approve</Button>
                                                     <Button size="xs" color="red" onClick={() => setOpenReupload(doc.employeeTravelDocumentId)}>Reupload</Button>
                                                     <Button size="xs" color="blue" onClick={() => docMutation.mutate(doc.employeeDocumentUrl, {
                                                         onSuccess: (url) => {
                                                             window.open(url, '_blank')
                                                         }
-                                                    })}>{docMutation.isPending ? <Spinner size="sm"/> : 'View'}</Button>
+                                                    })}>View</Button>
                                                 </>
                                             )}
                                         </div>
@@ -171,7 +172,7 @@ function DocumentVarification() {
                                                 window.open(url, '_blank')
                                             }
                                         })}>
-                                            {docMutation.isPending ? <Spinner size="sm"/> : 'View'}
+                                            'View'
                                         </Button>
                                     </div>
                                 ))
@@ -226,6 +227,7 @@ function DocumentVarification() {
                 )}
                 onClose={() => setOpenReupload(null)}
             />
+            {(docMutation.isPending || verifyMutation.isPending) && <Loader/>}
         </>
     );
 }

@@ -81,10 +81,10 @@ public class DocumentController {
         );
     }
 
-    @GetMapping("request/{employeeId}")
-    public ResponseEntity<SuccessResponse<List<EmployeeTravelDocumentResponseDTO>>> getDocumentRequest(@PathVariable int employeeId){
+    @GetMapping("request/{planId}/{employeeId}")
+    public ResponseEntity<SuccessResponse<List<EmployeeTravelDocumentResponseDTO>>> getDocumentRequest(@PathVariable int planId,@PathVariable int employeeId){
         return ResponseEntity.ok(
-                new SuccessResponse<>(null, travelDocumentService.getAllDocumentRequest(employeeId))
+                new SuccessResponse<>(null, travelDocumentService.getAllDocumentRequest(employeeId, planId))
         );
     }
 

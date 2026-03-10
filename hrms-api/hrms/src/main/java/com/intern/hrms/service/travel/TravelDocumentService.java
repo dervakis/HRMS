@@ -50,11 +50,9 @@ public class TravelDocumentService {
         travelPlanRepository.save(travelPlan);
     }
 
-    public List<EmployeeTravelDocumentResponseDTO> getAllDocumentRequest(int employeeId){
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(
-                ()-> new RuntimeException("No Employee found with this id")
-        );
-        List<EmployeeTravelDocument> employeeTravelDocuments =  employeeTravelDocumentRepository.findEmployeeTravelDocumentsByTravelEmployeeEmployee(employee);
+    public List<EmployeeTravelDocumentResponseDTO> getAllDocumentRequest(int employeeId, int planId){
+        TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployee_EmployeeIdAndTravelPlan_TravelPlanId(employeeId, planId);
+        List<EmployeeTravelDocument> employeeTravelDocuments =  employeeTravelDocumentRepository.findEmployeeTravelDocumentsByTravelEmployee(travelEmployee);
         return modelMapper.map(employeeTravelDocuments, new TypeToken<List<EmployeeTravelDocumentResponseDTO>>(){}.getType());
     }
 

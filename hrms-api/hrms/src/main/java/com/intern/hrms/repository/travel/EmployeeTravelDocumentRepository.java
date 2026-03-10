@@ -10,6 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeTravelDocumentRepository extends JpaRepository<EmployeeTravelDocument, Integer> {
-    List<EmployeeTravelDocument> findEmployeeTravelDocumentsByTravelEmployeeEmployee(Employee travelEmployeeEmployee);
+    List<EmployeeTravelDocument> findEmployeeTravelDocumentsByTravelEmployee(TravelEmployee travelEmployee);
     Optional<EmployeeTravelDocument> findByTravelEmployeeAndDocumentType(TravelEmployee travelEmployee, DocumentType documentType);
 }

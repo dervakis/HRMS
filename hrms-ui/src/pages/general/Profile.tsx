@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import type { RootStateType } from '../../redux-store/Store';
 import { CircleCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Loader from '../../common/Loader';
 
 function Profile() {
     const { data: allGames } = useGetGames();
@@ -52,6 +53,7 @@ function Profile() {
                     </Select>
                 </div>
             </Card>
+            {( addMutation.isPending || removeMutation.isPending) && <Loader/>}
         </div>
     )
 }

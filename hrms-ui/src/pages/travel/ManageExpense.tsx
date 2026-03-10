@@ -61,8 +61,8 @@ function ManageExpense() {
                 {expenses?.map((expense) => (
                   <tr key={expense.employeeTravelExpenseId} className="border-b">
                     <td className="px-4 py-2">
-                      {selectedPlan?.travelEmployees.find((te) => te.employeeId = expense.travelEmployeeEmployeeId)?.firstName} {''}
-                      {selectedPlan?.travelEmployees.find((te) => te.employeeId = expense.travelEmployeeEmployeeId)?.lastName}
+                      {selectedPlan?.travelEmployees.find((te) => te.employeeId == expense.travelEmployeeEmployeeId)?.firstName} {''}
+                      {selectedPlan?.travelEmployees.find((te) => te.employeeId == expense.travelEmployeeEmployeeId)?.lastName}
                     </td>
                     <td className="px-4 py-2">
                       {expense.expenseDetail}
@@ -89,7 +89,7 @@ function ManageExpense() {
                             <Button size="xs" color='green' onClick={() => {
                               verifyExpenseMutation.mutate({ expenseId: expense.employeeTravelExpenseId, status: 'Approved', remark: null }, {
                                 onSuccess: (data) => { toast.success(data.message); refetch() },
-                                onError: (err) => console.log(err.message)
+                                onError: (err) => toast.error(err.message)
                               })
                             }}><CircleCheck size={14}/></Button>
                             <Button size="xs" color='red' onClick={() => setOpenConfirm(expense.employeeTravelExpenseId)
@@ -137,7 +137,7 @@ function ManageExpense() {
         onClose={() => setOpenConfirm(null)}
       />
 
-      { (tpLoading || exLoading || docMutation.isPending) &&<Loader/>}
+      { (tpLoading || exLoading || docMutation.isPending || verifyExpenseMutation.isPending) &&<Loader/>}
     </>
   )
 }

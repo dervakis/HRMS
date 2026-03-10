@@ -139,7 +139,7 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
                                                             {isMine && (
                                                                 <div className="flex justify-end gap-2 mt-1">
                                                                     <Button size="xs" color="blue" onClick={() => setEditingComment({ commentId: c.commentId, text: c.text })}><Edit2 size={14} /></Button>
-                                                                    <Button size="xs" color="red" disabled={deleteCommentMutation.isPending} onClick={() => handleDeleteComment(c.commentId)}>{deleteCommentMutation.isPending ? <Spinner size="sm"/> :<Trash2 size={14} />}</Button>
+                                                                    <Button size="xs" color="red" onClick={() => handleDeleteComment(c.commentId)}><Trash2 size={14}/></Button>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -181,10 +181,11 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
                 message="Please confirm deletion. You may add a remark."
                 danger
                 requireRemark
+                loading={deleteCommentByHrMutation.isPending}
                 onConfirm={(remark) => handleHrDelete(remark!)}
                 onClose={() => setHrDeleteModalOpen(false)}
             />
-            {deleteCommentByHrMutation.isPending && <Loader/>}
+            {(deleteCommentMutation.isPending) && <Loader/>}
         </>
     );
 };

@@ -22,6 +22,7 @@ function ManageGames() {
       createMutation.mutate(data, {
         onSuccess: (res) => {
           toast.success(res.message);
+          onClose();
           refetchGame();
         },
         onError: (err) => toast.error(err.message) 
@@ -30,12 +31,13 @@ function ManageGames() {
       updateMutation.mutate(data, {
         onSuccess: (res) => {
           toast.success(res.message);
+          onClose();
           refetchGame();
         },
         onError: (err) => toast.error(err.message) 
       })
     }
-    onClose();
+    
   }
 
   const onClose = () => {

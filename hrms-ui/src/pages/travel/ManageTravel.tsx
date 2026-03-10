@@ -47,7 +47,8 @@ function ManageTravel() {
                 refetchTravelPlan()
             },
             onError: (error) => {
-                console.log(error)
+                // console.log(error)
+                toast.error(error.message)
             }
         })
     }
@@ -107,9 +108,9 @@ function ManageTravel() {
                     travelPlans?.map((plan) => (
                         <Card key={plan.travelPlanId} className='shadow-md border border-gray-200'>
                             <div >
-                                <h5 className='text-xl font-semibold text-gray-900'>{plan.title}</h5>
+                                <h5 className='text-xl text-center font-semibold text-gray-900'>{plan.title}</h5>
                             </div>
-                            <p className='text-gray-700 text-sm'>{plan.description}</p>
+                            <p className='text-gray-700 text-center text-sm'>{plan.description}</p>
                             <div className='text-sm text-gray-600 space-y-1'>
                                 <p>Start : {new Date(plan.startTime).toLocaleDateString('en-GB', { hour: 'numeric', minute: '2-digit', })}</p>
                                 <p>End : {new Date(plan.endTime).toLocaleDateString('en-GB', { hour: 'numeric', minute: '2-digit', })}</p>
@@ -238,7 +239,7 @@ function ManageTravel() {
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={handleSelect}>{manageEmployeeMutation.isPending && <Spinner size='sm' />}Save</Button>
+                    <Button onClick={handleSelect} disabled={manageEmployeeMutation.isPending}>{manageEmployeeMutation.isPending && <Spinner size='sm' />}Save</Button>
                     <Button color="gray" onClick={() => setOpenModal(undefined)}>Close</Button>
                 </ModalFooter>
             </Modal>
@@ -282,7 +283,7 @@ function ManageTravel() {
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={handleDocument} disabled={manageDocumentMutation.isPending}>{manageDocumentMutation && <Spinner size='sm'/>}Save</Button>
+                    <Button onClick={handleDocument} disabled={manageDocumentMutation.isPending}>{manageDocumentMutation.isPending && <Spinner size='sm'/>}Save</Button>
                     <Button color={'gray'} onClick={() => setOpenModal(undefined)}>Cancle</Button>
                 </ModalFooter>
             </Modal>

@@ -29,7 +29,7 @@ import Configuration from './pages/general/Configuration'
 function App() {
   const router = createBrowserRouter([
     {
-      path: '/login',
+      path: '*',
       element: <Login/>
     },
     {
