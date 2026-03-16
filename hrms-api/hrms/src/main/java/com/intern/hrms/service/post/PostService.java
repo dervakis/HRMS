@@ -16,7 +16,7 @@ import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.general.RoleRepository;
 import com.intern.hrms.repository.achievement.PostRepository;
 import com.intern.hrms.service.general.NotificationService;
-import com.intern.hrms.utility.MailSend;
+import com.intern.hrms.utility.IMailService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +38,7 @@ public class PostService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
-    private final MailSend mailSend;
+    private final IMailService mailService;
     private final AppConfigurationRepository appConfigurationRepository;
     private final NotificationService notificationService;
 
@@ -259,7 +259,7 @@ public class PostService {
                 .orElseThrow(() -> new NoSuchElementException("Post not found"));
         if (post.getAuthor() != null) {
             String emailBody = "Your post titled '" + post.getTitle() + "' has been removed by HR.\n Remark: " + remark;
-            mailSend.sendMail(List.of(post.getAuthor().getEmail()), null, "Post removed by HR", emailBody, null);
+            mailService.sendMail(List.of(post.getAuthor().getEmail()), null, "Post removed by HR", emailBody, null, null, null);
         }
         post.setIsActive(false);
         postRepository.save(post);

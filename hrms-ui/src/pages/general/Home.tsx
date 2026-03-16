@@ -1,6 +1,6 @@
 function Home() {
     return (
-        <div>Welcom to HRMS</div>
+        <div>Welcome to HRMS</div>
     )
 }
 

@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 public class LocalFileStorageServiceImpl implements IFileStorageService{
@@ -53,5 +55,15 @@ public class LocalFileStorageServiceImpl implements IFileStorageService{
     @Override
     public String getDocument(String url) {
         return "http://localhost:8080/files/"+url;
+    }
+
+    @Override
+    public byte[] downloadContent(String url) {
+        try{
+            return Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/"+path+url));
+        }catch (IOException exception){
+            System.out.println("Error : Issue in Download File : "+exception.getMessage());
+            throw new RuntimeException(exception.getMessage());
+        }
     }
 }

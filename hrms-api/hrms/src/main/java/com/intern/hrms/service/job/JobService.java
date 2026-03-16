@@ -16,10 +16,11 @@ import com.intern.hrms.repository.job.JobReferralRepository;
 import com.intern.hrms.repository.job.JobRepository;
 import com.intern.hrms.repository.job.JobSharingRepository;
 import com.intern.hrms.utility.IFileStorageService;
-import com.intern.hrms.utility.MailSend;
+import com.intern.hrms.utility.IMailService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,7 +38,7 @@ public class JobService {
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
     private final JobReferralRepository jobReferralRepository;
-    private final MailSend mailSend;
+    private final IMailService mailService;
     private final JobSharingRepository jobSharingRepository;
     private final AppConfigurationRepository  appConfigurationRepository;
 
@@ -85,28 +86,34 @@ public class JobService {
     }
 
     public JobReferral sendJobReferral(JobReferralRequestDTO dto, String username){
-        Employee referrer = employeeRepository.getReferenceByEmail(username);
-        Job job = jobRepository.getReferenceById(dto.getJobId());
-        JobReferral jobReferral = new JobReferral();
-        modelMapper.map(dto, jobReferral);
-        jobReferral.setReferrer(referrer);
-        jobReferral.setJob(job);
-        jobReferral.setJobReferralId(UUID.randomUUID());
-        if(dto.getResumeFile() == null || dto.getResumeFile().isEmpty())
-            throw new RuntimeException("Resume file not attached with referral");
-        String url = fileStorageService.uploadFile("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
-        jobReferral.setResumeUrl(url);
-        jobReferral.setReferralStatus(ReferralStatusEnum.New);
-        jobReferralRepository.save(jobReferral);
-        List<String> emails = appConfigurationRepository.findByConfigKey("referral_to").stream().map(AppConfiguration::getConfigValue).toList();
-        mailSend.sendMail(emails,null,
-                "Referral for Job - "+ job.getTitle(),
-                "Pleas find Referral for job.\nI am referring this candidate for job\n"
-        + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
-                        "\nReferrer : "+jobReferral.getReferrer().getEmail(),
-                jobReferral.getResumeUrl()
-        );
-        return jobReferral;
+        try{
+            Employee referrer = employeeRepository.getReferenceByEmail(username);
+            Job job = jobRepository.getReferenceById(dto.getJobId());
+            JobReferral jobReferral = new JobReferral();
+            modelMapper.map(dto, jobReferral);
+            jobReferral.setReferrer(referrer);
+            jobReferral.setJob(job);
+            jobReferral.setJobReferralId(UUID.randomUUID());
+            if(dto.getResumeFile() == null || dto.getResumeFile().isEmpty())
+                throw new RuntimeException("Resume file not attached with referral");
+            String url = fileStorageService.uploadFile("resumes/", jobReferral.getJobReferralId().toString(),dto.getResumeFile());
+            jobReferral.setResumeUrl(url);
+            jobReferral.setReferralStatus(ReferralStatusEnum.New);
+            jobReferralRepository.save(jobReferral);
+            List<String> emails = appConfigurationRepository.findByConfigKey("referral_to").stream().map(AppConfiguration::getConfigValue).toList();
+            mailService.sendMail(emails,null,
+                    "Referral for Job - "+ job.getTitle(),
+                    "Pleas find Referral for job.\nI am referring this candidate for job\n"
+            + "Candidate Name : " + jobReferral.getReferee() + "\nCandidate Email : " + jobReferral.getRefereeEmail() +
+                            "\nReferrer : "+jobReferral.getReferrer().getEmail(),
+                    dto.getResumeFile().getBytes(),
+                    url.substring(url.lastIndexOf("/")+1),
+                    dto.getResumeFile().getContentType()
+            );
+            return jobReferral;
+        }catch (Exception e){
+            throw new RuntimeException("Issue on file reading : " + e.getMessage());
+        }
     }
     public void shareJob(int jobId, List<String> emails, String username){
         Job job = jobRepository.findById(jobId).orElseThrow();
@@ -116,15 +123,14 @@ public class JobService {
             sharings.add(new JobSharing(email, job, employee));
         }
         jobSharingRepository.saveAll(sharings);
-        try{
-        mailSend.sendMail(emails, null, "Job Open for - "+job.getTitle(),
+        mailService.sendMail(emails, null, "Job Open for - "+job.getTitle(),
                 "Hello,\nJob Opening on Roima for position - "+job.getTitle()+
                 "\nPlease refer attached Job description for more details"+
                 "\nShared By :"+employee.getFirstName()+" "+employee.getLastName(),
-                job.getJobDescriptionUrl());
-        }catch (Exception e){
-            throw new RuntimeException("Error in sharing email : "+e.getMessage());
-        }
+                fileStorageService.downloadContent(job.getJobDescriptionUrl()),
+                job.getJobDescriptionUrl().substring(job.getJobDescriptionUrl().lastIndexOf("/")+1),
+                MediaType.ALL_VALUE
+                );
     }
     public List<JobResponseDTO> getJobs(){
         List<Job> jobs = jobRepository.findAll();

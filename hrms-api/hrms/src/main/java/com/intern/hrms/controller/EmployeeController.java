@@ -14,10 +14,9 @@ import com.intern.hrms.service.general.ActivityLogService;
 import com.intern.hrms.service.travel.EmployeeDocumentService;
 import com.intern.hrms.service.general.EmployeeService;
 import com.intern.hrms.service.job.JobService;
-import com.intern.hrms.utility.MailSend;
+import com.intern.hrms.utility.IMailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,14 +33,14 @@ import java.util.logging.Logger;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final Logger logger = Logger.getLogger(EmployeeController.class.getName());
-    private final MailSend mailSend;
+    private final IMailService mailService;
     private final EmployeeDocumentService employeeDocumentService;
     private final JobService jobService;
     private final ActivityLogService activityLogService;
 
-    public EmployeeController(EmployeeService employeeService, MailSend mailSend, EmployeeDocumentService employeeDocumentService, JobService jobService, ActivityLogService activityLogService) {
+    public EmployeeController(EmployeeService employeeService, IMailService mailService, EmployeeDocumentService employeeDocumentService, JobService jobService, ActivityLogService activityLogService) {
         this.employeeService = employeeService;
-        this.mailSend = mailSend;
+        this.mailService = mailService;
         this.employeeDocumentService = employeeDocumentService;
         this.jobService = jobService;
         this.activityLogService = activityLogService;
@@ -97,7 +96,7 @@ public class EmployeeController {
     public ResponseEntity<SuccessResponse<Object>> requestForgetPassword(@PathVariable String email){
         String token = employeeService.requestForgetPassword(email);
 
-        mailSend.sendMail(List.of(email), null,
+        mailService.sendMail(List.of(email), null,
                 "Reset Password on HRMS Portal",
                 """
                         Dear user,
@@ -105,7 +104,7 @@ public class EmployeeController {
                         Your Reset Password Request is Arrived. Please click below link for set new password.
                         
                         Click: """+"http://localhost:5173/reset-password?token="+token,
-                null
+                null, null, null
         );
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new SuccessResponse<>("Token for reset Password forwarded to your mail.", null)

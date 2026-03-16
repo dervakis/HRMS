@@ -9,7 +9,7 @@ import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.achievement.CommentRepository;
 import com.intern.hrms.repository.achievement.PostRepository;
 import com.intern.hrms.service.general.NotificationService;
-import com.intern.hrms.utility.MailSend;
+import com.intern.hrms.utility.IMailService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final EmployeeRepository employeeRepository;
-    private final MailSend mailSend;
+    private final IMailService mailService;
     private final NotificationService notificationService;
 
     /** List active comments for a post */
@@ -71,7 +71,7 @@ public class CommentService {
         Employee commenter = comment.getCommentBy();
         if (commenter != null) {
             String emailBody = "Your comment on post '" + comment.getPost().getTitle() + "' has been removed by HR.\n Remark: " + remark;
-            mailSend.sendMail(List.of(commenter.getEmail()), null, "Comment removed by HR", emailBody, null);
+            mailService.sendMail(List.of(commenter.getEmail()), null, "Comment removed by HR", emailBody, null, null, null);
         }
         comment.setActive(false);
         commentRepository.save(comment);

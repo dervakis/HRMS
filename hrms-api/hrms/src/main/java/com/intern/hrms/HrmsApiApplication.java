@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
-@EnableAsync
+@EnableAsync()
 public class HrmsApiApplication {
 
 	public static void main(String[] args) {

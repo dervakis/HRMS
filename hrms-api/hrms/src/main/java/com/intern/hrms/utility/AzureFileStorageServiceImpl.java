@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.time.OffsetDateTime;
 
 @Service
@@ -81,5 +82,14 @@ public class AzureFileStorageServiceImpl implements IFileStorageService{
         BlobServiceSasSignatureValues values = new BlobServiceSasSignatureValues(OffsetDateTime.now().plusMinutes(expiry), permission);
         String sasToken = blobClient.generateSas(values);
         return blobClient.getBlobUrl() + "?" + sasToken;
+    }
+
+    @Override
+    public byte[] downloadContent(String url) {
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(container);
+        BlobClient blobClient = containerClient.getBlobClient(url);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        blobClient.downloadStream(stream);
+        return stream.toByteArray();
     }
 }

@@ -88,4 +88,9 @@ public class S3FileStorageServiceImpl implements IFileStorageService{
         PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
         return presignedGetObjectRequest.url().toString();
     }
+
+    @Override
+    public byte[] downloadContent(String url) {
+        return new byte[0];
+    }
 }

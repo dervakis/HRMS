@@ -7,4 +7,5 @@ public interface IFileStorageService {
     String updateFile(String url, MultipartFile file);
     String getFileExtension(String name);
     String getDocument(String url);
+    byte[] downloadContent(String url);
 }

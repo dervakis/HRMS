@@ -9,7 +9,7 @@ import com.intern.hrms.enums.NotificationTypeEnum;
 import com.intern.hrms.repository.general.EmployeeRepository;
 import com.intern.hrms.repository.game.*;
 import com.intern.hrms.service.general.NotificationService;
-import com.intern.hrms.utility.MailSend;
+import com.intern.hrms.utility.IMailService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -36,7 +36,7 @@ public class GameBookingService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeInterestRepository employeeInterestRepository;
     private final ModelMapper modelMapper;
-    private final MailSend mailSend;
+    private final IMailService mailService;
     private final WaitingQueueRepository waitingQueueRepository;
     private final NotificationService notificationService;
 
@@ -120,7 +120,7 @@ public class GameBookingService {
             booking.setBookingStatus(BookingStatusEnum.Waiting);
         }
 //        System.out.println(emails.size());
-        mailSend.sendMail(emails,null,
+        mailService.sendMail(emails,null,
                 "Booking Confirmation",
                 "Your Booking Request received successfully\n"
                 + "Game : " + booking.getGame().getGameName()
@@ -128,7 +128,7 @@ public class GameBookingService {
                 + "\nTime : " + booking.getBookingTime()
                 +"\nStatus : " + booking.getBookingStatus()
                 +"\nBooked By : " + bookedBy.getFirstName() + " " + bookedBy.getLastName()
-                ,null);
+                ,null, null, null);
         booking =  gameBookingRepository.save(booking);
         if(booking.getBookingStatus() == BookingStatusEnum.Waiting)
             waitingQueueRepository.save(new WaitingQueue(booking));
@@ -161,7 +161,7 @@ public class GameBookingService {
             employeeInterestRepository.save(interest);
         }
         gameBookingRepository.save(selected);
-        mailSend.sendMail(emails,null,
+        mailService.sendMail(emails,null,
                 "Booking Status Updated",
                 "Your Slot Booked successfully\n"
                         + "Game : " + selected.getGame().getGameName()
@@ -169,7 +169,7 @@ public class GameBookingService {
                         + "\nTime : " + selected.getBookingTime()
                         +"\nStatus : " + selected.getBookingStatus()
                         +"\nBooked By : " + selected.getBookedBy().getFirstName() + " " + selected.getBookedBy().getLastName()
-                ,null);
+                ,null, null, null);
     }
 
     @Transactional

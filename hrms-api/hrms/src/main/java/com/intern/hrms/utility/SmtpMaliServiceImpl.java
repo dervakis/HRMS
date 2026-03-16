@@ -1,51 +1,43 @@
 package com.intern.hrms.utility;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
 
 @Service
-public class MailSend {
-    @Value("${frontend.url}")
-    private String frontendUrl;
+public class SmtpMaliServiceImpl implements IMailService{
     @Value("${spring.mail.username}")
     private String mail;
     private final JavaMailSender javaMailSender;
 
-    public MailSend(JavaMailSender javaMailSender) {
+    public SmtpMaliServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
+    @Override
     @Async
-    public void sendMail(List<String> to, List<String> cc, String subject, String body, String attachPath) {
-        try{
+    public void sendMail(List<String> to, List<String>cc, String subject, String body, byte[] attachment, String fileName, String contentType) {
+        try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to.toArray(new String[0]));
             helper.setSubject(subject);
             helper.setText(body, false);
-
-            // Optional CC
             if (cc != null && !cc.isEmpty()) {
                 helper.setCc(cc.toArray(new String[0]));
             }
-            // Optional Attachment
-            if (attachPath != null && !attachPath.isBlank()) {
-                FileSystemResource file = new FileSystemResource(
-                        new File(System.getProperty("user.dir") + "/" + attachPath)
-                );
-                helper.addAttachment(file.getFilename(), file);
+            if(attachment != null && !fileName.isBlank() && !contentType.isBlank()){
+                ByteArrayResource resource = new ByteArrayResource(attachment);
+                helper.addAttachment(fileName, resource, contentType);
             }
-
             helper.setFrom("HRMS <" + mail + ">");
             javaMailSender.send(message);
         }catch (Exception e){

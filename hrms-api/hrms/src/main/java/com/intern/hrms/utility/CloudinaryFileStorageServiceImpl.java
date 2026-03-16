@@ -55,4 +55,9 @@ public class CloudinaryFileStorageServiceImpl implements IFileStorageService {
                 .secure(true)
                 .generate(url);
     }
+
+    @Override
+    public byte[] downloadContent(String url) {
+        return new byte[0];
+    }
 }
