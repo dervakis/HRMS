@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.time.OffsetDateTime;
 
-@Service
 public class AzureFileStorageServiceImpl implements IFileStorageService{
     @Value("${azure.container}")
     private String container;

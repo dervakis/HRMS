@@ -5,6 +5,7 @@ import com.intern.hrms.dto.game.request.GameBookingRequestDTO;
 import com.intern.hrms.dto.game.response.GameBookingResponseDTO;
 import com.intern.hrms.service.game.GameBookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,21 +15,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@Tag(name = "Game Booking Controller")
 @RequestMapping("api/booking")
+@Tag(name = "Game Booking Controller", description = "Endpoint for managing game bookings")
+@AllArgsConstructor
 public class GameBookingController {
 
     private final GameBookingService gameBookingService;
 
-    public GameBookingController(GameBookingService gameBookingService) {
-        this.gameBookingService = gameBookingService;
-    }
-
     @PostMapping
-    public ResponseEntity<SuccessResponse<Object>> gameBooking(@RequestBody @Validated GameBookingRequestDTO dto){
-        gameBookingService.createGameBooking(dto);
+    public ResponseEntity<SuccessResponse<GameBookingResponseDTO>> gameBooking(@RequestBody @Validated GameBookingRequestDTO dto){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Booking Request Accepted", null)
+                new SuccessResponse<>("Booking Request Accepted", gameBookingService.createGameBooking(dto))
         );
     }
 

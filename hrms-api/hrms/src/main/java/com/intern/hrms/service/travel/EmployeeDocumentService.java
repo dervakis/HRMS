@@ -28,7 +28,7 @@ public class EmployeeDocumentService {
     private final IFileStorageService fileStorageService;
     private final ModelMapper modelMapper;
 
-    public EmployeeDocument addEmployeeDocument(EmployeeDocumentRequestDTO dto){
+    public EmployeeDocumentResponse addEmployeeDocument(EmployeeDocumentRequestDTO dto){
         Employee employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow(
                 ()-> new RuntimeException("Employee not found with id :"+dto.getEmployeeId())
         );
@@ -37,7 +37,10 @@ public class EmployeeDocumentService {
         );
         String documentUrl = fileStorageService.uploadFile("documents/"+employee.getEmployeeId()+"/", documentType.getDocumentTypeName(), dto.getFile());
         EmployeeDocument document = new EmployeeDocument(documentUrl, LocalDate.now(), documentType, employee);
-        return employeeDocumentRepository.save(document);
+        return modelMapper.map(
+                employeeDocumentRepository.save(document),
+                EmployeeDocumentResponse.class
+        );
     }
 
     public String getDocumentByUrl(String url){
@@ -47,21 +50,23 @@ public class EmployeeDocumentService {
         return fileStorageService.getDocument(url);
     }
 
-    public void updateEmployeeDocument(int employeeDocumentId, MultipartFile file){
+    public EmployeeDocumentResponse updateEmployeeDocument(int employeeDocumentId, MultipartFile file){
         EmployeeDocument employeeDocument= employeeDocumentRepository.findById(employeeDocumentId).orElseThrow(
                 ()-> new RuntimeException("No Record found for this document Id : "+employeeDocumentId)
         );
         String newUrl = fileStorageService.updateFile(employeeDocument.getDocumentUrl(), file);
         employeeDocument.setDocumentUrl(newUrl);
         employeeDocument.setUploadedAt(LocalDate.now());
-        employeeDocumentRepository.save(employeeDocument);
+        return modelMapper.map(
+            employeeDocumentRepository.save(employeeDocument),
+            EmployeeDocumentResponse.class
+        );
     }
 
     public List<EmployeeDocumentResponse> getEmployeeDocuments(int employeeId){
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 ()-> new RuntimeException("Employe not exist with id : "+employeeId)
         );
-        List<EmployeeDocumentResponse> response = modelMapper.map(employee.getEmployeeDocuments(), new TypeToken<List<EmployeeDocumentResponse>>(){}.getType());
-        return response;
+        return modelMapper.map(employee.getEmployeeDocuments(), new TypeToken<List<EmployeeDocumentResponse>>(){}.getType());
     }
 }

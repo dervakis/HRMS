@@ -3,8 +3,10 @@ package com.intern.hrms.service.travel;
 import com.intern.hrms.dto.travel.request.ProvidedTravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentRequestDTO;
 import com.intern.hrms.dto.travel.request.TravelDocumentSubmitRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeResponseDTO;
 import com.intern.hrms.dto.travel.response.EmployeeTravelDocumentResponseDTO;
 import com.intern.hrms.dto.travel.response.ProvidedTravelDocumetnResponseDTO;
+import com.intern.hrms.dto.travel.response.TravelPlanResponseDTO;
 import com.intern.hrms.entity.Employee;
 import com.intern.hrms.entity.travel.*;
 import com.intern.hrms.enums.DocumentStatusEnum;
@@ -41,13 +43,16 @@ public class TravelDocumentService {
     private final ModelMapper modelMapper;
     private final NotificationService notificationService;
 
-    public void createAllEmployeeTravelDocument(TravelDocumentRequestDTO dto){
+    public TravelPlanResponseDTO createAllEmployeeTravelDocument(TravelDocumentRequestDTO dto){
         TravelPlan travelPlan = travelPlanRepository.findById(dto.getTravelPlanId()).orElseThrow(
                 ()-> new RuntimeException("No such Travel Plan Exist for document Request Id: "+dto.getTravelPlanId())
         );
         List<DocumentType> documentTypes = documentTypeRepository.findAllById(dto.getDocumentTypeIds());
         travelPlan.setDocumentTypes(documentTypes);
-        travelPlanRepository.save(travelPlan);
+
+        TravelPlanResponseDTO res = modelMapper.map(travelPlanRepository.save(travelPlan), TravelPlanResponseDTO.class);
+        res.setTravelEmployees(modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType()));
+        return res;
     }
 
     public List<EmployeeTravelDocumentResponseDTO> getAllDocumentRequest(int employeeId, int planId){
@@ -56,7 +61,7 @@ public class TravelDocumentService {
         return modelMapper.map(employeeTravelDocuments, new TypeToken<List<EmployeeTravelDocumentResponseDTO>>(){}.getType());
     }
 
-    public void submitDocumentRequest(TravelDocumentSubmitRequestDTO dto){
+    public EmployeeTravelDocumentResponseDTO submitDocumentRequest(TravelDocumentSubmitRequestDTO dto){
         TravelPlan travelPlan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
         Employee employee = employeeRepository.getReferenceById(dto.getEmployeeId());
         TravelEmployee travelEmployee = travelEmployeeRepository.findByEmployeeAndTravelPlan(employee, travelPlan);
@@ -64,19 +69,25 @@ public class TravelDocumentService {
         EmployeeDocument employeeDocument = employeeDocumentRepository.findEmployeeDocumentByEmployee_EmployeeIdAndDocumentType_DocumentTypeId(dto.getEmployeeId(), dto.getDocumentTypeId()).orElseThrow(
                 ()->new RuntimeException("Employee has not Uploaded Document with specified type")
         );
-        employeeTravelDocumentRepository.save(new EmployeeTravelDocument(travelEmployee, documentType, employeeDocument));
+        return modelMapper.map(
+            employeeTravelDocumentRepository.save(new EmployeeTravelDocument(travelEmployee, documentType, employeeDocument)),
+            EmployeeTravelDocumentResponseDTO.class
+        );
     }
 
-    public void reSubmitDocumentRequest(int employeeTravelDocumentId){
+    public EmployeeTravelDocumentResponseDTO reSubmitDocumentRequest(int employeeTravelDocumentId){
         EmployeeTravelDocument request = employeeTravelDocumentRepository.findById(employeeTravelDocumentId).orElseThrow();
         if(request.getDocumentStatus() != DocumentStatusEnum.Reupload){
             throw new RuntimeException("Document request re-upload not allowed");
         }
         request.setDocumentStatus(DocumentStatusEnum.Uploaded);
-        employeeTravelDocumentRepository.save(request);
+        return modelMapper.map(
+            employeeTravelDocumentRepository.save(request),
+            EmployeeTravelDocumentResponseDTO.class
+        );
     }
 
-    public void verifyDocumentRequest(String username, int employeeTravelDocumentId, DocumentStatusEnum status, String remark){
+    public EmployeeTravelDocumentResponseDTO verifyDocumentRequest(String username, int employeeTravelDocumentId, DocumentStatusEnum status, String remark){
         EmployeeTravelDocument employeeTravelDocument = employeeTravelDocumentRepository.findById(employeeTravelDocumentId).orElseThrow(
                 ()-> new RuntimeException("No such travel Document Entry found with Id :"+employeeTravelDocumentId)
         );
@@ -86,13 +97,20 @@ public class TravelDocumentService {
         employeeTravelDocument.setApprover(employeeRepository.getReferenceByEmail(username));
         employeeTravelDocument.setDocumentStatus(status);
         employeeTravelDocument.setRemark(remark);
-        employeeTravelDocumentRepository.save(employeeTravelDocument);
-        notificationService.notifyUser(employeeTravelDocument.getTravelEmployee().getEmployee().getEmployeeId(),
+
+        notificationService.notifyUser(
+                employeeTravelDocument.getTravelEmployee().getEmployee().getEmployeeId(),
                 NotificationTypeEnum.TravelDocument,
-                "Your Document for Travel Plan "+employeeTravelDocument.getTravelEmployee().getTravelPlan().getTitle()+" has been marked as "+status.name());
+                "Your Document for Travel Plan "+employeeTravelDocument.getTravelEmployee().getTravelPlan().getTitle()+" has been marked as "+status.name()
+        );
+
+        return modelMapper.map(
+            employeeTravelDocumentRepository.save(employeeTravelDocument),
+            EmployeeTravelDocumentResponseDTO.class
+        );
     }
 
-    public void submitProvidedDocument(ProvidedTravelDocumentRequestDTO dto, String username) {
+    public ProvidedTravelDocumetnResponseDTO submitProvidedDocument(ProvidedTravelDocumentRequestDTO dto, String username) {
         DocumentType type = documentTypeRepository.getReferenceById(dto.getDocumentTypeId());
         Employee employee = employeeRepository.getReferenceById(dto.getEmployeeId());
         TravelPlan plan = travelPlanRepository.getReferenceById(dto.getTravelPlanId());
@@ -105,10 +123,11 @@ public class TravelDocumentService {
                 provider,
                 travelEmployee
         );
-        providedTravelDocumentRepository.save(providedTravelDocument);
+
         notificationService.notifyUser(employee.getEmployeeId(),
                 NotificationTypeEnum.TravelDocument,
                 "Document for Travel Plan "+travelEmployee.getTravelPlan().getTitle()+" Provided to you.");
+        return modelMapper.map(providedTravelDocumentRepository.save(providedTravelDocument), ProvidedTravelDocumetnResponseDTO.class);
     }
 
     public List<ProvidedTravelDocumetnResponseDTO> getProvideDocumentByEmployee(int travelPlanId, int employeeId){

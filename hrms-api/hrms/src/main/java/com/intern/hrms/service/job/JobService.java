@@ -42,7 +42,7 @@ public class JobService {
     private final JobSharingRepository jobSharingRepository;
     private final AppConfigurationRepository  appConfigurationRepository;
 
-    public Job createJob(JobRequestDTO dto, String username){
+    public JobResponseDTO createJob(JobRequestDTO dto, String username){
         Job newJob = new Job();
         modelMapper.map(dto,newJob);
         Employee creator = employeeRepository.getReferenceByEmail(username);
@@ -53,9 +53,9 @@ public class JobService {
                 newJob.setJobDescriptionUrl(url);
                 jobRepository.save(newJob);
             }
-        return newJob;
+        return modelMapper.map(newJob, JobResponseDTO.class);
     }
-    public Job updateJob(JobRequestDTO dto){
+    public JobResponseDTO updateJob(JobRequestDTO dto){
         Job job = jobRepository.findById(dto.getJobId()).orElseThrow();
         modelMapper.map(dto, job);
         if(dto.getJobDescription() != null) {
@@ -67,7 +67,9 @@ public class JobService {
                 }
         }
         jobRepository.save(job);
-        return job;
+        JobResponseDTO res = modelMapper.map(job, JobResponseDTO.class);
+        res.setReferralCount(job.getJobReferrals().size());
+        return res;
     }
 
     public void jobStatus(boolean isOpen, int jobId){

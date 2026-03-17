@@ -48,7 +48,7 @@ public class TravelExpenseService {
         return travelExpenseTypeRepository.findAll();
     }
 
-    public EmployeeTravelExpense draftEmployeeExpense(EmployeeTravelExpenseRequestDTO dto) {
+    public EmployeeTravelExpenseResponseDTO draftEmployeeExpense(EmployeeTravelExpenseRequestDTO dto) {
         EmployeeTravelExpense expense =  dto.getEmployeeTravelExpenseId() != null
                 ? employeeTravelExpenseRepository.findById(dto.getEmployeeTravelExpenseId()).orElseThrow()
                 : new EmployeeTravelExpense();
@@ -77,10 +77,10 @@ public class TravelExpenseService {
         }
 
         expense.setStatus(TravelExpenseStatusEnum.Draft);
-        return employeeTravelExpenseRepository.save(expense);
+        return modelMapper.map(employeeTravelExpenseRepository.save(expense), EmployeeTravelExpenseResponseDTO.class);
     }
 
-    public void submitEmployeeExpense(int employeeTravelExpenseId){
+    public EmployeeTravelExpenseResponseDTO submitEmployeeExpense(int employeeTravelExpenseId){
         EmployeeTravelExpense expense = employeeTravelExpenseRepository.findById(employeeTravelExpenseId).orElseThrow(
                 ()-> new RuntimeException("Invalid Submission not found expense entry")
         );
@@ -93,10 +93,10 @@ public class TravelExpenseService {
 
         expense.setStatus(TravelExpenseStatusEnum.Submitted);
         expense.setCreatedAt(LocalDate.now());
-        employeeTravelExpenseRepository.save(expense);
+        return modelMapper.map(employeeTravelExpenseRepository.save(expense), EmployeeTravelExpenseResponseDTO.class);
     }
 
-    public void verifyEmployeeExpense(int employeeTravelExpenseId, TravelExpenseStatusEnum status, String remark, String username){
+    public EmployeeTravelExpenseResponseDTO verifyEmployeeExpense(int employeeTravelExpenseId, TravelExpenseStatusEnum status, String remark, String username){
         EmployeeTravelExpense expense = employeeTravelExpenseRepository.findById(employeeTravelExpenseId).orElseThrow(
                 ()-> new RuntimeException("Invalid id not found expense entry")
         );
@@ -108,10 +108,12 @@ public class TravelExpenseService {
         expense.setUpdatedAt(LocalDate.now());
         expense.setApprover(approver);
         expense.setRemark(remark);
-        employeeTravelExpenseRepository.save(expense);
+
         notificationService.notifyUser(expense.getTravelEmployee().getEmployee().getEmployeeId(),
                 NotificationTypeEnum.TravelExpense,
                 "Your Expense for Travel Plan "+expense.getTravelEmployee().getTravelPlan().getTitle()+" has been "+status.name());
+
+        return modelMapper.map(employeeTravelExpenseRepository.save(expense), EmployeeTravelExpenseResponseDTO.class);
     }
 
     public List<EmployeeTravelExpenseResponseDTO> getExpenseByEmployee(int employeeId){

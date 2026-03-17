@@ -37,21 +37,24 @@ public class TravelPlanService {
     private final NotificationService notificationService;
     private final AppConfigurationRepository appConfigurationRepository;
 
-    public TravelPlan createTravelPlan(TravelPlanRequestDTO travelPlanRequestDTO, String username){
+    public TravelPlanResponseDTO createTravelPlan(TravelPlanRequestDTO travelPlanRequestDTO, String username){
         Employee creator = employeeRepository.getReferenceByEmail(username);
         TravelPlan travelPlan = new TravelPlan();
         modelMapper.map(travelPlanRequestDTO, travelPlan);
         travelPlan.setCreatedBy(creator);
-        return travelPlanRepository.save(travelPlan);
+        return modelMapper.map(travelPlanRepository.save(travelPlan), TravelPlanResponseDTO.class);
     }
 
-    public TravelPlan updateTravelPlan(TravelPlanRequestDTO dto){
+    public TravelPlanResponseDTO updateTravelPlan(TravelPlanRequestDTO dto){
         TravelPlan travelPlan = travelPlanRepository.findById(dto.getTravelPlanId()).orElseThrow(
                 () -> new RuntimeException("Invalid Travel Plan for update id :"+dto.getTravelPlanId())
         );
         modelMapper.map(dto, travelPlan);
         travelPlanRepository.save(travelPlan);
-        return travelPlan;
+
+        TravelPlanResponseDTO res = modelMapper.map(travelPlan, TravelPlanResponseDTO.class);
+        res.setTravelEmployees(modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType()));
+        return res;
     }
 
     public void addTravelEmployee(TravelPlan travelPlan, List<Integer> employeeIds){
@@ -78,7 +81,7 @@ public class TravelPlanService {
         travelEmployeeRepository.deleteAllById(travelEmployeeIds);
     }
 
-    public TravelPlan manageTravelEmployee(TravelEmployeeRequestDTO travelEmployeeRequestDTO){
+    public TravelPlanResponseDTO manageTravelEmployee(TravelEmployeeRequestDTO travelEmployeeRequestDTO){
         TravelPlan travelPlan = travelPlanRepository.findById(travelEmployeeRequestDTO.getTravelPlanId()).orElseThrow(
                 () -> new RuntimeException("No such Travel Plan found with Id : "+travelEmployeeRequestDTO.getTravelPlanId())
         );
@@ -102,7 +105,10 @@ public class TravelPlanService {
         );
 
         addTravelEmployee(travelPlan, add.stream().toList());
-        return travelPlan;
+
+        TravelPlanResponseDTO res = modelMapper.map(travelPlan, TravelPlanResponseDTO.class);
+        res.setTravelEmployees(modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType()));
+        return res;
     }
 
     public List<TravelPlanResponseDTO> getTravelPlans(){

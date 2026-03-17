@@ -3,6 +3,8 @@ package com.intern.hrms.controller;
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.entity.AppConfiguration;
 import com.intern.hrms.service.general.AppConfigurationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,12 +13,10 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("api/config")
+@AllArgsConstructor
+@Tag(name = "App Configuration Controller", description = "Endpoint for application parameter")
 public class AppConfigurationController {
     private final AppConfigurationService appConfigurationService;
-
-    public AppConfigurationController(AppConfigurationService appConfigurationService) {
-        this.appConfigurationService = appConfigurationService;
-    }
 
     @PostMapping("/{key}/{value}")
     public ResponseEntity<SuccessResponse<Objects>> addConfiguration(@PathVariable String key, @PathVariable String value){

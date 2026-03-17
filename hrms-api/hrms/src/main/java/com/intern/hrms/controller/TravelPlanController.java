@@ -50,36 +50,32 @@ public class TravelPlanController {
 
     @PostMapping
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<TravelPlan>> addTravelPlan(@Validated @RequestBody TravelPlanRequestDTO travelPlanRequestDTO, Principal principal){
-        TravelPlan travelPlan = travelPlanService.createTravelPlan(travelPlanRequestDTO, principal.getName());
+    public ResponseEntity<SuccessResponse<TravelPlanResponseDTO>> addTravelPlan(@Validated @RequestBody TravelPlanRequestDTO travelPlanRequestDTO, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(
-          new SuccessResponse<TravelPlan>("Travel Plan Created", null)
+          new SuccessResponse<>("Travel Plan Created", travelPlanService.createTravelPlan(travelPlanRequestDTO, principal.getName()))
         );
     }
     @PutMapping
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<TravelPlan>> updateTravelPlan(@Validated(Update.class) @RequestBody TravelPlanRequestDTO travelPlanRequestDTO){
-        TravelPlan travelPlan = travelPlanService.updateTravelPlan(travelPlanRequestDTO);
+    public ResponseEntity<SuccessResponse<TravelPlanResponseDTO>> updateTravelPlan(@Validated(Update.class) @RequestBody TravelPlanRequestDTO travelPlanRequestDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new SuccessResponse<TravelPlan>("Travel Plan Updated Successfully", null)
+                new SuccessResponse<>("Travel Plan Updated Successfully", travelPlanService.updateTravelPlan(travelPlanRequestDTO))
         );
     }
 
     @PostMapping("/employee")
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<Object>> manageTravelEmploye(@RequestBody @Validated TravelEmployeeRequestDTO travelEmployeeRequestDTO){
-        travelPlanService.manageTravelEmployee(travelEmployeeRequestDTO);
+    public ResponseEntity<SuccessResponse<TravelPlanResponseDTO>> manageTravelEmployee(@RequestBody @Validated TravelEmployeeRequestDTO travelEmployeeRequestDTO){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Employee Manuplation Done", null)
+                new SuccessResponse<>("Employee Selection Updated Successfully", travelPlanService.manageTravelEmployee(travelEmployeeRequestDTO))
         );
     }
 
     @PostMapping("/employee-document")
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<Object>> addEmployeeTravelDocument(@RequestBody TravelDocumentRequestDTO travelDocumentRequestDTO){
-        travelDocumentService.createAllEmployeeTravelDocument(travelDocumentRequestDTO);
+    public ResponseEntity<SuccessResponse<TravelPlanResponseDTO>> addEmployeeTravelDocument(@RequestBody TravelDocumentRequestDTO travelDocumentRequestDTO){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Employee Travel Document Request Created", null)
+                new SuccessResponse<>("Document Record Updated Successfully", travelDocumentService.createAllEmployeeTravelDocument(travelDocumentRequestDTO))
         );
     }
 

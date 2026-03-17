@@ -50,7 +50,7 @@ public class EmployeeController {
     public ResponseEntity<SuccessResponse<LoginResponseDTO>> login(@RequestParam String email,
                                                                    @RequestParam String password,
                                                                    HttpServletRequest request,
-                                                                   @RequestHeader("User-Agent") String agent){
+                                                                   @RequestHeader(value = "User-Agent",required = false) String agent){
         LoginResponseDTO dto = employeeService.login(email, password);
         activityLogService.addLog(request, dto.getEmail(),agent,"LOGGED_IN" );
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
@@ -109,7 +109,6 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new SuccessResponse<>("Token for reset Password forwarded to your mail.", null)
         );
-        //remaining mail sending,s0 only mail owner get this token
     }
 
     @PostMapping("forget-password/{email}")

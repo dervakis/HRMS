@@ -2,11 +2,13 @@ package com.intern.hrms.controller;
 
 import com.intern.hrms.commonResponse.SuccessResponse;
 import com.intern.hrms.dto.travel.request.EmployeeTravelExpenseRequestDTO;
+import com.intern.hrms.dto.travel.response.EmployeeTravelExpenseResponseDTO;
 import com.intern.hrms.entity.travel.EmployeeTravelExpense;
 import com.intern.hrms.entity.travel.TravelExpenseType;
 import com.intern.hrms.enums.TravelExpenseStatusEnum;
 import com.intern.hrms.service.travel.TravelExpenseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("api/expense")
 @Tag(name = "Travel Expense Controller", description = "Endpoint to handle Expense")
+@AllArgsConstructor
 public class TravelExpenseController {
 
     private final TravelExpenseService travelExpenseService;
-
-    public TravelExpenseController(TravelExpenseService travelExpenseService) {
-        this.travelExpenseService = travelExpenseService;
-    }
 
     @PostMapping("/type/{name}/{maxAmount}")
     public ResponseEntity<SuccessResponse<TravelExpenseType>> addExpenseType(@PathVariable String name, @PathVariable Integer maxAmount){
@@ -40,29 +39,26 @@ public class TravelExpenseController {
         );
     }
     @PatchMapping("/submit/{employeeTravelExpenseId}")
-    public ResponseEntity<SuccessResponse<Object>> submitTravelExpense(@PathVariable int employeeTravelExpenseId){
-        travelExpenseService.submitEmployeeExpense(employeeTravelExpenseId);
+    public ResponseEntity<SuccessResponse<EmployeeTravelExpenseResponseDTO>> submitTravelExpense(@PathVariable int employeeTravelExpenseId){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Expense Submitted Successfully", null)
+                new SuccessResponse<>("Expense Submitted Successfully", travelExpenseService.submitEmployeeExpense(employeeTravelExpenseId))
         );
     }
 
     @PatchMapping("/verify/{employeeTravelExpenseId}/{status}")
-    public ResponseEntity<SuccessResponse<Object>> verifyTravelExpense(@PathVariable int employeeTravelExpenseId,
+    public ResponseEntity<SuccessResponse<EmployeeTravelExpenseResponseDTO>> verifyTravelExpense(@PathVariable int employeeTravelExpenseId,
                                                                        @PathVariable TravelExpenseStatusEnum status,
                                                                        @RequestBody(required = false) String remark,
                                                                        Principal principal){
-        travelExpenseService.verifyEmployeeExpense(employeeTravelExpenseId, status, remark, principal.getName());
         return ResponseEntity.ok(
-                new SuccessResponse<>("Expense Verified Successfully", null)
+                new SuccessResponse<>("Expense Verified Successfully", travelExpenseService.verifyEmployeeExpense(employeeTravelExpenseId, status, remark, principal.getName()))
         );
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse<EmployeeTravelExpense>> addTravelExpense(EmployeeTravelExpenseRequestDTO dto){
-        travelExpenseService.draftEmployeeExpense(dto);
+    public ResponseEntity<SuccessResponse<EmployeeTravelExpenseResponseDTO>> addTravelExpense(EmployeeTravelExpenseRequestDTO dto){
         return ResponseEntity.ok(
-          new SuccessResponse<>("Travel expense saved successfully", null)
+          new SuccessResponse<>("Travel expense saved successfully", travelExpenseService.draftEmployeeExpense(dto))
         );
     }
 

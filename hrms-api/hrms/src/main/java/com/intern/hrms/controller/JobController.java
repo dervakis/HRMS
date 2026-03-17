@@ -13,6 +13,7 @@ import com.intern.hrms.enums.ReferralStatusEnum;
 import com.intern.hrms.service.job.JobService;
 import com.intern.hrms.validation.Create;
 import com.intern.hrms.validation.Update;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/job")
+@Tag(name = "Job Controller", description = "Handling Job opening endpoint")
 public class JobController {
 
     private final JobService jobService;
@@ -33,17 +35,15 @@ public class JobController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse<Object>> createJob(@Validated(Create.class) JobRequestDTO dto, Principal principal){
-        jobService.createJob(dto, principal.getName());
+    public ResponseEntity<SuccessResponse<JobResponseDTO>> createJob(@Validated(Create.class) JobRequestDTO dto, Principal principal){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Job Created Successfully", null)
+                new SuccessResponse<>("Job Created Successfully", jobService.createJob(dto, principal.getName()))
         );
     }
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-        public ResponseEntity<SuccessResponse<Object>> updateJob(@Validated(Update.class) JobRequestDTO dto){
-        jobService.updateJob(dto);
+        public ResponseEntity<SuccessResponse<JobResponseDTO>> updateJob(@Validated(Update.class) JobRequestDTO dto){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Job Updated Successfully", null)
+                new SuccessResponse<>("Job Updated Successfully", jobService.updateJob(dto))
         );
     }
 
@@ -67,11 +67,10 @@ public class JobController {
     public ResponseEntity<SuccessResponse<Object>> sendJobReferral(JobReferralRequestDTO dto, Principal principal){
         jobService.sendJobReferral(dto, principal.getName());
         return ResponseEntity.ok(
-                new SuccessResponse<>("Referral Sended Successfully", null)
+                new SuccessResponse<>("Referral Sent Successfully", null)
         );
-
-        // mail sending to hr, referral, separatly
     }
+
     @GetMapping("/referral/{jobId}")
     public ResponseEntity<SuccessResponse<List<JobReferralResponseDTO>>> getJobReferralByJob(@PathVariable int jobId){
         return ResponseEntity.ok(
@@ -95,7 +94,6 @@ public class JobController {
     @GetMapping
     public ResponseEntity<SuccessResponse<List<JobResponseDTO>>> getJobs(){
         List<JobResponseDTO> tem = jobService.getJobs();
-//        System.out.println(tem[0);
         return ResponseEntity.ok(
                 new SuccessResponse<>(null,tem)
         );

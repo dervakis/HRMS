@@ -44,10 +44,9 @@ public class GameController {
 
     @PutMapping()
     @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<SuccessResponse<Objects>> updateGame(@RequestBody GameRequestDTO dto){
-        gameService.updateGame(dto);
+    public ResponseEntity<SuccessResponse<Game>> updateGame(@RequestBody GameRequestDTO dto){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Game updated successfully", null)
+                new SuccessResponse<>("Game updated successfully", gameService.updateGame(dto))
         );
     }
     @GetMapping("/cycle/{gameId}")

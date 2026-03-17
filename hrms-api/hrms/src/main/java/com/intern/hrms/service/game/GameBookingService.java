@@ -68,7 +68,7 @@ public class GameBookingService {
         return (double) total / participants.size();
     }
 
-    public GameBooking createGameBooking(GameBookingRequestDTO dto){
+    public GameBookingResponseDTO createGameBooking(GameBookingRequestDTO dto){
         Game game = gameRepository.findById(dto.getGame()).orElseThrow();
         if(dto.getPlayers().isEmpty() || dto.getPlayers().size() > game.getMaxPlayer()){
             throw new RuntimeException("Invalid No. of player");
@@ -137,7 +137,7 @@ public class GameBookingService {
                     NotificationTypeEnum.GameBook,
                     "Your Slot Booking Request for '"+game.getGameName()+"' has been received.");
         }
-        return booking;
+        return modelMapper.map(booking, GameBookingResponseDTO.class);
     }
 
     public void allotFromWaiting(Game game, LocalDate date, LocalTime time, boolean fromCancel) {
