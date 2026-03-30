@@ -3,11 +3,14 @@ import { useGetJobReferralByJob, useGetJobs, useManageReferralStatus } from '../
 import { Button, Card, Select } from 'flowbite-react';
 import toast from 'react-hot-toast';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
+import type { JobReferralType } from '../../types/Job';
 
 function ManageJobReferral() {
+    const queryClient = useQueryClient();
     const { data: allJobs, isLoading:jobLoading } = useGetJobs();
     const [selectedJobId, setSelectedJobId] = useState<number>();
-    const { data: referrals, refetch: refetchReferral, isLoading:refLoading } = useGetJobReferralByJob(selectedJobId!)
+    const { data: referrals, isLoading:refLoading } = useGetJobReferralByJob(selectedJobId!)
     const statusMutation = useManageReferralStatus();
     const nextStatus = (status: string) => {
         switch (status) {
@@ -24,7 +27,7 @@ function ManageJobReferral() {
             <Card className="mb-6">
                 <h5 className="text-lg font-semibold mb-3">Select Job</h5>
                 <Select value={selectedJobId} onChange={e => setSelectedJobId(Number(e.target.value))}>
-                    <option value="">Select Travel Plan</option>
+                    <option value="">Select Job</option>
                     {allJobs?.map(job => <option key={job.jobId} value={job.jobId}>{job.title}</option>)}
                 </Select>
             </Card>
@@ -60,7 +63,7 @@ function ManageJobReferral() {
                                         statusMutation.mutate({ referralId: ref.jobReferralId, status: s }, {
                                             onSuccess: (data) => {
                                                 toast.success(data.message);
-                                                refetchReferral();
+                                                queryClient.setQueryData(['JobReferralJ',selectedJobId], (oldData : JobReferralType[]) => oldData.map(item => item.jobReferralId != ref.jobReferralId ? item : {...item, referralStatus: s}));
                                             },
                                             onError: (error) => toast.error(error.message)
                                         })

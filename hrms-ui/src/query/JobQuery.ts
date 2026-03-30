@@ -4,7 +4,8 @@ import { createJob, createJobReferral, getJobReferralByEmployee, getJobReferralB
 export const useGetJobs = () => {
     return useQuery({
         queryKey: ['Jobs'],
-        queryFn: getJobs
+        queryFn: getJobs,
+        staleTime: Infinity
     })
 }
 

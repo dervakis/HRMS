@@ -1,6 +1,6 @@
 import { Button, Card, Modal, ModalBody, ModalFooter, ModalHeader, Select, Spinner } from 'flowbite-react';
 import { Eye, Pencil, Plus, Upload } from 'lucide-react';
-import {useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { useAddDocument, useGetDocumentByUrl, useGetDocumentTypes } from '../../query/DocumentQuery';
 import type { DocumentSubmitType, EmployeeDocumentType } from '../../types/TravelPlan';
@@ -9,11 +9,13 @@ import { useSelector } from 'react-redux';
 import type { RootStateType } from '../../redux-store/Store';
 import toast from 'react-hot-toast';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 function EmployeeDocument() {
-    const { data: alldocumentTypes, isLoading:typeLoading } = useGetDocumentTypes(false);
+    const queryClient = useQueryClient();
+    const { data: alldocumentTypes, isLoading: typeLoading } = useGetDocumentTypes(false);
     const user = useSelector((state: RootStateType) => state.user);
-    const { data: allEmployeeDocuments, refetch, isLoading:docLoading } = useGetEmployeeDocuments(user.userId);
+    const { data: allEmployeeDocuments, isLoading: docLoading } = useGetEmployeeDocuments(user.userId);
     const addMutation = useAddDocument();
     const docMutation = useGetDocumentByUrl();
     const updateMutation = useUpdateEmployeeDocument();
@@ -51,7 +53,7 @@ function EmployeeDocument() {
                 onSuccess: (data) => {
                     toast.success(data.message);
                     setOpenModal(undefined);
-                    refetch();
+                    queryClient.setQueryData(['EmployeeDocument', user.userId], (oldData: EmployeeDocumentType[]) => oldData.map(item => item.employeeDocumentId != data.data.employeeDocumentId ? item : data.data ))
                     reset();
                 },
                 onError: (err) => toast.error(err.message)
@@ -63,7 +65,8 @@ function EmployeeDocument() {
         addMutation.mutate(formData, {
             onSuccess: (data) => {
                 toast.success(data.message);
-                refetch();
+                queryClient.setQueryData(['EmployeeDocument', user.userId], (oldData: EmployeeDocumentType[]) => [...oldData, data.data])
+                console.log(allEmployeeDocuments)
                 setOpenModal(undefined);
             },
             onError: (error) => {
@@ -73,12 +76,13 @@ function EmployeeDocument() {
     };
 
     const availableDocumentTypes = useMemo(() => {
+        console.log(allEmployeeDocuments)
         const uploadedIds = allEmployeeDocuments?.map((d) => d.documentTypeId);
         return alldocumentTypes?.filter((d) => !uploadedIds?.includes(d.documentTypeId));
     }, [allEmployeeDocuments]);
 
     return (
-        <>  
+        <>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {allEmployeeDocuments?.map((doc) => (
                     <Card
@@ -145,14 +149,14 @@ function EmployeeDocument() {
                         <label>
                             <div className="border-2 border-dashed border-blue-300 p-6 rounded-lg text-center cursor-pointer hover:bg-blue-50 transition-all">
                                 <Upload className="mx-auto mb-3 text-blue-500" size={32} />
-                                <p className="text-sm text-gray-600"> { watch('fileList') ? watch('fileList').item(0)?.name :  'Click to upload document'}</p>
+                                <p className="text-sm text-gray-600"> {watch('fileList') ? watch('fileList').item(0)?.name : 'Click to upload document'}</p>
                                 <input type="file" hidden {...register("fileList")} className="mt-3"></input>
                             </div>
                         </label>
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>{(addMutation.isPending || updateMutation.isPending) &&<Spinner size='sm'/>}Save</Button>
+                        <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>{(addMutation.isPending || updateMutation.isPending) && <Spinner size='sm' />}Save</Button>
                         <Button color="gray" onClick={() => setOpenModal(undefined)}>
                             Cancel
                         </Button>
@@ -160,7 +164,7 @@ function EmployeeDocument() {
                 </form>
             </Modal>
 
-            {(docLoading || typeLoading || docMutation.isPending ) &&<Loader/>}
+            {(docLoading || typeLoading || docMutation.isPending) && <Loader />}
         </>
     )
 }

@@ -27,12 +27,12 @@ export const createJobReferral = async(referral:FormData) : Promise<ApiResponseT
     return response.data;
 } 
 
-export const createJob = async(job:FormData): Promise<ApiResponseType<Object>> => {
+export const createJob = async(job:FormData): Promise<ApiResponseType<JobType>> => {
     const response = await Api.post('/job', job, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;
 }
 
-export const updateJob = async(job:FormData): Promise<ApiResponseType<Object>> => {
+export const updateJob = async(job:FormData): Promise<ApiResponseType<JobType>> => {
     const response = await Api.patch('/job', job, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;
 }

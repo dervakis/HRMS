@@ -7,14 +7,17 @@ import type { RootStateType } from "../../redux-store/Store";
 import toast from "react-hot-toast";
 import { Badge, Button, Card, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import Loader from "../../common/Loader";
+import { useQueryClient } from "@tanstack/react-query";
+import type { EmployeeTravelDocumentType } from "../../types/TravelPlan";
 
 function TravelDocument() {
+  const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState(false);
   const [selectedTravelId, setSelectedTravelId] = useState<number>();
   const user = useSelector((state: RootStateType) => state.user);
   const { data: travelPlans = [], isLoading: tpLoading } = useGetTravelPlanByEmployee(user.userId);
   const { data: employeeDocs = [], isLoading: edLoading } = useGetEmployeeDocuments(user.userId);
-  const { data: travelRequests = [], refetch, isLoading: trLoading } = useGetTravelDocumentRequest(selectedTravelId!, user.userId);
+  const { data: travelRequests = [], isLoading: trLoading } = useGetTravelDocumentRequest(selectedTravelId!, user.userId);
   const submitMutation = useSubmitTravelDocument();
   const reSubmitMutation = useReSubmitTravelDocument();
   const docMutation = useGetDocumentByUrl();
@@ -41,7 +44,7 @@ function TravelDocument() {
         // console.log(data);
         setOpenModal(false);
         toast.success(data.message);
-        refetch();
+        queryClient.setQueryData(['travelDocument', selectedTravelId, user.userId], (old: EmployeeTravelDocumentType[]) => [...old, data.data])
       }
     });
   };
@@ -89,10 +92,10 @@ function TravelDocument() {
         {travelPlans.map((plan) => (
           <Card key={plan.travelPlanId} className="shadow-md border border-gray-200 cursor-pointer hover:shadow-lg transition-all"
             onClick={() => openRequestModal(plan.travelPlanId)}>
-              <div>
+            <div>
 
-            <h5 className="text-lg text-center font-semibold">{plan.title}</h5>
-              </div>
+              <h5 className="text-lg text-center font-semibold">{plan.title}</h5>
+            </div>
             <p className='text-gray-700 dark:text-gray-400 text-center text-sm'>{plan.description}</p>
             <div className="text-sm dark:text-gray-500 text-gray-600 mb-3">
               <p>Start:{" "}{new Date(plan.startTime).toLocaleDateString("en-GB")}</p>
@@ -172,9 +175,10 @@ function TravelDocument() {
                         "Reupload" && (
                           <Button size="xs" onClick={() => {
                             reSubmitMutation.mutate(status.employeeTravelDocumentId!, {
-                              onSuccess: () => {
+                              onSuccess: (data) => {
                                 toast.success("Document request re-submitted successfully");
-                                refetch();
+                                queryClient.setQueryData(['travelDocument', selectedTravelId, user.userId],
+                                  (old: EmployeeTravelDocumentType[]) => old.map(item => item.employeeTravelDocumentId != data.data.employeeTravelDocumentId ? item : data.data))
                               }
                             })
                           }}>Reupload</Button>

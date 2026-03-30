@@ -23,10 +23,10 @@ public class AppConfigurationService {
         appConfigurationRepository.deleteById(configId);
     }
 
-    public void updateConfiguration(int configId, String value){
+    public AppConfiguration updateConfiguration(int configId, String value){
         AppConfiguration config =  appConfigurationRepository.findById(configId).orElseThrow();
         config.setConfigValue(value);
-        appConfigurationRepository.save(config);
+        return appConfigurationRepository.save(config);
     }
 
     public List<AppConfiguration> getValueByKey(String key){

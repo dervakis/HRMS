@@ -1,6 +1,6 @@
 import { Card, Modal, ModalBody, ModalHeader, ModalFooter, Button, Select, Badge, Spinner, Label, FileInput } from "flowbite-react";
 import { useMemo, useState } from "react";
-import type { TravelEmployeeType, TravelPlanType } from "../../types/TravelPlan";
+import type { EmployeeTravelDocumentType, ProvidedDocumentResponseType, TravelEmployeeType, TravelPlanType } from "../../types/TravelPlan";
 import { useAddProvidedDocument, useGetProvidedDocument, useGetTravelPlan } from "../../query/TravelPlanQuery";
 import { useGetDocumentByUrl, useGetDocumentTypes, useGetTravelDocumentRequest, useVerifyTravelDocument } from "../../query/DocumentQuery";
 import toast from "react-hot-toast";
@@ -8,14 +8,16 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import SelectOption from "../../common/SelectOption";
 import ConfirmModal from "../achievement/component/ConfirmModal";
 import Loader from "../../common/Loader";
+import { useQueryClient } from "@tanstack/react-query";
 
 function DocumentVarification() {
+    const queryClient = useQueryClient();
     const [selectedPlanId, setSelectedPlanId] = useState<number>();
     const [selectedEmployee, setSelectedEmployee] = useState<TravelEmployeeType>();
     const [openModal, setOpenModal] = useState(false);
     const [openReupload, setOpenReupload] = useState<number | null>(null);
     const { data: travelPlans = [], isLoading: tpLoading } = useGetTravelPlan();
-    const { data: travelDocumentRequests = [], isFetching, refetch: refetchRequest } = useGetTravelDocumentRequest(selectedPlanId!,selectedEmployee?.employeeId!);
+    const { data: travelDocumentRequests = [], isFetching } = useGetTravelDocumentRequest(selectedPlanId!, selectedEmployee?.employeeId!);
     const verifyMutation = useVerifyTravelDocument();
     const docMutation = useGetDocumentByUrl();
 
@@ -28,7 +30,7 @@ function DocumentVarification() {
 
     const openEmployeeModal = (employee: TravelEmployeeType) => { setSelectedEmployee(employee); setOpenModal(true); };
     const [openAdd, setOpenAdd] = useState<number>();
-    const { data: providedDocuments, isLoading: pdLoading, refetch } = useGetProvidedDocument({ travelPlanId: selectedPlanId!, employeeId: selectedEmployee?.employeeId! })
+    const { data: providedDocuments, isLoading: pdLoading } = useGetProvidedDocument({ travelPlanId: selectedPlanId!, employeeId: selectedEmployee?.employeeId! })
     const addProvidedMutation = useAddProvidedDocument();
     const { register, handleSubmit, reset } = useForm<{ documentTypeId: number, file: FileList }>();
     const { data: documents } = useGetDocumentTypes(true);
@@ -44,7 +46,7 @@ function DocumentVarification() {
             onSuccess: (data) => {
                 toast.success(data.message);
                 reset();
-                refetch();
+                queryClient.setQueryData(['Provided', selectedPlanId, selectedEmployee?.employeeId], (oldData: ProvidedDocumentResponseType[]) => [...oldData, data.data]);
                 setOpenAdd(undefined);
             },
             onError: (err) => toast.error(err.message)
@@ -124,7 +126,7 @@ function DocumentVarification() {
                                                             onSuccess: data => {
                                                                 toast.success(data.message);
                                                                 setOpenModal(false);
-                                                                refetchRequest();
+                                                                queryClient.setQueryData(['travelDocument', selectedPlan, selectedEmployee?.employeeId], (oldData: EmployeeTravelDocumentType[]) => oldData.map(item => item.employeeTravelDocumentId != doc.employeeTravelDocumentId ? item : data.data))
                                                             }
                                                         }
                                                     )}>Approve</Button>
@@ -172,7 +174,7 @@ function DocumentVarification() {
                                                 window.open(url, '_blank')
                                             }
                                         })}>
-                                            'View'
+                                            View
                                         </Button>
                                     </div>
                                 ))
@@ -201,7 +203,7 @@ function DocumentVarification() {
                         </div>
                     </ModalBody>
                     <div className="flex ml-6 mb-4 gap-4">
-                        <Button type="submit" disabled={addProvidedMutation.isPending}>{addProvidedMutation.isPending && <Spinner size="sm"/>}Add</Button>
+                        <Button type="submit" disabled={addProvidedMutation.isPending}>{addProvidedMutation.isPending && <Spinner size="sm" />}Add</Button>
                         <Button onClick={() => setOpenAdd(undefined)}>Cancel</Button>
                     </div>
                 </form>
@@ -219,7 +221,7 @@ function DocumentVarification() {
                     {
                         onSuccess: data => {
                             toast.success(data.message);
-                            refetchRequest();
+                            queryClient.setQueryData(['travelDocument', selectedPlan, selectedEmployee?.employeeId], (oldData: EmployeeTravelDocumentType[]) => oldData.map(item => item.employeeTravelDocumentId != data.data.employeeTravelDocumentId ? item : data.data))
                             setOpenReupload(null);
                         },
                         onError: error => toast.error(error.message)
@@ -227,7 +229,7 @@ function DocumentVarification() {
                 )}
                 onClose={() => setOpenReupload(null)}
             />
-            {(docMutation.isPending || verifyMutation.isPending) && <Loader/>}
+            {(docMutation.isPending || verifyMutation.isPending) && <Loader />}
         </>
     );
 }

@@ -1,5 +1,5 @@
 import { Alert, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Textarea, TextInput } from 'flowbite-react';
-import { FileText, Plus, SquarePen, Trash2, Users} from 'lucide-react';
+import { FileText, Plus, SquarePen, Trash2, Users } from 'lucide-react';
 import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useCreateTravelPlan, useDeleteTravelPlan, useGetTravelPlan, useManageTravelDocument, useManageTravelEmployee, useUpdateTravelPlan } from '../../query/TravelPlanQuery';
@@ -10,12 +10,14 @@ import { useGetDocumentTypes } from '../../query/DocumentQuery';
 import ConfirmModal from '../achievement/component/ConfirmModal';
 import SearchableDropdown from '../../common/SearchableDD';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 function ManageTravel() {
+    const queryClient = useQueryClient();
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<TravelPlanCreate>();
-    const { data: travelPlans, refetch: refetchTravelPlan, isLoading:tpLoading } = useGetTravelPlan();
-    const { data: allEmployees, isLoading:empLoading } = useGetEmployees();
-    const { data: allDocuments, isLoading:docLoading } = useGetDocumentTypes(false);
+    const { data: travelPlans, isLoading: tpLoading } = useGetTravelPlan();
+    const { data: allEmployees, isLoading: empLoading } = useGetEmployees();
+    const { data: allDocuments, isLoading: docLoading } = useGetDocumentTypes(false);
     const createTravelMutation = useCreateTravelPlan();
     const manageEmployeeMutation = useManageTravelEmployee();
     const manageDocumentMutation = useManageTravelDocument();
@@ -34,7 +36,7 @@ function ManageTravel() {
                     reset();
                     setOpenModal(undefined);
                     toast.success(data.message);
-                    refetchTravelPlan();
+                    queryClient.setQueryData(['travelPlans'], (old: TravelPlanType[]) => old.map(item => item.travelPlanId != data.data.travelPlanId ? item : data.data))
                 }
             })
             return;
@@ -44,7 +46,7 @@ function ManageTravel() {
                 reset();
                 setOpenModal(undefined);
                 toast.success(data.message);
-                refetchTravelPlan()
+                queryClient.setQueryData(['travelPlans'], (old: TravelPlanType[]) => [...old, data.data])
             },
             onError: (error) => {
                 // console.log(error)
@@ -81,7 +83,7 @@ function ManageTravel() {
                 onSuccess: (data) => {
                     toast.success(data.message);
                     setOpenModal(undefined)
-                    refetchTravelPlan()
+                    queryClient.setQueryData(['travelPlans'], (old: TravelPlanType[]) => old.map(item => item.travelPlanId != data.data.travelPlanId ? item : data.data))
                 },
                 onError: (error) => {
                     toast.error(error.message)
@@ -96,7 +98,7 @@ function ManageTravel() {
             onSuccess: (data) => {
                 toast.success(data.message);
                 setOpenModal(undefined)
-                refetchTravelPlan()
+                queryClient.setQueryData(['travelPlans'], (old: TravelPlanType[]) => old.map(item => item.travelPlanId != data.data.travelPlanId ? item : data.data))
             }
         })
     }
@@ -180,7 +182,7 @@ function ManageTravel() {
 
                         <ModalFooter>
                             <Button type="submit" disabled={(createTravelMutation.isPending || updateTravelMutation.isPending)}>
-                                {(createTravelMutation.isPending || updateTravelMutation.isPending) && <Spinner size='sm'/>}{openModal == 'edit' ? "Update" : "Create"}
+                                {(createTravelMutation.isPending || updateTravelMutation.isPending) && <Spinner size='sm' />}{openModal == 'edit' ? "Update" : "Create"}
                             </Button>
                             <Button color="gray" onClick={() => {
                                 setOpenModal(undefined);
@@ -283,7 +285,7 @@ function ManageTravel() {
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={handleDocument} disabled={manageDocumentMutation.isPending}>{manageDocumentMutation.isPending && <Spinner size='sm'/>}Save</Button>
+                    <Button onClick={handleDocument} disabled={manageDocumentMutation.isPending}>{manageDocumentMutation.isPending && <Spinner size='sm' />}Save</Button>
                     <Button color={'gray'} onClick={() => setOpenModal(undefined)}>Cancle</Button>
                 </ModalFooter>
             </Modal>
@@ -300,7 +302,7 @@ function ManageTravel() {
                         onSuccess: (data) => {
                             toast.success(data.message);
                             setOpenConfirm(null);
-                            refetchTravelPlan();
+                            queryClient.setQueryData(['travelPlans'], (old: TravelPlanType[]) => old.filter(item => item.travelPlanId != openConfirm))
                         },
                         onError: (err) => toast.error(err.message)
                     }
@@ -308,7 +310,7 @@ function ManageTravel() {
                 onClose={() => setOpenConfirm(null)}
             />
 
-            {(empLoading || docLoading || tpLoading) && <Loader/>}
+            {(empLoading || docLoading || tpLoading) && <Loader />}
         </>
     )
 }

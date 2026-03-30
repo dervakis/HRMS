@@ -7,9 +7,11 @@ import { type GameType, type GameCreateType } from '../../types/Game';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../achievement/component/ConfirmModal';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 function ManageGames() {
-  const { data: allGame, refetch: refetchGame, isFetching } = useGetGames();
+  const queryClient = useQueryClient();
+  const { data: allGame, isLoading } = useGetGames();
   const createMutation = useCreateGame();
   const deleteMutation = useDeleteGame();
   const updateMutation = useUpdateGame();
@@ -18,32 +20,32 @@ function ManageGames() {
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<GameCreateType>();
 
   const onSubmit: SubmitHandler<GameCreateType> = (data) => {
-    if(data.gameId == undefined){
+    if (data.gameId == undefined) {
       createMutation.mutate(data, {
         onSuccess: (res) => {
           toast.success(res.message);
           onClose();
-          refetchGame();
+          queryClient.setQueryData(['Games'], (oldData: GameType[]) => [...oldData, oldData]);
         },
-        onError: (err) => toast.error(err.message) 
+        onError: (err) => toast.error(err.message)
       })
-    }else{
+    } else {
       updateMutation.mutate(data, {
         onSuccess: (res) => {
           toast.success(res.message);
           onClose();
-          refetchGame();
+          queryClient.setQueryData(['Games'], (oldData: GameType[]) => oldData.map(item => item.gameId != res.data.gameId ? item : res.data));
         },
-        onError: (err) => toast.error(err.message) 
+        onError: (err) => toast.error(err.message)
       })
     }
-    
+
   }
 
   const onClose = () => {
     setOpenModal(false);
     reset({
-      gameId:undefined,
+      gameId: undefined,
       gameName: undefined,
       durationInMinute: undefined,
       maxPlayer: undefined,
@@ -52,9 +54,9 @@ function ManageGames() {
     })
   }
 
-  const onEdit = (game:GameType) => {
+  const onEdit = (game: GameType) => {
     reset({
-      gameId:game.gameId,
+      gameId: game.gameId,
       gameName: game.gameName,
       durationInMinute: game.durationInMinute,
       maxPlayer: game.maxPlayer,
@@ -68,7 +70,7 @@ function ManageGames() {
     deleteMutation.mutate(openDelete!.gameId, {
       onSuccess: (res) => {
         toast.success(res.message)
-        refetchGame();
+        queryClient.setQueryData(['Games'], (oldData: GameType[]) => oldData.filter(item => item.gameId != openDelete?.gameId));
         setOpenDelete(null)
       },
       onError: (err: any) => {
@@ -106,7 +108,7 @@ function ManageGames() {
       </div>
 
       <Modal show={openModal}>
-        <ModalHeader>{watch('gameId') == undefined ? 'Add New Game' : 'Edit Game' }</ModalHeader>
+        <ModalHeader>{watch('gameId') == undefined ? 'Add New Game' : 'Edit Game'}</ModalHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody>
             <div>
@@ -128,15 +130,15 @@ function ManageGames() {
               </div>
               <div className='w-full'>
                 <Label>End Time</Label>
-                <TextInput type='time' {...register('endingTime', { 
-                  required: "Ending time is required", 
+                <TextInput type='time' {...register('endingTime', {
+                  required: "Ending time is required",
                   validate: (value) => {
-                    if(new Date(value) < new Date(watch('startingTime'))){
+                    if (new Date(value) < new Date(watch('startingTime'))) {
                       return "Endtime must be greater that starting Time"
                     }
                     return true;
                   }
-                   })} />
+                })} />
               </div>
             </div>
             {(Object.keys(errors).length > 0) && (
@@ -156,17 +158,17 @@ function ManageGames() {
       </Modal>
 
       <ConfirmModal
-                open={!!openDelete}
-                title="Delete Game"
-                message="Are you sure you want to delete this Game? This action cannot be undone."
-                confirmText="Yes, Delete"
-                cancelText="Cancel"
-                danger
-                loading={deleteMutation.isPending}
-                onConfirm={confirmDelete}
-                onClose={() => setOpenDelete(null)}
-            />
-      {(isFetching)&& <Loader/>}
+        open={!!openDelete}
+        title="Delete Game"
+        message="Are you sure you want to delete this Game? This action cannot be undone."
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        danger
+        loading={deleteMutation.isPending}
+        onConfirm={confirmDelete}
+        onClose={() => setOpenDelete(null)}
+      />
+      {(isLoading) && <Loader />}
     </>
   )
 }

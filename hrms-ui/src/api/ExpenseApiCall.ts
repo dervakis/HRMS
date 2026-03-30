@@ -17,12 +17,12 @@ export const getExpenseType = async(): Promise<TravelExpenseType[]> => {
     return response.data.data;
 }
 
-export const addExpeneType = async({name, maxAmount}:{name:string, maxAmount:number}): Promise<ApiResponseType<Object>> => {
+export const addExpeneType = async({name, maxAmount}:{name:string, maxAmount:number}): Promise<ApiResponseType<TravelExpenseType>> => {
     const response = await Api.post(`/expense/type/${name}/${maxAmount}`);
     return response.data;
 }
 
-export const createTravelExpense = async(form: FormData): Promise<ApiResponseType<Object>> => {
+export const createTravelExpense = async(form: FormData): Promise<ApiResponseType<TravelExpenseResponseType>> => {
     const response = await Api.post(`/expense`, form, {headers: {'Content-Type': 'multipart/form-data'}});
     return response.data;
 }
@@ -32,12 +32,12 @@ export const deleteTravelExpense = async(expenseId: number): Promise<ApiResponse
     return response.data;
 } 
 
-export const submitTravelExpense = async(expenseId:number):Promise<ApiResponseType<Object>> => {
+export const submitTravelExpense = async(expenseId:number):Promise<ApiResponseType<TravelExpenseResponseType>> => {
     const response = await Api.patch(`/expense/submit/${expenseId}`);
     return response.data;
 }
 
-export const verifyTravelExpense = async({expenseId, status, remark}:{expenseId:number, status:string, remark:string|null}) :Promise<ApiResponseType<Object>>  => {
+export const verifyTravelExpense = async({expenseId, status, remark}:{expenseId:number, status:string, remark:string|null}) :Promise<ApiResponseType<TravelExpenseResponseType>>  => {
     const response = await Api.patch(`/expense/verify/${expenseId}/${status}`, remark, {headers: {'Content-Type': 'text/plain'}});
     return response.data;
 }

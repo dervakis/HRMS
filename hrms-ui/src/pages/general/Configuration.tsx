@@ -7,10 +7,13 @@ import { useAddDocumentTypes, useGetDocumentTypes } from '../../query/DocumentQu
 import SearchableDropdown from '../../common/SearchableDD';
 import { useAddExpenseType, useGetExpenseType } from '../../query/ExpenseQuery';
 import type { TravelExpenseType } from '../../types/TravelPlan';
+import { useQueryClient } from '@tanstack/react-query';
+import type { AppConfigurationType } from '../../api/AppConfigurationApiCall';
 
 function Configuration() {
-    const { data, isLoading, refetch } = useGetConfiguration("referral_to");
-    const { data: days, refetch: refetchDay } = useGetConfiguration("expense_deadline");
+    const queryClient = useQueryClient();
+    const { data, isLoading } = useGetConfiguration("referral_to");
+    const { data: days } = useGetConfiguration("expense_deadline");
     const addMutation = useAddConfiguration();
     const deleteMutation = useDeleteConfiguration();
     const updateMutation = useUpdateConfigurationByKey()
@@ -21,8 +24,8 @@ function Configuration() {
     const [docType, setDocType] = useState("");
     const [isProvided, setIsProvided] = useState(false);
     const [newExpType, setNewExpType] = useState<TravelExpenseType>();
-    const { data: documentType, refetch: refetchType } = useGetDocumentTypes(isProvided);
-    const { data: expenseType, refetch: refetchExpType } = useGetExpenseType();
+    const { data: documentType } = useGetDocumentTypes(isProvided);
+    const { data: expenseType } = useGetExpenseType();
     const handleAdd = async () => {
         if (!email.trim()) {
             toast.error("Email is required");
@@ -37,7 +40,7 @@ function Configuration() {
             onSuccess: (data) => {
                 toast.success(data.message);
                 setEmail("");
-                refetch();
+                queryClient.setQueryData(["config", "referral_to"], (oldData: AppConfigurationType[]) => [...oldData, data.data])
 
             },
             onError: (err) => {
@@ -51,8 +54,7 @@ function Configuration() {
             onSuccess: (data) => {
                 toast.success(data.message);
                 setEmail("");
-                refetch();
-
+                queryClient.setQueryData(["config", "referral_to"], (oldData: AppConfigurationType[]) => oldData.filter(item => item.appConfigurationId != id));
             }
         });
     };
@@ -95,9 +97,9 @@ function Configuration() {
                     <TextInput type='number' value={deadline} onChange={(e) => setDeadline(Number(e.target.value))} className="flex-1" />
                     <Button size='sm' onClick={() => updateMutation.mutateAsync({ configId: Number(days?.[0].appConfigurationId), value: deadline.toString() },
                         {
-                            onSuccess: () => {
+                            onSuccess: (data) => {
                                 toast.success("Value Updated Successfully");
-                                refetchDay();
+                                queryClient.setQueryData(["config", "expense_deadline"], (oldData: AppConfigurationType[]) => oldData.map(item => item.appConfigurationId != data.data.appConfigurationId ? data.data : item));
 
                             },
                             onError: (err) => {
@@ -131,7 +133,11 @@ function Configuration() {
 
                     <TextInput value={docType} onChange={(e) => setDocType(e.target.value)} className="flex-1" />
                     <Button disabled={!docType} size='sm' onClick={() => addDocTypeMutation.mutate({ name: docType, isProvided: isProvided }, {
-                        onSuccess: (data) => { toast.success(data.message); refetchType(); setDocType(""); },
+                        onSuccess: (data) => {
+                            toast.success(data.message);
+                            queryClient.setQueryData(['DocumentTypes', isProvided], (oldData: DocumentType[]) => [...oldData, data.data]);
+                            setDocType("");
+                        },
                         onError: (err) => toast.error(err.message)
                     })}>Add</Button>
                 </div>
@@ -153,7 +159,11 @@ function Configuration() {
                         <TextInput type='number' placeholder='Maximum Amount' value={newExpType?.maxAmount} onChange={(e) => setNewExpType({ ...newExpType!, maxAmount: Number(e.target.value) })} className='flex-1' />
                     </div>
                     <Button size='sm' disabled={!newExpType?.maxAmount || !newExpType?.travelExpenseTypeName} onClick={() => addExpTypeMutation.mutate({ name: newExpType?.travelExpenseTypeName!, maxAmount: newExpType?.maxAmount! }, {
-                        onSuccess: (data) => { toast.success(data.message); refetchExpType(); setNewExpType({ ...newExpType!, travelExpenseTypeName: '', maxAmount: 0 }) },
+                        onSuccess: (data) => {
+                            toast.success(data.message);
+                            queryClient.setQueryData(['ExpenseType'], (oldData: TravelExpenseType[]) => [...oldData, data.data])
+                            setNewExpType({ ...newExpType!, travelExpenseTypeName: '', maxAmount: 0 })
+                        },
                         onError: (err) => toast.error(err.message)
                     })}>Add</Button>
                 </div>

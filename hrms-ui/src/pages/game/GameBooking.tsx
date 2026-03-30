@@ -11,16 +11,18 @@ import InputField from '../../common/InputField';
 import SelectOption from '../../common/SelectOption';
 import SearchableDropdown from '../../common/SearchableDD';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 function GameBooking() {
+    const queryClient = useQueryClient();
     const user = useSelector((state: RootStateType) => state.user)
-    const { data: allInterestedGames, isLoading:igLoading } = useGetInterestedGame(user.userId);
+    const { data: allInterestedGames, isLoading: igLoading } = useGetInterestedGame(user.userId);
     const [selectedGameId, setSelectedGameId] = useState<number>();
-    const { data: gameCycle, isLoading:gcLoading } = useGetGameCycle(selectedGameId!);
-    const { data: bookings, isFetching: bookingLoading, refetch } = useGetEmployeeBookingsInCycle(selectedGameId!, user.userId);
+    const { data: gameCycle, isLoading: gcLoading } = useGetGameCycle(selectedGameId!);
+    const { data: bookings, isLoading: bookingLoading } = useGetEmployeeBookingsInCycle(selectedGameId!, user.userId);
     const cancelMutation = useCancelBooking()
     const selectedGame = allInterestedGames?.find((game) => game.gameId == selectedGameId);
-    const { data: interestedEmployees, isLoading:empLoading, refetch:ieRefetch } = useGetInterestedEmployee(selectedGameId!);
+    const { data: interestedEmployees, isLoading: empLoading, refetch: ieRefetch } = useGetInterestedEmployee(selectedGameId!);
     const [openModal, setOpenModal] = useState<boolean>();
     const createBookingMutation = useCreateGameBooking();
     const [selectedPlayers, setSelectedPlayers] = useState<InterestedEmployeeType[]>([]);
@@ -92,7 +94,7 @@ function GameBooking() {
                 onSuccess: (res) => {
                     toast.success(res.message);
                     onCloseCreate();
-                    refetch();
+                    queryClient.setQueryData(["cycleBookings", data.game, user.userId], (oldData: GameBookingResponseType[]) => [...oldData, res.data])
                     ieRefetch();
                 },
                 onError: (err) => {
@@ -107,7 +109,7 @@ function GameBooking() {
         cancelMutation.mutate(bookingId, {
             onSuccess: (res) => {
                 toast.success(res.message)
-                refetch()
+                queryClient.setQueryData(["cycleBookings", selectedGame?.gameId, user.userId], (oldData: GameBookingResponseType[]) => oldData.map(item => item.gameBookingId != bookingId ? item : {...item, bookingStatus:'Cancelled'}));
                 ieRefetch();
             },
             onError: (err) => {
@@ -166,7 +168,7 @@ function GameBooking() {
                             <Button className='md:ml-auto' onClick={() => setOpenModal(true)}>Book Your Slot</Button>
                         </div>
                     </Card>
-                    {bookingLoading ? <div className='flex items-center justify-center'><Spinner/></div> : bookings?.length == 0 ? (
+                    {bookingLoading ? <div className='flex items-center justify-center'><Spinner /></div> : bookings?.length == 0 ? (
                         <p className='text-gray-500'>No bookings found</p>
                     ) : (
                         <div className='grid md:grid-cols-3 gap-6'>
@@ -293,7 +295,7 @@ function GameBooking() {
                     </ModalFooter>
                 </form>
             </Modal>
-            {(igLoading || gcLoading || empLoading || cancelMutation.isPending) && <Loader/>}
+            {(igLoading || gcLoading || empLoading || cancelMutation.isPending) && <Loader />}
         </>
     )
 }

@@ -1,15 +1,17 @@
 import { useCreateJob, useGetJobs, useManageJobStatus, useUpdateJob } from "../../query/JobQuery"
 import { useState } from "react"
 import type { JobCreateType, JobType } from "../../types/Job"
-import { useForm, type SubmitErrorHandler, type SubmitHandler } from "react-hook-form"
+import { set, useForm, type SubmitErrorHandler, type SubmitHandler } from "react-hook-form"
 import { Badge, Button, Card, FileInput, Label, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, TextInput } from "flowbite-react"
 import toast from "react-hot-toast"
 import { Plus } from "lucide-react"
 import { useGetDocumentByUrl } from "../../query/DocumentQuery"
 import Loader from "../../common/Loader"
+import { useQueryClient } from "@tanstack/react-query"
 
 function ManageJob() {
-    const { data: allJobs, refetch: refetchAllJobs, isLoading:jobLoading } = useGetJobs();
+    const queryClient = useQueryClient();
+    const { data: allJobs, isLoading:jobLoading } = useGetJobs();
     const [openModal, setOpenModal] = useState<string>();
     const [selectedJob, setSelectedJob] = useState<JobType | null>(null);
     const { register, handleSubmit, reset } = useForm<JobCreateType>();
@@ -51,7 +53,7 @@ function ManageJob() {
             updateMutation.mutate(formData, {
                 onSuccess: (res) => {
                     toast.success(res.message);
-                    refetchAllJobs();
+                    queryClient.setQueryData(['Jobs'], (oldData : JobType[]) => oldData.map(item => item.jobId == res.data.jobId ? res : item));
                     setOpenModal(undefined);
                 },
                 onError: (res) => {
@@ -64,7 +66,7 @@ function ManageJob() {
         createMutation.mutate(formData, {
             onSuccess: (res) => {
                 toast.success(res.message);
-                refetchAllJobs();
+                queryClient.setQueryData(['Jobs'], (oldData : JobType[]) => [...oldData, res.data])
                 setOpenModal(undefined);
             },
             onError: (res) => {
@@ -80,7 +82,7 @@ function ManageJob() {
             {
                 onSuccess: (data) => {
                     toast.success(data.message);
-                    refetchAllJobs();
+                    queryClient.setQueryData(['Jobs'], (oldData : JobType[]) => oldData.map(item => item.jobId != job.jobId ? item : {...item, isOpen: !job.isOpen}));
                 }
             }
         );

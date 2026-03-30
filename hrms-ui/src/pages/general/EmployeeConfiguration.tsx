@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useCreateDepartment, useCreateEmployee, useCreateRole, useDeleteDepartment, useDeleteEmployee, useDeleteRole, useGetDepartments, useGetEmployees, useGetEmployeesPage, useGetRoles, useUpdateDepartment, useUpdateEmployee, useUpdateRole } from "../../query/EmployeeQuery";
-import type { EmployeeRequestType } from "../../types/CommonType";
+import type { DepartmentType, EmployeeRequestType, RoleType } from "../../types/CommonType";
 import toast from "react-hot-toast";
 import type { ApiErrorType } from "../../types/ApiResponse";
 import { Button, Card, Select, Spinner, TextInput } from "flowbite-react";
 import { Check, Edit, Trash2, X } from "lucide-react";
 import Loader from "../../common/Loader";
+import { useQueryClient } from "@tanstack/react-query";
+import { data } from "react-router-dom";
 
 const EmployeeConfiguration = () => {
+    const queryClient = useQueryClient();
     const { data: allEmployees, refetch: refetchEmp } = useGetEmployees();
 
-    const { data: departments, refetch: refetchDept, isFetching: depFetching } = useGetDepartments();
+    const { data: departments, isLoading: depFetching } = useGetDepartments();
     const createDepartment = useCreateDepartment();
     const updateDepartment = useUpdateDepartment();
     const deleteDepartment = useDeleteDepartment();
@@ -19,7 +22,7 @@ const EmployeeConfiguration = () => {
     const [departmentNewName, setDepartmentNewName] = useState("");
     const [departmentUpdateName, setDepartmentUpdateName] = useState<string | null>(null);
 
-    const { data: roles, refetch: refetchRole, isFetching: roleFetching } = useGetRoles();
+    const { data: roles, isLoading: roleFetching } = useGetRoles();
     const createRoleMutation = useCreateRole();
     const updateRoleMutation = useUpdateRole();
     const deleteRoleMutation = useDeleteRole();
@@ -62,18 +65,26 @@ const EmployeeConfiguration = () => {
             managerId: undefined,
         });
     };
-    const handleCreateDepartment = async () => {
+    const handleCreateDepartment = () => {
         if (!departmentNewName) return;
-        await createDepartment.mutateAsync(departmentNewName);
-        refetchDept()
-        setDepartmentNewName("");
+        createDepartment.mutate(departmentNewName, {
+            onSuccess: (data) => {
+                setDepartmentNewName("");
+                queryClient.setQueryData(['Departments'], (oldData: DepartmentType[]) => [...oldData, data])
+            },
+            onError: (err) => toast.error(err.message)
+        })
     };
 
     const handleCreateRole = async () => {
         if (!roleNewName) return;
-        await createRoleMutation.mutateAsync(roleNewName);
-        refetchRole();
-        setRoleNewName("");
+        createRoleMutation.mutate(roleNewName, {
+            onSuccess: (data) => {
+                queryClient.setQueryData(['Roles'], (oldData: RoleType[]) => [...oldData, data]);
+                setRoleNewName("");
+            },
+            onError: (err) => toast.error(err.message)
+        })
     };
 
     const handleCreateEmployee = async () => {
@@ -110,7 +121,7 @@ const EmployeeConfiguration = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {depFetching ? <div className='flex items-center justify-center'><Spinner/></div> :
+                            {depFetching ? <div className='flex items-center justify-center'><Spinner /></div> :
                                 departments?.map((dept, index) => (
                                     <tr key={dept.departmentId} className="border-b">
                                         <td className="px-4 py-2">{index + 1}</td>
@@ -131,9 +142,13 @@ const EmployeeConfiguration = () => {
                                                         size="sm"
                                                         color='green'
                                                         onClick={async () => {
-                                                            await updateDepartment.mutateAsync({ departmentId: dept.departmentId, departmentName: departmentUpdateName!, });
-                                                            setDepartmentEditIndex(null);
-                                                            refetchDept();
+                                                            updateDepartment.mutate({ departmentId: dept.departmentId, departmentName: departmentUpdateName! }, {
+                                                                onSuccess: (data) => {
+                                                                    queryClient.setQueryData(['Departments'], (oldData: DepartmentType[]) => oldData.map(item => item.departmentId != data.departmentId ? item : data));
+                                                                    setDepartmentEditIndex(null);
+                                                                },
+                                                                onError: (err) => toast.error(err.message)
+                                                            })
                                                         }}
                                                     ><Check /></Button>
                                                     <Button size="sm" color='gray' onClick={() => setDepartmentEditIndex(null)}><X /></Button>
@@ -148,7 +163,12 @@ const EmployeeConfiguration = () => {
                                                             setDepartmentUpdateName(dept.departmentName);
                                                         }}
                                                     ><Edit /></Button>
-                                                    <Button size="sm" color='red' onClick={async () => { await deleteDepartment.mutateAsync(dept.departmentId); refetchDept() }}
+                                                    <Button size="sm" color='red' onClick={async () => {
+                                                        deleteDepartment.mutate(dept.departmentId, {
+                                                            onSuccess: (data) => queryClient.setQueryData(['Departments'], (oldData: DepartmentType[]) => oldData.filter(item => item.departmentId != dept.departmentId)),
+                                                            onError: (err) => toast.error(err.message)
+                                                        })
+                                                    }}
                                                     ><Trash2 /></Button>
                                                 </div>
                                             )}
@@ -205,12 +225,14 @@ const EmployeeConfiguration = () => {
                                                 <div className="flex gap-2 justify-center">
                                                     <Button size="sm" color="green"
                                                         onClick={async () => {
-                                                            await updateRoleMutation.mutateAsync({
-                                                                roleId: role.roleId,
-                                                                roleName: roleUpdateName!,
-                                                            });
-                                                            setRoleEditIndex(null);
-                                                            refetchRole();
+                                                            updateRoleMutation.mutate({ roleId: role.roleId, roleName: roleUpdateName! }, {
+                                                                onSuccess: (data) => {
+                                                                    queryClient.setQueryData(['Roles'], (oldData: RoleType[]) => oldData.map(item => item.roleId != data.roleId ? item : data))
+                                                                    setRoleEditIndex(null);
+                                                                },
+                                                                onError: (err) => toast.error(err.message)
+                                                            })
+                                                            updateRoleMutation
                                                         }}
                                                     >
                                                         <Check />
@@ -230,8 +252,11 @@ const EmployeeConfiguration = () => {
 
                                                     <Button size="sm" color="red"
                                                         onClick={async () => {
-                                                            await deleteRoleMutation.mutateAsync(role.roleId);
-                                                            refetchRole();
+                                                            deleteRoleMutation.mutate(role.roleId, {
+                                                                onSuccess: (data) => {
+                                                                    queryClient.setQueryData(['Roles'], (oldData: RoleType[]) => oldData.filter(item => item.roleId != role.roleId));
+                                                                }
+                                                            })
                                                         }}
                                                     >
                                                         <Trash2 />
@@ -308,204 +333,204 @@ const EmployeeConfiguration = () => {
                         </thead>
 
                         <tbody>
-                            {empFetching ? <Spinner/> :
-                            employeePage?.items.map((emp, idx) => (
-                                <tr key={emp.employeeId} className="border-b">
-                                    <td className="px-4 py-2">{idx + 1 + page * 10}</td>
+                            {empFetching ? <Spinner /> :
+                                employeePage?.items.map((emp, idx) => (
+                                    <tr key={emp.employeeId} className="border-b">
+                                        <td className="px-4 py-2">{idx + 1 + page * 10}</td>
 
-                                    {employeeEditId === emp.employeeId ? (
-                                        <>
-                                            <td className="px-4 py-2 space-y-2">
-                                                <TextInput value={newEmployee.firstName}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            firstName: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                                <TextInput value={newEmployee.lastName}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            lastName: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <TextInput value={newEmployee.email}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            email: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <TextInput type="date"
-                                                    value={newEmployee.dateOfBirth}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            dateOfBirth: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <TextInput type="date" value={newEmployee.joiningDate}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            joiningDate: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <Select value={newEmployee.departmentId || ""}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            departmentId:
-                                                                Number(e.target.value) || undefined,
-                                                        })
-                                                    }
-                                                >
-                                                    <option value="">Select</option>
-                                                    {departments?.map((d) => (
-                                                        <option key={d.departmentId} value={d.departmentId}>
-                                                            {d.departmentName}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <Select value={newEmployee.roleId || ""}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            roleId:
-                                                                Number(e.target.value) || undefined,
-                                                        })
-                                                    }
-                                                >
-                                                    <option value="">Select</option>
-                                                    {roles?.map((r) => (
-                                                        <option key={r.roleId} value={r.roleId}>
-                                                            {r.roleName}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <Select value={newEmployee.managerId || ""}
-                                                    onChange={(e) =>
-                                                        setNewEmployee({
-                                                            ...newEmployee,
-                                                            managerId:
-                                                                Number(e.target.value) || undefined,
-                                                        })
-                                                    }
-                                                >
-                                                    <option value="">Select</option>
-                                                    {allEmployees?.map((m) => (
-                                                        <option key={m.employeeId} value={m.employeeId}>
-                                                            {m.firstName} {m.lastName}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <div className="flex gap-2 justify-center">
-                                                    <Button size="sm" color="green"
-                                                        onClick={async () => {
-                                                            await updateEmployeeMutation.mutateAsync({
-                                                                employeeId: emp.employeeId,
-                                                                data: newEmployee,
-                                                            });
-                                                            setEmployeeEditId(null);
-                                                            refetchEmployees();
-                                                            resetNewEmployee();
-                                                        }}
-                                                    >
-                                                        <Check />
-                                                    </Button>
-
-                                                    <Button size="sm" color="gray"
-                                                        onClick={() => {
-                                                            resetNewEmployee();
-                                                            setEmployeeEditId(null);
-                                                        }}
-                                                    >
-                                                        <X />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <td className="px-4 py-2">
-                                                {emp.firstName} {emp.lastName}
-                                            </td>
-                                            <td className="px-4 py-2">{emp.email}</td>
-                                            <td className="px-4 py-2">
-                                                {new Date(emp.dateOfBirth).toLocaleDateString("en-GB")}
-                                            </td>
-                                            <td className="px-4 py-2">
-                                                {new Date(emp.joiningDate).toLocaleDateString("en-GB")}
-                                            </td>
-                                            <td className="px-4 py-2">{emp.departmentName}</td>
-                                            <td className="px-4 py-2">{emp.roleName}</td>
-                                            <td className="px-4 py-2">
-                                                {emp.managerFirstName} {emp.managerLastName}
-                                            </td>
-
-                                            <td className="px-4 py-2">
-                                                <div className="flex gap-2 justify-center">
-                                                    <Button size="sm" color="gray"
-                                                        onClick={() => {
-                                                            setEmployeeEditId(emp.employeeId);
+                                        {employeeEditId === emp.employeeId ? (
+                                            <>
+                                                <td className="px-4 py-2 space-y-2">
+                                                    <TextInput value={newEmployee.firstName}
+                                                        onChange={(e) =>
                                                             setNewEmployee({
-                                                                firstName: emp.firstName,
-                                                                lastName: emp.lastName,
-                                                                email: emp.email,
-                                                                dateOfBirth: emp.dateOfBirth.toString(),
-                                                                joiningDate: emp.joiningDate.toString(),
-                                                                departmentId: emp.departmentId,
-                                                                roleId: emp.roleId,
-                                                                managerId: emp.managerId,
-                                                            });
-                                                        }}
-                                                    >
-                                                        <Edit />
-                                                    </Button>
+                                                                ...newEmployee,
+                                                                firstName: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                    <TextInput value={newEmployee.lastName}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                lastName: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
 
-                                                    <Button size="sm" color="red"
-                                                        onClick={async () => {
-                                                            await deleteEmployeeMutation.mutateAsync(
-                                                                emp.employeeId
-                                                            );
-                                                            refetchEmployees();
-                                                        }}
+                                                <td className="px-4 py-2">
+                                                    <TextInput value={newEmployee.email}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                email: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <TextInput type="date"
+                                                        value={newEmployee.dateOfBirth}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                dateOfBirth: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <TextInput type="date" value={newEmployee.joiningDate}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                joiningDate: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <Select value={newEmployee.departmentId || ""}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                departmentId:
+                                                                    Number(e.target.value) || undefined,
+                                                            })
+                                                        }
                                                     >
-                                                        <Trash2 />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </>
-                                    )}
-                                </tr>
-                            ))}
+                                                        <option value="">Select</option>
+                                                        {departments?.map((d) => (
+                                                            <option key={d.departmentId} value={d.departmentId}>
+                                                                {d.departmentName}
+                                                            </option>
+                                                        ))}
+                                                    </Select>
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <Select value={newEmployee.roleId || ""}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                roleId:
+                                                                    Number(e.target.value) || undefined,
+                                                            })
+                                                        }
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {roles?.map((r) => (
+                                                            <option key={r.roleId} value={r.roleId}>
+                                                                {r.roleName}
+                                                            </option>
+                                                        ))}
+                                                    </Select>
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <Select value={newEmployee.managerId || ""}
+                                                        onChange={(e) =>
+                                                            setNewEmployee({
+                                                                ...newEmployee,
+                                                                managerId:
+                                                                    Number(e.target.value) || undefined,
+                                                            })
+                                                        }
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {allEmployees?.map((m) => (
+                                                            <option key={m.employeeId} value={m.employeeId}>
+                                                                {m.firstName} {m.lastName}
+                                                            </option>
+                                                        ))}
+                                                    </Select>
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <div className="flex gap-2 justify-center">
+                                                        <Button size="sm" color="green"
+                                                            onClick={async () => {
+                                                                await updateEmployeeMutation.mutateAsync({
+                                                                    employeeId: emp.employeeId,
+                                                                    data: newEmployee,
+                                                                });
+                                                                setEmployeeEditId(null);
+                                                                refetchEmployees();
+                                                                resetNewEmployee();
+                                                            }}
+                                                        >
+                                                            <Check />
+                                                        </Button>
+
+                                                        <Button size="sm" color="gray"
+                                                            onClick={() => {
+                                                                resetNewEmployee();
+                                                                setEmployeeEditId(null);
+                                                            }}
+                                                        >
+                                                            <X />
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td className="px-4 py-2">
+                                                    {emp.firstName} {emp.lastName}
+                                                </td>
+                                                <td className="px-4 py-2">{emp.email}</td>
+                                                <td className="px-4 py-2">
+                                                    {new Date(emp.dateOfBirth).toLocaleDateString("en-GB")}
+                                                </td>
+                                                <td className="px-4 py-2">
+                                                    {new Date(emp.joiningDate).toLocaleDateString("en-GB")}
+                                                </td>
+                                                <td className="px-4 py-2">{emp.departmentName}</td>
+                                                <td className="px-4 py-2">{emp.roleName}</td>
+                                                <td className="px-4 py-2">
+                                                    {emp.managerFirstName} {emp.managerLastName}
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <div className="flex gap-2 justify-center">
+                                                        <Button size="sm" color="gray"
+                                                            onClick={() => {
+                                                                setEmployeeEditId(emp.employeeId);
+                                                                setNewEmployee({
+                                                                    firstName: emp.firstName,
+                                                                    lastName: emp.lastName,
+                                                                    email: emp.email,
+                                                                    dateOfBirth: emp.dateOfBirth.toString(),
+                                                                    joiningDate: emp.joiningDate.toString(),
+                                                                    departmentId: emp.departmentId,
+                                                                    roleId: emp.roleId,
+                                                                    managerId: emp.managerId,
+                                                                });
+                                                            }}
+                                                        >
+                                                            <Edit />
+                                                        </Button>
+
+                                                        <Button size="sm" color="red"
+                                                            onClick={async () => {
+                                                                await deleteEmployeeMutation.mutateAsync(
+                                                                    emp.employeeId
+                                                                );
+                                                                refetchEmployees();
+                                                            }}
+                                                        >
+                                                            <Trash2 />
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </>
+                                        )}
+                                    </tr>
+                                ))}
 
                             {employeeEditId == null && (
                                 <tr className="border-b">
@@ -621,10 +646,10 @@ const EmployeeConfiguration = () => {
                 </div>
             </Card>
 
-            { (createDepartment.isPending || updateDepartment.isPending || deleteDepartment.isPending
+            {(createDepartment.isPending || updateDepartment.isPending || deleteDepartment.isPending
                 || createRoleMutation.isPending || updateRoleMutation.isPending || deleteRoleMutation.isPending
                 || createEmployeeMutation.isPending || updateEmployeeMutation.isPending || deleteEmployeeMutation.isPending
-            ) && <Loader/>}
+            ) && <Loader />}
         </div>
     );
 };

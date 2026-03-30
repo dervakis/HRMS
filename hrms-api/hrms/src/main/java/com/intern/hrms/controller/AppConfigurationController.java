@@ -19,10 +19,9 @@ public class AppConfigurationController {
     private final AppConfigurationService appConfigurationService;
 
     @PostMapping("/{key}/{value}")
-    public ResponseEntity<SuccessResponse<Objects>> addConfiguration(@PathVariable String key, @PathVariable String value){
-        appConfigurationService.addConfiguration(key, value);
+    public ResponseEntity<SuccessResponse<AppConfiguration>> addConfiguration(@PathVariable String key, @PathVariable String value){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Added Successfully",null )
+                new SuccessResponse<>("Added Successfully",appConfigurationService.addConfiguration(key, value) )
         );
     }
 
@@ -42,10 +41,9 @@ public class AppConfigurationController {
     }
 
     @PutMapping("/{configId}/{value}")
-    public ResponseEntity<SuccessResponse<Objects>> updateConfiguration(@PathVariable int configId, @PathVariable String value){
-        appConfigurationService.updateConfiguration(configId, value);
+    public ResponseEntity<SuccessResponse<AppConfiguration>> updateConfiguration(@PathVariable int configId, @PathVariable String value){
         return ResponseEntity.ok(
-                new SuccessResponse<>("Updated Successfully",null )
+                new SuccessResponse<>("Updated Successfully",appConfigurationService.updateConfiguration(configId, value) )
         );
     }
 }

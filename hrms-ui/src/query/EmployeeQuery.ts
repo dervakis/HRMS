@@ -32,8 +32,9 @@ export const useGetEmployees = () => {
 
 export const useGetEmployeeDocuments = (userId: number) => {
     return useQuery({
-        queryKey: ['EmployeeDocument'],
-        queryFn: () => getEmployeeDocuments(userId)
+        queryKey: ['EmployeeDocument', userId],
+        queryFn: () => getEmployeeDocuments(userId),
+        staleTime: Infinity
     })
 }
 
@@ -46,7 +47,8 @@ export const useUpdateEmployeeDocument = () => {
 export const useGetOrgChartByEmployee = (employeeId: number) => {
     return useQuery({
         queryKey: ['OrgChart', employeeId],
-        queryFn: () => getOrgChartByEmployee(employeeId)
+        queryFn: () => getOrgChartByEmployee(employeeId),
+        staleTime: 2*60*60*1000
     })
 }
 

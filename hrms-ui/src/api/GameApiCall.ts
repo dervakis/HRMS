@@ -7,7 +7,7 @@ export const getGames = async (): Promise<GameType[]> => {
     return response.data.data
 }
 
-export const createGame = async (data: GameCreateType): Promise<ApiResponseType<Object>> => {
+export const createGame = async (data: GameCreateType): Promise<ApiResponseType<GameType>> => {
     const response = await Api.post(`/game`, data)
     return response.data
 }
@@ -17,7 +17,7 @@ export const deleteGame = async (gameId: number): Promise<ApiResponseType<Object
     return response.data
 }
 
-export const updateGame = async (data: GameCreateType): Promise<ApiResponseType<Object>> => {
+export const updateGame = async (data: GameCreateType): Promise<ApiResponseType<GameType>> => {
     const response = await Api.put(`/game`, data)
     return response.data
 }
@@ -47,7 +47,7 @@ export const removeInterest = async(gameId:number): Promise<ApiResponseType<Obje
     return response.data
 }
 
-export const createGameBooking = async (data: GameBookingSubmitType): Promise<ApiResponseType<Object>> => {
+export const createGameBooking = async (data: GameBookingSubmitType): Promise<ApiResponseType<GameBookingResponseType>> => {
     const response = await Api.post(`/booking`, data)
     return response.data
 }

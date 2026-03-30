@@ -12,7 +12,7 @@ export interface AppConfigurationCreateType {
     value: string;
 }
 
-export const addConfiguration = async (data:AppConfigurationCreateType): Promise<ApiResponseType<Object>> => {
+export const addConfiguration = async (data:AppConfigurationCreateType): Promise<ApiResponseType<AppConfigurationType>> => {
     const res = await Api.post(`/config/${data.key}/${data.value}`);
     return res.data;
 };
@@ -22,8 +22,9 @@ export const getConfigurationByKey = async (key: string): Promise<AppConfigurati
     return res.data.data;
 };
 
-export const updateConfigurationByKey = async ({configId, value}:{configId: number, value: string}): Promise<void> => {
-    await Api.put(`/config/${configId}/${value}`);
+export const updateConfigurationByKey = async ({configId, value}:{configId: number, value: string}): Promise<ApiResponseType<AppConfigurationType>> => {
+    const res = await Api.put(`/config/${configId}/${value}`);
+    return res.data;
 };
 
 export const deleteConfiguration = async (configId: number) : Promise<ApiResponseType<Object>> => {

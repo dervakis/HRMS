@@ -5,11 +5,14 @@ import type { RootStateType } from '../../redux-store/Store';
 import { CircleCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
+import type { GameType } from '../../types/Game';
 
 function Profile() {
+    const queryClient = useQueryClient();
     const { data: allGames } = useGetGames();
     const user = useSelector((state: RootStateType) => state.user);
-    const { data: interestedGame, refetch } = useGetInterestedGame(user.userId);
+    const { data: interestedGame } = useGetInterestedGame(user.userId);
     const addMutation = useAddInterest();
     const removeMutation = useRemoveInterest();
     return (
@@ -25,7 +28,7 @@ function Profile() {
                                 removeMutation.mutate(game.gameId, {
                                     onSuccess: (data) => {
                                         toast.success(data.message);
-                                        refetch();
+                                        queryClient.setQueryData(["interestedGame", user.userId], (oldData : GameType[]) => oldData.filter(item => item.gameId != game.gameId))
                                         // console.log(interestedGame)
                                     },
                                     onError: (err) => console.log(err)
@@ -43,7 +46,7 @@ function Profile() {
                         addMutation.mutate(Number(e.target.value), {
                             onSuccess: (data) => {
                                 toast.success(data.message)
-                                refetch();
+                                queryClient.setQueryData(["interestedGame", user.userId], (oldData : GameType[]) => [...oldData, allGames?.find(game => game.gameId.toString() == e.target.value)])
                             }
                         })
                     }}>

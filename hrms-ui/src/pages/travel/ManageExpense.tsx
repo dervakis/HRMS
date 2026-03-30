@@ -8,11 +8,14 @@ import { useGetDocumentByUrl } from '../../query/DocumentQuery';
 import SelectOption from '../../common/SelectOption';
 import ConfirmModal from '../achievement/component/ConfirmModal';
 import Loader from '../../common/Loader';
+import { useQueryClient } from '@tanstack/react-query';
+import type { TravelExpenseResponseType } from '../../types/TravelPlan';
 
 function ManageExpense() {
+  const queryClient = useQueryClient();
   const [selectedPlanId, setSelectedPlanId] = useState<number>();
-  const { data: travelPlans = [] , isLoading:tpLoading} = useGetTravelPlan();
-  const { data: expenses, refetch, isLoading:exLoading } = useGetExpenseByTravelPlan(selectedPlanId!);
+  const { data: travelPlans = [], isLoading: tpLoading } = useGetTravelPlan();
+  const { data: expenses, isLoading: exLoading } = useGetExpenseByTravelPlan(selectedPlanId!);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Submitted":
@@ -46,14 +49,14 @@ function ManageExpense() {
             <table className='w-full text-sm text-center'>
               <thead className='border-b'>
                 <tr>
-                <th className="px-3 py-3">Name</th>
-                <th className="px-3 py-3">Detail</th>
-                <th className="px-3 py-3">Date</th>
-                <th className="px-3 py-3">Type</th>
-                <th className="px-3 py-3">Amount</th>
-                <th className="px-3 py-3">Status</th>
-                <th className="px-3 py-3">Remark</th>
-                <th className="px-3 py-3">Action</th>
+                  <th className="px-3 py-3">Name</th>
+                  <th className="px-3 py-3">Detail</th>
+                  <th className="px-3 py-3">Date</th>
+                  <th className="px-3 py-3">Type</th>
+                  <th className="px-3 py-3">Amount</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="px-3 py-3">Remark</th>
+                  <th className="px-3 py-3">Action</th>
                 </tr>
               </thead>
 
@@ -88,12 +91,15 @@ function ManageExpense() {
                           <>
                             <Button size="xs" color='green' onClick={() => {
                               verifyExpenseMutation.mutate({ expenseId: expense.employeeTravelExpenseId, status: 'Approved', remark: null }, {
-                                onSuccess: (data) => { toast.success(data.message); refetch() },
+                                onSuccess: (data) => {
+                                  toast.success(data.message);
+                                  queryClient.setQueryData(['ExpenseT', selectedPlanId], (old: TravelExpenseResponseType[]) => old.map(item => item.employeeTravelExpenseId != data.data.employeeTravelExpenseId ? item : data.data))
+                                },
                                 onError: (err) => toast.error(err.message)
                               })
-                            }}><CircleCheck size={14}/></Button>
+                            }}><CircleCheck size={14} /></Button>
                             <Button size="xs" color='red' onClick={() => setOpenConfirm(expense.employeeTravelExpenseId)
-                            }><X size={14}/></Button>
+                            }><X size={14} /></Button>
                           </>
                         )}
                         <Button size="xs" color="gray" onClick={() => {
@@ -111,7 +117,7 @@ function ManageExpense() {
                 ))}
               </tbody>
             </table>
-            </div>
+          </div>
         </Card>
       }
 
@@ -128,7 +134,7 @@ function ManageExpense() {
           {
             onSuccess: data => {
               toast.success(data.message);
-              refetch();
+              queryClient.setQueryData(['ExpenseT', selectedPlanId], (old: TravelExpenseResponseType[]) => old.filter(item => item.employeeTravelExpenseId != openConfirm))
               setOpenConfirm(null);
             },
             onError: error => toast.error(error.message)
@@ -137,7 +143,7 @@ function ManageExpense() {
         onClose={() => setOpenConfirm(null)}
       />
 
-      { (tpLoading || exLoading || docMutation.isPending || verifyExpenseMutation.isPending) &&<Loader/>}
+      {(tpLoading || exLoading || docMutation.isPending || verifyExpenseMutation.isPending) && <Loader />}
     </>
   )
 }

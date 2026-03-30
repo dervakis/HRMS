@@ -10,8 +10,10 @@ import toast from "react-hot-toast";
 import { useGetDocumentByUrl } from "../../query/DocumentQuery";
 import { Alert, Badge, Button, Card, Label, Modal, ModalBody, ModalFooter, ModalHeader, Select, TextInput } from "flowbite-react";
 import Loader from "../../common/Loader";
+import { useQueryClient } from "@tanstack/react-query";
 
 function EmployeeTravelExpense() {
+  const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState<string>();
   const user = useSelector((state: RootStateType) => state.user);
   const { data: openTravel, isLoading: otLoading } = useGetTravelPlanForExpense(user.userId!);
@@ -21,7 +23,7 @@ function EmployeeTravelExpense() {
   const submitExpenseMutation = useSubmitTravelExpense();
   const docMutation = useGetDocumentByUrl();
   const deleteMutation = useDeleteTravelExpense();
-  const { data: expenses, refetch: expensesRefetch } = useGetExpenseByEmployee(user.userId);
+  const { data: expenses, isLoading: exLoading } = useGetExpenseByEmployee(user.userId);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -63,7 +65,10 @@ function EmployeeTravelExpense() {
     createExpenseMutation.mutate(form, {
       onSuccess: (data) => {
         setOpenModal(undefined)
-        expensesRefetch();
+        if (openModal == 'create')
+          queryClient.setQueryData(['ExpenseE', user.userId], (old: TravelExpenseResponseType[]) => [...old, data.data])
+        else
+          queryClient.setQueryData(['ExpenseE', user.userId], (old: TravelExpenseResponseType[]) => old.map(item => item.employeeTravelExpenseId != data.data.employeeTravelExpenseId ? item : data.data))
         toast.success(data.message);
         resetForm();
       },
@@ -153,14 +158,20 @@ function EmployeeTravelExpense() {
                         <>
                           <Button size="xs" color='green' onClick={() => {
                             submitExpenseMutation.mutate(expense.employeeTravelExpenseId, {
-                              onSuccess: (data) => { toast.success(data.message); expensesRefetch() },
+                              onSuccess: (data) => {
+                                toast.success(data.message);
+                                queryClient.setQueryData(['ExpenseE', user.userId], (old: TravelExpenseResponseType[]) => old.map(item => item.employeeTravelExpenseId != data.data.employeeTravelExpenseId ? item : data.data))
+                              },
                               onError: (err) => toast.error(err.message)
                             })
                           }}>
                             <CheckCircle size={14} /></Button>
 
                           <Button size="xs" color='red' onClick={() => deleteMutation.mutate(expense.employeeTravelExpenseId, {
-                            onSuccess: (data) => { toast.success(data.message); expensesRefetch() }
+                            onSuccess: (data) => {
+                              toast.success(data.message);
+                              queryClient.setQueryData(['ExpenseE', user.userId], (old: TravelExpenseResponseType[]) => old.filter(item => item.employeeTravelExpenseId != expense.employeeTravelExpenseId))
+                            }
                           })}
                           ><X size={14} /></Button>
 
@@ -224,7 +235,7 @@ function EmployeeTravelExpense() {
                     if (!value)
                       return "Expense date is mandatory";
                     const travelPlan = openTravel?.find((obj) => obj.travelPlanId == watch('TravelPlanId'));
-                    if(new Date(value) > new Date())
+                    if (new Date(value) > new Date())
                       return "Can not predict Future expense."
                     if (new Date(value) < new Date(travelPlan?.startTime!) || new Date(value) > new Date(travelPlan?.endTime!))
                       return "Expense date out of travel plan range."
@@ -276,7 +287,7 @@ function EmployeeTravelExpense() {
           </ModalFooter>
         </form>
       </Modal>
-      {(otLoading || etLoading || createExpenseMutation.isPending || docMutation.isPending || deleteMutation.isPending || submitExpenseMutation.isPending) && <Loader />}
+      {(otLoading || etLoading || exLoading || createExpenseMutation.isPending || docMutation.isPending || deleteMutation.isPending || submitExpenseMutation.isPending) && <Loader />}
     </>
   );
 }

@@ -29,7 +29,8 @@ export const useUpdateGame = () => {
 export const useGetGameCycle = (gameId: number) => {
     return useQuery({
         queryKey: ['GameCycle', gameId],
-        queryFn: gameId ? () => getGameCycle(gameId) : skipToken
+        queryFn: gameId ? () => getGameCycle(gameId) : skipToken,
+        staleTime: Infinity
     });
 }
 
@@ -56,7 +57,8 @@ export const useGetInterestedGame = (employeeId: number) => {
     return useQuery({
         queryKey: ["interestedGame", employeeId],
         queryFn: () => getInterestedGame(employeeId),
-        enabled: !!employeeId
+        enabled: !!employeeId,
+        staleTime: Infinity
     })
 }
 
