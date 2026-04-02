@@ -7,7 +7,6 @@ import { Button, Card, Select, Spinner, TextInput } from "flowbite-react";
 import { Check, Edit, Trash2, X } from "lucide-react";
 import Loader from "../../common/Loader";
 import { useQueryClient } from "@tanstack/react-query";
-import { data } from "react-router-dom";
 
 const EmployeeConfiguration = () => {
     const queryClient = useQueryClient();
@@ -165,7 +164,7 @@ const EmployeeConfiguration = () => {
                                                     ><Edit /></Button>
                                                     <Button size="sm" color='red' onClick={async () => {
                                                         deleteDepartment.mutate(dept.departmentId, {
-                                                            onSuccess: (data) => queryClient.setQueryData(['Departments'], (oldData: DepartmentType[]) => oldData.filter(item => item.departmentId != dept.departmentId)),
+                                                            onSuccess: () => queryClient.setQueryData(['Departments'], (oldData: DepartmentType[]) => oldData.filter(item => item.departmentId != dept.departmentId)),
                                                             onError: (err) => toast.error(err.message)
                                                         })
                                                     }}
@@ -253,7 +252,7 @@ const EmployeeConfiguration = () => {
                                                     <Button size="sm" color="red"
                                                         onClick={async () => {
                                                             deleteRoleMutation.mutate(role.roleId, {
-                                                                onSuccess: (data) => {
+                                                                onSuccess: () => {
                                                                     queryClient.setQueryData(['Roles'], (oldData: RoleType[]) => oldData.filter(item => item.roleId != role.roleId));
                                                                 }
                                                             })
