@@ -1,6 +1,8 @@
 package com.intern.hrms.utility;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -13,6 +15,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.time.Duration;
 
+@Service
+@Profile("storage-aws")
 public class S3FileStorageServiceImpl implements IFileStorageService{
     @Value("${aws.bucket}")
     private String bucket;

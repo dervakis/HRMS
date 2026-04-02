@@ -7,12 +7,15 @@ import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.time.OffsetDateTime;
 
+@Service
+@Profile("storage-azure")
 public class AzureFileStorageServiceImpl implements IFileStorageService{
     @Value("${azure.container}")
     private String container;

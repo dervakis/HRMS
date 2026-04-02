@@ -2,6 +2,7 @@ package com.intern.hrms.utility;
 
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.List;
 
 @Service
+@Profile("mail-smtp")
 public class SmtpMaliServiceImpl implements IMailService{
     @Value("${spring.mail.username}")
     private String mail;

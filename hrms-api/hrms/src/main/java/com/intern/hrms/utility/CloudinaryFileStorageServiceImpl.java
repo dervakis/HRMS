@@ -3,11 +3,14 @@ package com.intern.hrms.utility;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
+@Service
+@Profile("storage-cloudinary")
 public class CloudinaryFileStorageServiceImpl implements IFileStorageService {
     private final Cloudinary cloudinary;
 
