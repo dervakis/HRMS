@@ -2,10 +2,9 @@ package com.intern.hrms.scheduler;
 
 import com.intern.hrms.service.game.GameService;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-
+@Service
 public class GameCycleScheduler {
     private final GameService gameService;
 
@@ -13,7 +12,7 @@ public class GameCycleScheduler {
         this.gameService = gameService;
     }
 
-    @Scheduled(cron = "0 0 0 ? * SUN")
+    @Scheduled(cron = "${scheduler.game-cycle.cron}")
     public void runWeeklyCycle(){
         gameService.createGameCycle();
     }

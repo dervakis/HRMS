@@ -67,7 +67,8 @@ public class TravelPlanService {
                 throw new RuntimeException("Employee " + employee.getFirstName() +" is already assigned to another travel plan during this period");
             }
 
-            travelEmployeeRepository.save(new TravelEmployee(travelPlan, employee));
+            TravelEmployee te = travelEmployeeRepository.save(new TravelEmployee(travelPlan, employee));
+            travelPlan.getTravelEmployees().add(te);
             notificationService.notifyUser(employeeId, NotificationTypeEnum.TravelPlan, "You are selected for travel plan : "+travelPlan.getTitle());
         }
     }
@@ -78,6 +79,7 @@ public class TravelPlanService {
             travelEmployeeIds.add(travelEmployeeRepository.findByEmployee_EmployeeIdAndTravelPlan(employeeId, travelPlan).getTravelEmployeeId());
             notificationService.notifyUser(employeeId, NotificationTypeEnum.TravelPlan, "Your selection for travel plan : "+travelPlan.getTitle()+" , has been cancelled.");
         }
+        travelPlan.getTravelEmployees().removeIf(te -> travelEmployeeIds.contains(te.getTravelEmployeeId()));
         travelEmployeeRepository.deleteAllById(travelEmployeeIds);
     }
 
@@ -105,7 +107,6 @@ public class TravelPlanService {
         );
 
         addTravelEmployee(travelPlan, add.stream().toList());
-
         TravelPlanResponseDTO res = modelMapper.map(travelPlan, TravelPlanResponseDTO.class);
         res.setTravelEmployees(modelMapper.map(travelPlan.getTravelEmployees(),new TypeToken<List<EmployeeResponseDTO>>() {}.getType()));
         return res;

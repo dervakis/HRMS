@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Modal, Button, TextInput, Spinner, ModalHeader, ModalBody } from "flowbite-react";
-import { Edit2, Trash2, Check, X, MessageCircle, MessageCircleWarning, Loader } from "lucide-react";
+import { Edit2, Trash2, Check, X, MessageCircle, MessageCircleWarning } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCreateComment, useDeleteComment, useDeleteCommentByHr, useGetComments, useUpdateComment } from "../../../query/AchievementQuery";
 import { useSelector } from "react-redux";
@@ -52,8 +52,10 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
 
     const handleDeleteComment = async (commentId: number) => {
         if (!postId) return;
+        setSelectedCommentId(commentId);
         await deleteCommentMutation.mutateAsync(commentId);
         queryClient.setQueryData(["Comments", postId], comments?.filter(comment => comment.commentId != commentId))
+        setSelectedCommentId(undefined);
     };
 
     const formatInitials = (name: string) => {
@@ -64,7 +66,6 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
 
     const handleHrDelete = async (remark: string) => {
         await deleteCommentByHrMutation.mutateAsync({ id: selecteCommentId!, remark: remark });
-        // queryClient.invalidateQueries({ queryKey: ["Comments", postId] });
         queryClient.setQueryData(["Comments", postId], comments?.filter(comment => comment.commentId != selecteCommentId))
         setHrDeleteModalOpen(false);
         setSelectedCommentId(undefined);
@@ -140,7 +141,7 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
                                                             {isMine && (
                                                                 <div className="flex justify-end gap-2 mt-1">
                                                                     <Button size="xs" color="blue" onClick={() => setEditingComment({ commentId: c.commentId, text: c.text })}><Edit2 size={14} /></Button>
-                                                                    <Button size="xs" color="red" onClick={() => handleDeleteComment(c.commentId)}><Trash2 size={14} /></Button>
+                                                                    <Button size="xs" color="red" onClick={() => handleDeleteComment(c.commentId)} disabled={deleteCommentMutation.isPending && selecteCommentId == c.commentId}>{deleteCommentMutation.isPending && selecteCommentId == c.commentId ? <Spinner size="sm" /> : <Trash2 size={14} />}</Button>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -186,7 +187,6 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, open, onClose }) =>
                 onConfirm={(remark) => handleHrDelete(remark!)}
                 onClose={() => setHrDeleteModalOpen(false)}
             />
-            {(deleteCommentMutation.isPending) && <Loader />}
         </>
     );
 };

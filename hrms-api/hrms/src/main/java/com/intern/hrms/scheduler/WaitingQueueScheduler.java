@@ -24,7 +24,7 @@ public class WaitingQueueScheduler {
         this.gameBookingService = gameBookingService;
     }
 
-    @Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "${scheduler.waiting-queue.cron}")
     @Transactional
     public void runTenMinuteCycle(){
         LocalDate today = LocalDate.now();

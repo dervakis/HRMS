@@ -22,7 +22,7 @@ function Feed() {
         dateTo: undefined,
     })
     const [page, setPage] = useState<number>(1);
-    const { data: filteredPost, isRefetching } = useGetPosts(filters, page);
+    const { data: filteredPost, isLoading } = useGetPosts(filters, page);
     const createPostMutation = useCreatePost();
     const updatePostMutation = useUpdatePost();
     const deletePostMutation = useDeletePost();
@@ -273,7 +273,7 @@ function Feed() {
                 onClose={() => setHrDeleteModalOpen(false)}
             />
             {(createPostMutation.isPending || updatePostMutation.isPending
-                || isRefetching
+                || isLoading
             ) && <Loader />}
         </div>
     )

@@ -24,7 +24,7 @@ public class SystemPostScheduler {
     /**
      * Scheduled to run every day at 8 AM
      */
-    @Scheduled(cron = "0 0 8 * * ?") // every day at 08:00
+    @Scheduled(cron = "${scheduler.system-post.cron}") // every day at 08:00
     @Transactional
     public void createBirthdayAndAnniversaryPosts() {
         LocalDate today = LocalDate.now();

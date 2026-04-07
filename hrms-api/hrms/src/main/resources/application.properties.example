@@ -1,13 +1,47 @@
 spring.application.name=HRMS API
 
 #database related configuration
-spring.datasource.url=jdbc:sqlserver://;serverName=localhost;databaseName=hrms_db;encrypt=false;trustServerCertificate=false;
-spring.datasource.username=USERNAME
-spring.datasource.password=DBPASSWORD
+spring.datasource.url=jdbc:sqlserver://;serverName=localhost;databaseName=hrms_db;encrypt=false;trustServerCertificate=false;sendTimeAsDateTime=false;
+spring.datasource.username=sa
+spring.datasource.password=abc@xyz
 spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jpa.database-platform=org.hibernate.dialect.SQLServerDialect
 spring.jpa.show-sql=true
-spring.jpa.hibernate.ddl-auto=create
+spring.jpa.hibernate.ddl-auto=update
 
 #jwt related things
-jwt.secret=YOUR_SECREAT_KEY
-jwt.expiry=10
+jwt.secret=5x2nbkvMLwbEvVAPA7vNtruujm3d2/Y9PdqIRxLoITbCI=
+jwt.expiry=60
+
+#Storage
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+storage.path=upload/
+
+#mail sending
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username={your email address}
+spring.mail.password={email's app password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+#frontend-url
+frontend.url=http://localhost:5173
+
+#static resource
+spring.mvc.static-path-pattern=/files/**
+spring.web.resources.static-locations=file:./upload/
+
+##Azure blob
+#azure.connection-string={azure connection string}
+#azure.container={container name}
+#azure.url-expiry=2
+
+#profile
+spring.profiles.active=storage-local,mail-smtp
+
+#scheduler
+scheduler.game-cycle.cron=0 0 0 ? * SUN
+scheduler.waiting-queue.cron=0 0/10 * * * *
+scheduler.system-post.cron=0 0 8 * * ?

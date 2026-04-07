@@ -123,7 +123,7 @@ function ManageTravel() {
                                     <Button size='xs' color='gray' onClick={() => openSelection(plan)}>
                                         <Users />
                                         <span className="absolute -top-1 -right-1 w-5 h-5 text-xs flex items-center justify-center bg-blue-500 text-white rounded-full">
-                                            {plan.travelEmployees.length}
+                                            {plan.travelEmployees?.length}
                                         </span>
                                     </Button>
                                     <Button size='xs' color='gray' onClick={() => openDocument(plan)}><FileText /></Button>
